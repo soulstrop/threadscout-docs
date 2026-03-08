@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Gemini CLI" />
+  <title>0006 Stable Dev Oauth Callback</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">0006 Stable Dev Oauth Callback</h1>
+<p class="author">Gemini CLI</p>
+</header>
+<h1 id="adr-0006-stable-development-oauth-callbacks-via-cloudflare">ADR
+0006: Stable Development OAuth Callbacks via Cloudflare</h1>
+<h2 id="status">Status</h2>
+<p>Proposed</p>
+<h2 id="context">Context</h2>
+<p>ThreadScout integrates with the eBay API, which requires a public
+HTTPS callback for OAuth2 authentication. Currently, we use temporary
+Cloudflare Tunnels (<code>trycloudflare.com</code>), which has several
+drawbacks:</p>
+<ol type="1">
+<li><strong>URL Instability</strong>: Every time the tunnel restarts,
+the URL changes. This requires manual updates to the eBay Developer
+Portal’s “Auth Accepted URL” (RU_NAME).</li>
+<li><strong>Compliance</strong>: Many IdPs (including eBay) are becoming
+stricter about redirect URIs, often requiring verified domain ownership
+or rejecting “random” subdomains.</li>
+<li><strong>Local HTTPS Complexity</strong>: Running Caddy locally to
+provide HTTPS for <code>localhost</code> is often blocked by
+system-level permissions (e.g., binding to port 80/443) or browser
+certificate trust issues.</li>
+</ol>
+<h2 id="proposed-decision">Proposed Decision</h2>
+<p>We will use a stable, custom subdomain (e.g.,
+<code>threadscout.constans.dev</code>) managed by Cloudflare to route
+traffic to the developer’s local machine.</p>
+<h3 id="persistent-cloudflare-tunnel">1. Persistent Cloudflare
+Tunnel</h3>
+<p>Instead of a temporary tunnel, we will use a <strong>Named
+Tunnel</strong> via <code>cloudflared</code>.</p>
+<ul>
+<li>The tunnel will be linked to the <code>constans.dev</code>
+zone.</li>
+<li>A DNS CNAME record will point <code>threadscout.constans.dev</code>
+to the tunnel ID.</li>
+</ul>
+<h3 id="traffic-routing">2. Traffic Routing</h3>
+<ul>
+<li>Traffic arriving at <code>https://threadscout.constans.dev</code>
+will be proxied by Cloudflare to the local FastAPI backend (e.g.,
+<code>http://localhost:8000</code>).</li>
+<li>This eliminates the need for a local Caddy proxy for external
+callbacks.</li>
+</ul>
+<h3 id="security-hardening">3. Security Hardening</h3>
+<p>To ensure this “hop” is safe:</p>
+<ol type="1">
+<li><p><strong>Cloudflare Access (Zero Trust)</strong>:</p>
+<ul>
+<li>Protect the root domain with an authentication policy (e.g., Google
+Workspace, GitHub, or One-Time Pin).</li>
+<li><strong>Bypass Rule</strong>: Create a specific bypass rule for the
+OAuth callback path (<code>/api/ebay/callback</code>) to allow eBay’s
+servers to hit the endpoint without manual authentication.</li>
+</ul></li>
+<li><p><strong>OAuth State Parameter</strong>:</p>
+<ul>
+<li>Implement a cryptographically secure <code>state</code> parameter in
+the OAuth flow to prevent CSRF attacks. (Implemented in PR #XX).</li>
+</ul></li>
+<li><p><strong>Strict HTTPS</strong>:</p>
+<ul>
+<li>Enforce “Always Use HTTPS” and HSTS at the Cloudflare edge.</li>
+</ul></li>
+<li><p><strong>Localhost Binding</strong>:</p>
+<ul>
+<li>The backend should only bind to <code>127.0.0.1</code> (not
+<code>0.0.0.0</code>) to ensure only the tunnel can reach it.</li>
+</ul></li>
+</ol>
+<h2 id="alternatives-considered">Alternatives Considered</h2>
+<h3 id="tailscale-funnel">1. Tailscale Funnel</h3>
+<p>Tailscale Funnel allows exposing a local port to the public internet
+via the Tailnet.</p>
+<ul>
+<li><strong>Pros</strong>: Zero-configuration for existing Tailscale
+users; automatic HTTPS; high security via the Tailnet’s private
+infrastructure.</li>
+<li><strong>Cons</strong>: Restricted to <code>*.ts.net</code>
+subdomains (cannot use custom branded domains like
+<code>constans.dev</code>); all-or-nothing public access to the port
+(lacks granular path-level bypass rules like Cloudflare Access).</li>
+</ul>
+<h3 id="comparison-cloudflare-vs.-tailscale-funnel">2. Comparison:
+Cloudflare vs. Tailscale Funnel</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">Cloudflare Tunnel
+(<code>cloudflared</code>)</th>
+<th style="text-align: left;">Tailscale Funnel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Domain Control</strong></td>
+<td style="text-align: left;"><strong>Full</strong>
+(<code>threadscout.constans.dev</code>)</td>
+<td style="text-align: left;"><strong>Restricted</strong>
+(<code>*.ts.net</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Access Control</strong></td>
+<td style="text-align: left;">Granular (WAF, Path-level Bypass)</td>
+<td style="text-align: left;">Port-level (All or Nothing)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Identity Management</strong></td>
+<td style="text-align: left;">Multiple IdPs (Google, GitHub, OKTA)</td>
+<td style="text-align: left;">Tailscale Identity (SSO/User)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Branding</strong></td>
+<td style="text-align: left;">Professional &amp; Consistent</td>
+<td style="text-align: left;">Utility &amp; Infrastructure focused</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coexistence-strategy">3. Coexistence Strategy</h3>
+<p>ThreadScout will utilize both technologies for maximum flexibility
+and security:</p>
+<ul>
+<li><strong>Public Ingress (<code>cloudflared</code>)</strong>: Used
+strictly for official API callbacks (eBay, Google) that require stable,
+custom-branded URLs and granular path-level security bypasses.</li>
+<li><strong>Private Access (Tailscale)</strong>: Used for secure,
+authenticated access to the raw developer environment (e.g., accessing
+the local frontend/backend from a mobile device or laptop on the same
+Tailnet) without exposing the application to the public internet at
+all.</li>
+<li><strong>No Conflict</strong>: <code>cloudflared</code> operates at
+the application proxy layer, while Tailscale operates at the network
+interface layer. They can run concurrently on the same machine without
+interference.</li>
+</ul>
+<h2 id="decision-drivers">Decision Drivers</h2>
+<ul>
+<li><strong>Stability</strong>: Reduce developer friction by providing a
+“set it and forget it” callback URL.</li>
+<li><strong>Safety</strong>: Leverage Cloudflare’s WAF and Zero Trust
+features to protect the developer machine.</li>
+<li><strong>Professionalism</strong>: Using a real domain is a
+prerequisite for moving from Sandbox to Production API tiers.</li>
+<li><strong>Granularity</strong>: The ability to bypass Cloudflare
+Access <em>only</em> for the specific <code>/api/ebay/callback</code>
+path is critical for external IdP compatibility.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li><strong>Dependency</strong>: Requires a Cloudflare account and a
+registered domain.</li>
+<li><strong>Configuration</strong>: Developers must have
+<code>cloudflared</code> installed and authenticated on their
+machine.</li>
+<li><strong>Cost</strong>: While the features used are available on the
+Free Tier, it introduces a reliance on external infrastructure.</li>
+</ul>
+</body>
+</html>

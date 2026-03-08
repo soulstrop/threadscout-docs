@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>0003 Pluggable Ingest Backends</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">0003 Pluggable Ingest Backends</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="adr-003-pluggable-ingest-backends">ADR 003: Pluggable Ingest
+Backends</h1>
+<h2 id="status">Status</h2>
+<p>Proposed</p>
+<h2 id="context">Context</h2>
+<p>ThreadScout originally assumed all photos would be located in a local
+<code>ingest/</code> directory. However, resellers use various sources
+for their product photography, including Google Photos, Apple iCloud,
+and direct URLs.</p>
+<p>We need a way to support these varied sources without hardcoding
+specific logic for every provider into the core application.</p>
+<h2 id="decision">Decision</h2>
+<p>We will implement an <strong>Ingest Provider Interface</strong>.</p>
+<p>The backend will be refactored to use a strategy pattern. A base
+<code>IngestProvider</code> class will define the contract, and specific
+implementations (e.g., <code>LocalProvider</code>,
+<code>GooglePhotosProvider</code>) will handle the platform-specific
+logic for listing, fetching, and finalizing images.</p>
+<h2 id="interface-contract">Interface Contract</h2>
+<p>Every Provider must implement:</p>
+<ol type="1">
+<li><code>list_images()</code>: Returns metadata for available images
+(id, preview_url).</li>
+<li><code>get_image_bytes(image_id)</code>: Returns raw bytes for AI
+analysis.</li>
+<li><code>finalize(image_ids, destination_path)</code>: Moves or marks
+images as processed.</li>
+</ol>
+<h2 id="rationale">Rationale</h2>
+<ul>
+<li><strong>Extensibility</strong>: New backends (S3, Dropbox, Apple
+Photos) can be added by simply implementing the interface.</li>
+<li><strong>Decoupling</strong>: The core FastAPI logic won’t need to
+know if an image is on a local disk or a Google server.</li>
+<li><strong>Mobile Workflow</strong>: Supporting cloud providers like
+Google Photos enables a seamless mobile-to-desktop workflow for
+users.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li><strong>Positive</strong>: High flexibility; supports modern cloud
+workflows.</li>
+<li><strong>Negative</strong>: Adds abstraction complexity; cloud
+providers may require complex OAuth or scraping logic.</li>
+<li><strong>Migration</strong>: The existing local filesystem logic must
+be moved into a <code>LocalProvider</code> implementation.</li>
+</ul>
+</body>
+</html>

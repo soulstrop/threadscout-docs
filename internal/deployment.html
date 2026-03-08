@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>DEPLOYMENT</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">DEPLOYMENT</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="threadscout-deployment-guide">ThreadScout Deployment Guide</h1>
+<p>This document provides technical instructions for deploying,
+monitoring, and maintaining ThreadScout. For the architectural
+rationale, see <a href="architecture.html">ARCHITECTURE</a>.</p>
+<hr />
+<h2 id="phase-1-preparation-setup">Phase 1: Preparation &amp; Setup</h2>
+<h3 id="prerequisites">1.1 Prerequisites</h3>
+<p>Before deployment, ensure the following are installed and
+configured:</p>
+<ul>
+<li><strong><a href="https://mise.jdx.dev/index.html">mise</a></strong>:
+For managing all tools and tasks.</li>
+<li><strong><a href="https://github.com/jdx/fnox">fnox</a></strong>: For
+managing encrypted secrets.</li>
+<li><strong>Docker &amp; Docker Compose</strong>: Required for
+containerized orchestration.</li>
+<li><strong>Google Cloud Platform</strong>: Vertex AI API enabled and
+<code>gcloud auth application-default login</code> run.</li>
+</ul>
+<h3 id="environment-configuration">1.2 Environment Configuration</h3>
+<p>ThreadScout uses Pydantic Settings for environment-aware constants.
+Configure these via <code>mise.toml</code> or export them as environment
+variables.</p>
+<h4 id="ingress-network-topology">Ingress &amp; Network Topology</h4>
+<p>ThreadScout uses an <strong>Ingress Authority</strong> model to
+ensure consistent authentication and security behavior across different
+deployment environments.</p>
+<ul>
+<li><code>THREADSCOUT_INGRESS_MODE</code>: <strong>REQUIRED</strong>.
+Defines the network path.
+<ul>
+<li><code>DIRECT</code>: (e.g., <code>localhost:3000</code>) No proxy.
+HTTP only. Insecure cookies allowed. Mock auth permitted.</li>
+<li><code>PROXY</code>: (e.g., Caddy on <code>localhost:3443</code>)
+Proxied traffic. Must trust <code>X-Forwarded-*</code> headers. Strict
+local OIDC.</li>
+<li><code>TUNNEL</code>: (e.g., Cloudflare on
+<code>threadscout.constans.dev</code>) Public traffic. Strict secure
+cookies. Strict public OIDC.</li>
+</ul></li>
+</ul>
+<h4 id="core-security-identity-variables">Core Security &amp; Identity
+Variables</h4>
+<p>ThreadScout uses robust configuration templating (SPEC-47) to ensure
+safe environment variable injection without <code>mise</code> startup
+crashes.</p>
+<ul>
+<li><p><code>THREADSCOUT_APP_ENV</code>: <code>mocking</code>,
+<code>development</code>, or <code>production</code>.</p></li>
+<li><p><code>THREADSCOUT_SECRET_KEY</code>: <strong>CRITICAL</strong>. A
+unique, high-entropy string used for session signing.</p></li>
+<li><p><code>THREADSCOUT_ENCRYPTION_KEY</code>: A Fernet (AES-128) key
+for at-rest token protection.</p></li>
+<li><p><code>THREADSCOUT_DEBUG</code>: Must be <code>false</code> in
+production to prevent sensitive trace leakage.</p></li>
+</ul>
+<p><strong>Identity (OIDC / PocketID)</strong>:</p>
+<ul>
+<li><code>THREADSCOUT_ENABLE_AUTH</code>: Must be <code>true</code> for
+public deployments.</li>
+<li><code>THREADSCOUT_POCKET_ID_PUBLIC_URL</code>: The public-facing URL
+of the auth service (e.g., <code>https://auth.threadscout.com</code>).
+This is the <code>issuer</code> claim in JWTs.</li>
+<li><code>THREADSCOUT_POCKET_ID_INTERNAL_URL</code>: (Optional) The
+internal network URL (e.g., <code>http://pocket-id:8080</code>). If set,
+the backend will fetch JWKS via this URL to bypass reverse proxies.</li>
+<li><code>THREADSCOUT_OIDC_AUDIENCE</code>: Defaults to
+<code>threadscout</code>.</li>
+</ul>
+<h4 id="secret-management-fnox-pass">Secret Management
+(<code>fnox</code> &amp; <code>pass</code>)</h4>
+<p>ThreadScout uses a tiered secret architecture to isolate development
+and production credentials. Secrets are stored in a hierarchical
+<code>pass</code> store and mapped via <code>fnox.toml</code>.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Namespace</th>
+<th style="text-align: left;">Use Case</th>
+<th style="text-align: left;"><code>pass</code> Path Root</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Development</strong></td>
+<td style="text-align: left;">Local testing (<code>local</code>
+profile)</td>
+<td style="text-align: left;"><code>threadscout/dev/</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Production</strong></td>
+<td style="text-align: left;">Live environments (<code>hybrid</code>,
+<code>live</code>, <code>prod</code>)</td>
+<td style="text-align: left;"><code>threadscout/prod/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Mandatory Production Keys</strong>:</p>
+<ul>
+<li><code>threadscout/prod/encryption_key</code>: A high-entropy Fernet
+key for database protection.</li>
+<li><code>threadscout/prod/auth/secret_key</code>: Unique string for
+backend session signing.</li>
+<li><code>threadscout/prod/auth/nextauth_secret</code>: Unique string
+for frontend authentication.</li>
+<li><code>threadscout/prod/auth/pocket_id_client_secret</code>: The OIDC
+client secret.</li>
+</ul>
+<hr />
+<h2 id="phase-2-starting-the-stack">Phase 2: Starting the Stack</h2>
+<p>ThreadScout uses Caddy as a unified ingress for local HTTPS, required
+for eBay OAuth and secure cookie handling.</p>
+<h3 id="standard-deployment-mise">2.1 Standard Deployment (Mise)</h3>
+<p>Best for rapid development and host-native execution.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run setup             <span class="co"># Installs local CA and browsers</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run launch hybrid     <span class="co"># Starts Caddy, Frontend, Backend, and sidecars (PocketID &amp; Tunnel)</span></span></code></pre></div>
+<h3 id="containerized-deployment-docker">2.2 Containerized Deployment
+(Docker)</h3>
+<p>Best for verified “Production-Ready” states.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Access via Caddy at: https://threadscout.constans.dev</span></span></code></pre></div>
+<h3 id="hardware-isolation-microvm">2.3 Hardware Isolation
+(MicroVM)</h3>
+<p>For high-security environments, isolate the backend in a QEMU
+MicroVM.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scripts/setup-isolation.sh</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run proxy  <span class="co"># Run Caddy on host</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run isolate <span class="co"># Run Backend in VM</span></span></code></pre></div>
+<h3 id="orchestration-edge-fidelity-spec-45-spec-46">2.4 Orchestration
+&amp; Edge Fidelity (SPEC-45, SPEC-46)</h3>
+<p>ThreadScout uses automated readiness probes and local worker
+simulation to ensure parity between development and production.</p>
+<ul>
+<li><strong>Readiness Probes</strong>: The <code>mise run launch</code>
+task utilizes automated probes to ensure Caddy, the database, and the
+OIDC provider are responsive before marking the stack as healthy.</li>
+<li><strong>Local Worker Simulation</strong>: To simulate Cloudflare
+Worker behavior (e.g., origin spoofing and header injection), the local
+Caddy configuration mirrors the production edge logic, ensuring a 1:1
+parity with the Cloudflare Ingress.</li>
+</ul>
+<hr />
+<h2 id="phase-3-monitoring-observability">Phase 3: Monitoring &amp;
+Observability</h2>
+<p>ThreadScout implements an “Agent-First” observability stack that
+persists logs even after process crashes.</p>
+<h3 id="live-log-probing">3.1 Live Log Probing</h3>
+<p>Instead of tailing multiple windows, use the unified prober to
+monitor service health.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor specific service errors</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> backend <span class="at">--level</span> ERROR</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Search for specific event patterns across all services</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> all <span class="at">--grep</span> <span class="st">&quot;OAuth Callback&quot;</span> <span class="at">--context</span> 5</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the stack initialized correctly</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> proxy <span class="at">--grep</span> <span class="st">&quot;serving&quot;</span></span></code></pre></div>
+<h3 id="security-auditing">3.2 Security Auditing</h3>
+<p>Before promoting to production, verify that the log scrubbing
+mechanism is active and that no PII has leaked.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Audit all logs for unmasked emails or secrets</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/audit-logs.sh</span> <span class="at">--all</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify that PII is being redacted correctly</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/audit-logs.sh</span> backend <span class="at">--grep</span> <span class="st">&quot;REDACTED_EMAIL&quot;</span></span></code></pre></div>
+<h3 id="health-checks-dependency-probing">3.3 Health Checks &amp;
+Dependency Probing</h3>
+<p>ThreadScout includes a deep health check endpoint for monitoring:</p>
+<ul>
+<li><strong>Endpoint</strong>:
+<code>https://localhost:3443/api/health</code></li>
+<li><strong>Behavior</strong>: Returns <code>200 OK</code> only if the
+database, Gemini AI, and (if enabled) the OIDC Identity Provider are
+responsive. Returns <code>503 Service Unavailable</code> with a detailed
+JSON payload on failure.</li>
+<li><strong>Startup Probe</strong>: The backend performs an
+<code>oidc_readiness_probe</code> during initialization. If the OIDC
+provider is unreachable, it logs specific instructions to check sidecar
+status.</li>
+</ul>
+<h3 id="metrics-telemetry">3.4 Metrics &amp; Telemetry</h3>
+<ul>
+<li><strong>Log Standardization</strong>: ThreadScout enforces UTC ISO
+8601 timestamps across all logs. Ensure that your log aggregators are
+configured to expect this format.</li>
+<li><strong>Prometheus</strong>: Real-time API performance and AI token
+usage available at <code>/api/metrics</code>.</li>
+<li><strong>Sentry</strong>: Critical application failures and debug
+snapshots are automatically reported to the configured Sentry DSN.</li>
+</ul>
+<h3 id="automated-ingress-cleanup-spec-41">3.5 Automated Ingress Cleanup
+(SPEC-41)</h3>
+<p>To maintain network hygiene and prevent stale configurations in
+hybrid environments, ThreadScout includes an automated ingress cleanup
+task.</p>
+<ul>
+<li><strong>Mechanism</strong>: The backend periodically audits active
+tunnels and local proxy rules.</li>
+<li><strong>Manual Trigger</strong>: Run
+<code>mise run ingress:cleanup</code> to forcefully prune expired
+ingress entries and sync the local Caddyfile with active Cloudflare
+tunnels.</li>
+<li><strong>Safety</strong>: The cleanup task preserves all entries
+marked with <code>permanent: true</code> in
+<code>fnox-schema.json</code>.</li>
+</ul>
+<hr />
+<h2 id="phase-4-crisis-response-triage">Phase 4: Crisis Response &amp;
+Triage</h2>
+<p>When an incident is reported or a crash occurs, follow these steps to
+restore service.</p>
+<h3 id="log-forensic-analysis">4.1 Log Forensic Analysis</h3>
+<p>Retrieve the state of the system at the time of the incident using
+the timestamped prober.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull 100 lines of context around a specific timestamp</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> all <span class="at">--grep</span> <span class="st">&quot;2026-03-03T10:15&quot;</span> <span class="at">--context</span> 50</span></code></pre></div>
+<h3 id="state-reset-the-nuclear-option">4.2 State Reset (The “Nuclear”
+Option)</h3>
+<p>If the application state becomes corrupted, perform a hard reset.
+This wipes the database and clears all image caches.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">WARNING</span><span class="co">: This deletes all local user data and item records.</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run reset <span class="at">--hard</span></span></code></pre></div>
+<hr />
+<h2 id="phase-5-public-connectivity-oauth">Phase 5: Public Connectivity
+&amp; OAuth</h2>
+<h3 id="cloudflare-tunnel">5.1 Cloudflare Tunnel</h3>
+<p>To receive eBay callbacks and support OIDC identity providers, route
+your public domains to your local instance.</p>
+<ol type="1">
+<li>Create a tunnel in Cloudflare and add <strong>two</strong> Public
+Hostnames mapping to <code>http://localhost:8080</code>:
+<ul>
+<li><code>threadscout.yourdomain.com</code> (Main App)</li>
+<li><code>auth.yourdomain.com</code> (Identity Provider)</li>
+</ul></li>
+<li>Start the tunnel: <code>mise run tunnel</code>.</li>
+</ol>
+<h3 id="ebay-portal-configuration">5.2 eBay Portal Configuration</h3>
+<p>Update your <strong>Auth Accepted URL</strong> in the eBay Developer
+Portal:
+<code>https://threadscout.yourdomain.com/api/ebay/callback</code></p>
+<h3 id="high-availability-static-compliance-spec-48">5.3
+High-Availability Static Compliance (SPEC-48)</h3>
+<p>To satisfy OIDC registration requirements and ensure high
+availability, the <code>/privacy</code> and <code>/about</code> pages
+are deployed as static assets to GitHub Pages.</p>
+<ul>
+<li><strong>URL</strong>:
+<code>https://docs.threadscout.com/privacy</code></li>
+<li><strong>Fallback</strong>: This static deployment ensures OIDC
+compliance even during local backend maintenance, allowing identity
+providers (Google, eBay) to always access required legal
+documentation.</li>
+</ul>
+</body>
+</html>

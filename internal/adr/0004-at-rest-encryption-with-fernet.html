@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>0004 At Rest Encryption With Fernet</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">0004 At Rest Encryption With Fernet</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="adr-0004-at-rest-encryption-for-sensitive-tokens-via-fernet">ADR
+0004: At-Rest Encryption for Sensitive Tokens via Fernet</h1>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>ThreadScout stores dynamic, user-specific credentials (eBay OAuth2
+Access and Refresh tokens) in a local SQLite database. While
+application-level secrets (API keys) are managed via <code>fnox</code>
+and injected as environment variables, these session tokens change
+frequently at runtime and must be persisted. Storing them in plain text
+within the database poses a significant security risk if the local
+filesystem is compromised.</p>
+<p>We evaluated several options for securing these tokens:</p>
+<ol type="1">
+<li><strong>Plain Text</strong>: No encryption. (Rejected: Unacceptable
+security posture).</li>
+<li><strong>Database-Level Encryption (e.g., SQLCipher)</strong>:
+Encrypting the entire SQLite file. (Rejected: Increases build complexity
+and requires specialized binaries).</li>
+<li><strong>Application-Level AES-GCM</strong>: Manual implementation of
+Authenticated Encryption. (Rejected: Higher risk of implementation
+errors such as IV reuse).</li>
+<li><strong>Fernet (Symmetric Encryption)</strong>: A high-level,
+“recipes” based implementation of AES-128 in CBC mode with HMAC for
+authentication.</li>
+</ol>
+<h2 id="decision">Decision</h2>
+<p>We chose <strong>Option 4: Fernet Encryption</strong>.</p>
+<p>We will use the <code>cryptography</code> library’s Fernet
+implementation to encrypt sensitive strings before they are written to
+the database and decrypt them upon retrieval. The master encryption key
+(32-byte URL-safe base64 string) will be managed as a static secret via
+<code>fnox</code> and injected into the application environment as
+<code>THREADSCOUT_ENCRYPTION_KEY</code>.</p>
+<h2 id="comparison-of-alternatives">Comparison of Alternatives</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Primitive / Recipe</th>
+<th style="text-align: left;">Evaluation</th>
+<th style="text-align: left;">Reason for Rejection in ThreadScout</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>AES-GCM</strong></td>
+<td style="text-align: left;">High performance; hardware
+accelerated.</td>
+<td style="text-align: left;"><strong>Brittle.</strong> Requires manual
+nonce management. Nonce reuse results in catastrophic key/plaintext
+recovery.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>AES-GCM-SIV /
+AES-SIV</strong></td>
+<td style="text-align: left;">Nonce-misuse resistant.</td>
+<td style="text-align: left;">Low-level primitive. Requires manual
+handling of tags/nonces in the database schema.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>XChaCha20Poly1305</strong></td>
+<td style="text-align: left;">High software performance; large 192-bit
+nonce.</td>
+<td style="text-align: left;">Low-level primitive. While safer than GCM,
+it still requires managing the output byte format manually.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Fernet</strong></td>
+<td style="text-align: left;"><strong>High-level “Recipe” (AES-CBC +
+HMAC).</strong></td>
+<td style="text-align: left;"><strong>Selected.</strong> Provides a
+single self-contained, versioned string that includes the IV and
+authentication tag.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rationale">Rationale</h2>
+<ul>
+<li><strong>Abstraction over Primitives</strong>: Fernet is an
+opinionated, high-level standard that handles key derivation, IV
+generation, and message authentication (HMAC) automatically. This
+“un-screw-up-able” API prevents common cryptographic pitfalls like nonce
+reuse or failing to authenticate the ciphertext.</li>
+<li><strong>Developer Ergonomics</strong>: Because Fernet outputs a
+single URL-safe string, it avoids the need to modify the database schema
+to store separate Nonces or Tags, which is where implementation bugs
+often occur.</li>
+<li><strong>Safety by Design</strong>: While primitives like AES-GCM are
+faster, the performance difference for small OAuth tokens is measured in
+microseconds and is negligible compared to the benefit of Fernet’s
+built-in authentication and versioning.</li>
+<li><strong>Developer Workflow Integration</strong>: Since ThreadScout
+already uses <code>fnox</code> and <code>mise</code> for environment
+management, storing a single master key in <code>fnox</code> is seamless
+and requires zero infrastructure changes.</li>
+<li><strong>Minimal Dependencies</strong>: The <code>cryptography</code>
+library is a standard, well-maintained Python package already present in
+the project’s dependency tree.</li>
+<li><strong>Portability</strong>: This approach works across any
+database backend (SQLite, PostgreSQL, etc.) without requiring
+specialized database drivers or extensions.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li><strong>Positive</strong>: Tokens are protected at rest; key
+rotation is possible by updating the <code>fnox</code> secret; code
+remains simple and readable.</li>
+<li><strong>Negative</strong>: If the master key is lost, all existing
+session tokens become unreadable, requiring the user to re-authenticate
+with eBay.</li>
+<li><strong>Future Work</strong>: Implement a utility for
+rolling/rotating keys if needed for higher security environments.</li>
+</ul>
+</body>
+</html>

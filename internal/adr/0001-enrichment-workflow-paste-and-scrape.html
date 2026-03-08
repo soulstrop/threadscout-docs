@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>0001 Enrichment Workflow Paste And Scrape</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">0001 Enrichment Workflow Paste And Scrape</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="adr-001-item-enrichment-workflow-via-paste-scrape">ADR 001: Item
+Enrichment Workflow via Paste &amp; Scrape</h1>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>The goal is to allow users to enrich extracted item metadata (Brand,
+Model, Material, etc.) by using external research. After performing a
+Google keyword search for images, the user needs to find a matching
+product page and pull that detailed information back into ThreadScout to
+improve the accuracy of the eBay Sold comparables search and final
+listing creation.</p>
+<p>We evaluated three primary options:</p>
+<ol type="1">
+<li><strong>Paste &amp; Scrape</strong>: User pastes a URL from their
+research into the app; the backend scrapes the page and uses AI to
+extract relevant details.</li>
+<li><strong>Integrated Search</strong>: Bringing search results directly
+into the app via API.</li>
+<li><strong>Browser Extension</strong>: A plugin to send data from
+resale sites directly to ThreadScout.</li>
+</ol>
+<h2 id="decision">Decision</h2>
+<p>We chose <strong>Option 1: Paste &amp; Scrape</strong>.</p>
+<p>Users will find a matching listing in a standard browser tab, copy
+the URL, and paste it into a “Research URL” field in ThreadScout. The
+backend will then fetch the HTML content, and an LLM (Gemini) will be
+used to extract highly specific garment details (e.g., technical names,
+style codes, MSRP) from the raw page text.</p>
+<h2 id="rationale">Rationale</h2>
+<ul>
+<li><strong>Robustness</strong>: Most retail and resale sites have
+aggressive anti-bot measures. By having the user navigate to the page
+first, we ensure the link is valid and accessible.</li>
+<li><strong>Accuracy</strong>: Human verification of a “best match” is
+significantly more reliable than automated image matching for
+specialized clothing items.</li>
+<li><strong>Low Complexity</strong>: This avoids the high development
+cost of a browser extension and the recurring API costs/scraping
+challenges of integrated Google Search.</li>
+<li><strong>AI Flexibility</strong>: Using Gemini to parse the scraped
+HTML allows the system to support a wide variety of sites (eBay,
+Grailed, Poshmark, Retailers) without writing site-specific
+scrapers.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li><strong>Positive</strong>: High accuracy of enriched data; support
+for almost any source URL; simplified backend logic.</li>
+<li><strong>Negative</strong>: Adds a manual “copy/paste” step to the
+user workflow.</li>
+<li><strong>Future Work</strong>: Requires implementation of a robust
+scraping endpoint and refined AI prompts for structured extraction from
+unstructured HTML.</li>
+</ul>
+</body>
+</html>
