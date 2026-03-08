@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>Analysis Ai Image Enhancement</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Analysis Ai Image Enhancement</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="engineering-analysis-ai-assisted-image-enhancement">Engineering
+Analysis: AI-Assisted Image Enhancement</h1>
+<p><strong>Date</strong>: February 28, 2026<br />
+<strong>Status</strong>: Concept Design - Ethical &amp; Technical
+Assessment</p>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>This analysis evaluates the integration of AI-driven image processing
+to improve the visual appeal of listing photos. Key features include
+<strong>background removal/replacement</strong>, <strong>automated
+rotation</strong>, and <strong>geometric straightening</strong>. We
+focus on maximizing click-through rates (CTR) on marketplaces like eBay
+while strictly adhering to ethical guidelines to prevent
+“misrepresentation” claims.</p>
+<hr />
+<h2 id="technical-scope">2. Technical Scope</h2>
+<h3 id="a.-semantic-segmentation-background-removal">A. Semantic
+Segmentation (Background Removal)</h3>
+<ul>
+<li><strong>Objective</strong>: Create a pixel-perfect mask of the
+clothing item.</li>
+<li><strong>Model</strong>: Vertex AI Image Segmentation or
+<strong>Imagen 3 (Editing API)</strong>.</li>
+<li><strong>Output</strong>: Transparent PNG or white-background JPG
+(eBay standard).</li>
+</ul>
+<h3 id="b.-contextual-backgrounds">B. Contextual Backgrounds</h3>
+<ul>
+<li><strong>Objective</strong>: Place the masked item into “Studio” or
+“Abstract” settings.</li>
+<li><strong>Risk</strong>: Generating a background that “bleeds” into
+the item or changes its perceived color.</li>
+<li><strong>Strategy</strong>: Use high-quality in-painting models with
+a “Safe Contrast” constraint.</li>
+</ul>
+<h3 id="c.-orientation-correction-auto-rotate">C. Orientation Correction
+(Auto-Rotate)</h3>
+<ul>
+<li><strong>Objective</strong>: Ensure the item is “right side up”
+regardless of how the user held their phone.</li>
+<li><strong>Model</strong>: <strong>Gemini 2.0 Flash (Vision)</strong>.
+<ul>
+<li><em>Detection</em>: Send a low-res thumbnail to Gemini. Ask:
+<code>"What is the rotation angle needed to make this item look natural? (0, 90, 180, 270)"</code>.</li>
+<li><em>Execution</em>: Perform the actual rotation locally using
+<code>ImageMagick</code> or <code>PIL</code> to avoid re-generating
+pixels.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="cost-performance-analysis">3. Cost &amp; Performance
+Analysis</h2>
+<p>Unlike text/reasoning models, Image Generation APIs are typically
+priced <strong>per image</strong>, not per token.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Operation</th>
+<th style="text-align: left;">Estimated Cost (Vertex AI)</th>
+<th style="text-align: left;">Latency</th>
+<th style="text-align: left;">Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Rotation Detection</strong></td>
+<td style="text-align: left;">~$0.0005 (Gemini Vision)</td>
+<td style="text-align: left;">&lt; 1s</td>
+<td style="text-align: left;">High</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Background Removal</strong></td>
+<td style="text-align: left;">~$0.02 per image</td>
+<td style="text-align: left;">2-4s</td>
+<td style="text-align: left;">High (Main Only)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Studio Replacement</strong></td>
+<td style="text-align: left;">~$0.04 per image</td>
+<td style="text-align: left;">5-10s</td>
+<td style="text-align: left;">Low/Opt-in</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heuristic-the-hero-shot">Heuristic: “The Hero Shot”</h3>
+<p>To optimize costs, ThreadScout should implement a <strong>“Main Image
+Only”</strong> policy.</p>
+<ul>
+<li>Only the first selected image (the “Hero Shot”) undergoes full
+background replacement.</li>
+<li>Secondary images (tags, flaws, back view) only receive auto-rotation
+and basic brightening.</li>
+</ul>
+<hr />
+<h2 id="ethical-guardrails-integrity">4. Ethical Guardrails &amp;
+Integrity</h2>
+<p>The primary risk in AI image enhancement is <strong>Buyer
+Dispute</strong> (item not as described).</p>
+<h3 id="a.-the-non-destructive-rule">A. The “Non-Destructive” Rule</h3>
+<p>AI must never:</p>
+<ul>
+<li>Remove stains, holes, or pilling.</li>
+<li>Enhance colors beyond “Natural Calibration.”</li>
+<li>Alter the texture of the fabric.</li>
+</ul>
+<h3 id="b.-transparency-declarations">B. Transparency &amp;
+Declarations</h3>
+<p>To maintain trust and comply with emerging marketplace regulations
+(e.g., C2PA), ThreadScout should:</p>
+<ol type="1">
+<li><p><strong>Visual Tag</strong>: (Optional) Add a discreet
+“AI-Enhanced” watermark or metadata tag.</p></li>
+<li><p><strong>Listing Declaration</strong>: Automatically append a line
+to the eBay description:<br />
+<code>"Main image enhanced by ThreadScout AI for clarity. Item condition is represented accurately in secondary photos."</code></p></li>
+<li><p><strong>Preservation</strong>: ALWAYS keep the original “Raw”
+photo in storage. The enhanced version is a derivative.</p></li>
+</ol>
+<hr />
+<h2 id="proposed-workflow">5. Proposed Workflow</h2>
+<ol type="1">
+<li><strong>Upload</strong>: User uploads 5 photos.</li>
+<li><strong>Analysis</strong>: Gemini Vision analyzes all 5 for metadata
+(UJ-01).</li>
+<li><strong>Enhancement (Parallel)</strong>:
+<ul>
+<li><strong>Image 1</strong>: Send to Imagen 3 for “Studio Background” +
+Gemini for “Rotation Detection”.</li>
+<li><strong>Images 2-5</strong>: Send to Gemini for “Rotation Detection”
+only.</li>
+</ul></li>
+<li><strong>Local Edit</strong>: Apply <code>ImageMagick</code>
+rotations.</li>
+<li><strong>Review</strong>: User sees “Original vs. Enhanced” toggle in
+the Synthesis Editor.</li>
+</ol>
+<hr />
+<h2 id="implementation-readiness">6. Implementation Readiness</h2>
+<h3 id="infrastructure-needs">Infrastructure Needs</h3>
+<ul>
+<li><strong><code>imagemagick</code></strong>: Must be added to the
+Docker/Mise environment (already present in
+<code>mise.toml</code>).</li>
+<li><strong>Imagen SDK</strong>: Requires
+<code>google-cloud-aiplatform</code> or similar expansion in
+<code>ai.py</code>.</li>
+</ul>
+<h3 id="recommendation">Recommendation</h3>
+<p><strong>Implement “Auto-Rotation” first.</strong> It is high-value,
+low-cost, and carries zero risk of misrepresentation. <strong>Implement
+“Background Removal” as a Pro-tier feature</strong>, limited to the Main
+Image only.</p>
+</body>
+</html>

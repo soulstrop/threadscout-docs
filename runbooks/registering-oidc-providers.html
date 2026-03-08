@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Gemini Architect" />
+  <title>Registering Oidc Providers</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Registering Oidc Providers</h1>
+<p class="author">Gemini Architect</p>
+</header>
+<h1 id="runbook-registering-oidc-providers">Runbook: Registering OIDC
+Providers</h1>
+<p>This document provides the exact technical metadata required to
+register ThreadScout as a “Relying Party” with various identity
+providers. <strong>Consistency in these strings is critical to
+preventing Authentication Loops.</strong></p>
+<hr />
+<h2 id="global-application-metadata">1. Global Application Metadata</h2>
+<p>Use these values for the “General Settings” or “OAuth Consent Screen”
+section of any developer console.</p>
+<ul>
+<li><strong>App Name</strong>: <code>ThreadScout</code></li>
+<li><strong>Homepage</strong>:
+<code>https://threadscout.constans.dev</code></li>
+<li><strong>Privacy Policy</strong>:
+<code>https://threadscout.constans.dev/privacy</code></li>
+<li><strong>Terms of Service</strong>:
+<code>https://threadscout.constans.dev/about</code></li>
+<li><strong>Support Email</strong>: (Use your verified admin email)</li>
+<li><strong>Authorized Domain</strong>: <code>constans.dev</code></li>
+</ul>
+<hr />
+<h2 id="redirect-uris-nextauth-standard">2. Redirect URIs (NextAuth
+Standard)</h2>
+<p>NextAuth.js expects the callback to follow a specific pattern. You
+must register the <strong>exact</strong> string below for each
+provider.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Provider</th>
+<th style="text-align: left;">Redirect URI (Production / Live)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Google</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/google</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Apple</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/apple</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>GitHub</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/github</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>eBay</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/ebay</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Facebook</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/facebook</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>PocketID (Internal)</strong></td>
+<td
+style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callback/pocketid</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="provider-specific-console-instructions">3. Provider-Specific
+Console Instructions</h2>
+<h3 id="google-google-cloud-console">Google (Google Cloud Console)</h3>
+<ol type="1">
+<li>Navigate to <strong>APIs &amp; Services &gt;
+Credentials</strong>.</li>
+<li>Create an <strong>OAuth 2.0 Client ID</strong>.</li>
+<li><strong>Authorized JavaScript origins</strong>:
+<code>https://threadscout.constans.dev</code></li>
+<li><strong>Scopes</strong>: <code>openid</code>, <code>email</code>,
+<code>profile</code>.</li>
+</ol>
+<h3 id="apple-apple-developer-portal">Apple (Apple Developer
+Portal)</h3>
+<ol type="1">
+<li>Create an <strong>App ID</strong> (if not already present).</li>
+<li>Create a <strong>Services ID</strong> (e.g.,
+<code>dev.constans.threadscout</code>).</li>
+<li>Enable <strong>Sign In with Apple</strong>.</li>
+<li>Configure the <strong>Primary App ID</strong> and register the
+Redirect URI.</li>
+<li>Generate a <strong>Private Key (.p8)</strong> and record the
+<strong>Key ID</strong> and <strong>Team ID</strong>.</li>
+</ol>
+<h3 id="ebay-ebay-developer-program">eBay (eBay Developer Program)</h3>
+<ol type="1">
+<li>Log in to the <strong>eBay Developer Portal</strong>.</li>
+<li>Navigate to <strong>Application Keys</strong>.</li>
+<li>Click <strong>User Consent</strong> for the Production
+environment.</li>
+<li>Provide the Redirect URI. eBay will generate a
+<strong>RuName</strong> (Redirect URL Name).</li>
+<li><strong>Note</strong>: The RuName must be stored in
+<code>fnox</code> as <code>THREADSCOUT_EBAY_RU_NAME</code>.</li>
+</ol>
+<h3 id="github-github-developer-settings">GitHub (GitHub Developer
+Settings)</h3>
+<ol type="1">
+<li>Navigate to <strong>Settings &gt; Developer Settings &gt; OAuth
+Apps</strong>.</li>
+<li>Create a <strong>New OAuth App</strong>.</li>
+<li><strong>Homepage URL</strong>:
+<code>https://threadscout.constans.dev</code></li>
+<li><strong>Authorization callback URL</strong>: See Table above.</li>
+</ol>
+<hr />
+<h2 id="post-registration-secret-storage">4. Post-Registration: Secret
+Storage</h2>
+<p>Once you have obtained the <code>Client ID</code> and
+<code>Client Secret</code>, they must be securely stored in
+<strong>fnox</strong>.</p>
+<p><strong>Command Template</strong>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fnox</span> set <span class="at">--profile</span> production THREADSCOUT_GOOGLE_CLIENT_ID <span class="st">&quot;your-id&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">fnox</span> set <span class="at">--profile</span> production THREADSCOUT_GOOGLE_CLIENT_SECRET <span class="st">&quot;your-secret&quot;</span></span></code></pre></div>
+<p>Refer to <code>docs/DEPLOYMENT.md</code> for the full list of secret
+keys.</p>
+</body>
+</html>

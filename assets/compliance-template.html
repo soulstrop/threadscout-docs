@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$"$if(dir)$ dir="$dir$"$endif$>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  $for(author-meta)$
+  <meta name="author" content="$author-meta$" />
+  $endfor$
+  $if(date-meta)$
+  <meta name="date" content="$date-meta$" />
+  $endif$
+  $if(keywords)$
+  <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
+  $endif$
+  <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+  <link rel="stylesheet" href="assets/tsds-static.css" />
+  $for(header-includes)$
+  $header-includes$
+  $endfor$
+</head>
+<body>
+  <header class="lite-header">
+    <a href="/" class="brand-link">
+      <img src="assets/ThreadScout_favicon.png" alt="ThreadScout" width="32" height="32" />
+      <span class="brand-name">ThreadScout</span>
+    </a>
+    <a href="/login" class="login-link">LOGIN</a>
+  </header>
+
+  <main>
+    <div class="mascot-container">
+      <!-- Dashing ThreadScout Mascot SVG (SPEC-43/48) -->
+      <svg width="120" height="120" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g class="ts-mascot">
+          <!-- Body -->
+          <circle cx="100" cy="100" r="80" fill="var(--color-ts-blue-50)" stroke="var(--foreground)" stroke-width="4"/>
+          <!-- Goggles -->
+          <rect x="60" y="60" width="80" height="30" rx="15" fill="var(--foreground)"/>
+          <circle cx="80" cy="75" r="8" fill="white"/>
+          <circle cx="120" cy="75" r="8" fill="white"/>
+          
+          $if(title)$
+            $if(privacy)$
+              <!-- Secure Pose (Shield) -->
+              <path d="M130 70V100C130 110 145 115 145 115C145 115 160 110 160 100V70H130Z" fill="var(--color-ts-blue-600)" fill-opacity="0.2" stroke="var(--color-ts-blue-600)" stroke-width="2"/>
+              <path d="M140 85L143 90L150 80" stroke="var(--color-ts-blue-600)" stroke-width="2" fill="none"/>
+            $else$
+              <!-- Searching Pose (Magnifying Glass) -->
+              <circle cx="145" cy="85" r="15" stroke="var(--color-ts-blue-600)" stroke-width="3" fill="var(--color-ts-blue-50)"/>
+              <line x1="155" y1="95" x2="170" y2="110" stroke="var(--color-ts-blue-600)" stroke-width="4" stroke-linecap="round"/>
+            $endif$
+          $endif$
+        </g>
+      </svg>
+    </div>
+
+    <div class="ts-card">
+      <div class="ts-card-header">
+        <h1>$title$</h1>
+      </div>
+      <div class="ts-card-content">
+        $body$
+      </div>
+    </div>
+
+    <footer>
+      THREADSCOUT &copy; 2026 | BUILT FOR RESELLERS
+    </footer>
+  </main>
+
+  $for(include-after)$
+  $include-after$
+  $endfor$
+</body>
+</html>

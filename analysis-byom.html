@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
+  <title>Analysis Byom</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Analysis Byom</h1>
+<p class="author">jmc &amp; gemini</p>
+</header>
+<h1 id="engineering-analysis-bring-your-own-model-byom">Engineering
+Analysis: Bring Your Own Model (BYOM)</h1>
+<p><strong>Date</strong>: February 28, 2026<br />
+<strong>Status</strong>: Initial Assessment - Concept Design</p>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>Following the “Bring Your Own Storage” (BYOS) initiative, this
+analysis evaluates the feasibility and architectural impact of “Bring
+Your Own Model” (BYOM). This feature would allow users to provide their
+own AI API keys (e.g., Google GenAI, OpenAI, Anthropic) or connect to
+local LLM runners (e.g., Ollama), offloading AI token costs from
+ThreadScout while giving users control over their data and model
+selection.</p>
+<hr />
+<h2 id="current-state">2. Current State</h2>
+<p>ThreadScout is currently coupled to <strong>Google Gemini
+2.0/2.5</strong> via the <code>google-genai</code> SDK, running on
+Vertex AI.</p>
+<ul>
+<li><strong>Backend Logic</strong>:
+<code>backend/src/threadscout/services/ai.py</code> initializes a global
+Vertex client.</li>
+<li><strong>Consumption</strong>: <code>research.py</code> uses this
+client for both <code>analyze_item_images</code> (Vision) and
+<code>enrich_item_from_url</code> (Text/Search).</li>
+<li><strong>Configuration</strong>: Prompts are stored in
+<code>config.py</code> and are highly optimized for Gemini’s behavior
+and JSON output format.</li>
+</ul>
+<hr />
+<h2 id="the-byom-architectural-gap">3. The “BYOM” Architectural Gap</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Current State</th>
+<th style="text-align: left;">Required for BYOM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>SDK</strong></td>
+<td style="text-align: left;"><code>google-genai</code> (Fixed)</td>
+<td style="text-align: left;">Generic <code>AIProvider</code>
+interface.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Identity</strong></td>
+<td style="text-align: left;">System-wide ADC / Service Account</td>
+<td style="text-align: left;">Per-user encrypted API keys.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Prompts</strong></td>
+<td style="text-align: left;">Fixed XML-style (Gemini-optimized)</td>
+<td style="text-align: left;">Model-aware prompt templates.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Quotas</strong></td>
+<td style="text-align: left;">Managed by ThreadScout (monthly
+limits)</td>
+<td style="text-align: left;">Unlimited/Self-managed by user.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Vision</strong></td>
+<td style="text-align: left;">Gemini
+<code>types.Part.from_bytes</code></td>
+<td style="text-align: left;">Standardized Base64/URL vision
+handling.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="proposed-architecture-aiprovider">4. Proposed Architecture:
+<code>AIProvider</code></h2>
+<p>We should follow the same pattern as the <code>StorageProvider</code>
+abstraction.</p>
+<h3 id="a.-interface">A. Interface</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AIProvider(ABC):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">@abstractmethod</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> analyze_images(<span class="va">self</span>, images: List[<span class="bu">bytes</span>], prompt: <span class="bu">str</span>) <span class="op">-&gt;</span> Dict[<span class="bu">str</span>, Any]:</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Performs vision extraction from images.&quot;&quot;&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">@abstractmethod</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> generate_text(<span class="va">self</span>, prompt: <span class="bu">str</span>, system_instruction: <span class="bu">str</span>) <span class="op">-&gt;</span> Dict[<span class="bu">str</span>, Any]:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Performs text-based enrichment/reasoning.&quot;&quot;&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span></code></pre></div>
+<h3 id="b.-supported-backends">B. Supported Backends</h3>
+<ol type="1">
+<li><strong><code>GoogleGenAIProvider</code></strong>: (Default) Current
+implementation using Vertex/SDK.</li>
+<li><strong><code>OpenAIProvider</code></strong>: Compatible with OpenAI
+(GPT-4o), Groq, and local runners like <strong>Ollama</strong> or
+<strong>vLLM</strong> via the standard <code>/v1/chat/completions</code>
+endpoint.</li>
+<li><strong><code>AnthropicProvider</code></strong>: Support for Claude
+3.5 Sonnet (often preferred for vision/accuracy).</li>
+</ol>
+<hr />
+<h2 id="engineering-challenges">5. Engineering Challenges</h2>
+<h3 id="a.-prompt-sensitivity-the-json-problem">A. Prompt Sensitivity
+(The “JSON” Problem)</h3>
+<p>ThreadScout relies heavily on structured JSON output. While Gemini
+2.5 is robust with <code>response_mime_type="application/json"</code>,
+other models (especially local ones) may require different framing or
+“schema enforcement” (e.g., Guidance or Outlines).</p>
+<ul>
+<li><strong>Solution</strong>: The <code>AIProvider</code> must handle
+“Response Format” wrapping for the specific model.</li>
+</ul>
+<h3 id="b.-vision-payload-normalization">B. Vision Payload
+Normalization</h3>
+<p>Gemini handles raw bytes natively in the SDK. OpenAI and Anthropic
+require Base64 encoding inside a specific message block.</p>
+<ul>
+<li><strong>Solution</strong>: The provider abstraction must take
+responsibility for payload formatting.</li>
+</ul>
+<h3 id="c.-security-credential-management">C. Security &amp; Credential
+Management</h3>
+<p>Users would provide sensitive API keys.</p>
+<ul>
+<li><strong>Security</strong>: Must be encrypted at-rest using
+<strong>Fernet</strong>, identical to the eBay and BYOS Storage
+tokens.</li>
+<li><strong>Privacy</strong>: User keys never touch logs; usage metadata
+is still logged locally for the user’s dashboard.</li>
+</ul>
+<hr />
+<h2 id="business-ux-impact">6. Business &amp; UX Impact</h2>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li><strong>Reseller Autonomy</strong>: Pro users can use their own
+“massive” limits if they are power-users.</li>
+<li><strong>Cost Offloading</strong>: ThreadScout can offer a lower
+subscription tier if the user provides their own “Compute.”</li>
+<li><strong>Privacy</strong>: Users can point ThreadScout to a local
+Ollama instance, ensuring photos never leave their local network
+(requires vision-capable local models like LLaVA or Moondream).</li>
+</ul>
+<h3 id="risks">Risks</h3>
+<ul>
+<li><strong>Support Burden</strong>: Troubleshooting “Why did the AI
+fail?” becomes harder when the user is using an obscure local
+model.</li>
+<li><strong>Fragmented Accuracy</strong>: The core “Draft Quality”
+metric depends on the model. We would need to define “Recommended
+Models” (Gemini 2.0 Flash, GPT-4o-mini).</li>
+</ul>
+<hr />
+<h2 id="recommendation">7. Recommendation</h2>
+<p><strong>Proceed with caution but prioritize the abstraction.</strong>
+Refactoring <code>ai.py</code> into an <code>AIProvider</code> interface
+is a high-value DX improvement even without BYOM, as it makes the system
+easier to test.</p>
+<p><strong>Next Steps</strong>:</p>
+<ol type="1">
+<li>Implement <code>AIProvider</code> base class.</li>
+<li>Add <code>EncryptedUserSetting</code> support for API keys.</li>
+<li>Implement an “OpenAI Compatible” provider to support the widest
+range of alternatives (Ollama, Groq, GPT).</li>
+</ol>
+</body>
+</html>

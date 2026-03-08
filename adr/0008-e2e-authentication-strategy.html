@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>0008 E2e Authentication Strategy</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">0008 E2e Authentication Strategy</h1>
+</header>
+<h1 id="adr-0008-e2e-authentication-strategy-robotic-login">ADR 0008:
+E2E Authentication Strategy (Robotic Login)</h1>
+<h2 id="status">Status</h2>
+<p>Proposed</p>
+<h2 id="context">Context</h2>
+<p>The introduction of authentication middleware (NextAuth.js) and JWT
+verification in Phase 7 has caused a regression in the Playwright E2E
+test suite. Tests that previously accessed the dashboard directly are
+now redirected to the <code>/login</code> page.</p>
+<p>We need a stable, high-fidelity method for authenticating tests
+that:</p>
+<ol type="1">
+<li>Verifies the end-to-end integration of the auth middleware.</li>
+<li>Does not rely on brittle cookie injection.</li>
+<li>Works in headless CI environments.</li>
+</ol>
+<h2 id="decision">Decision</h2>
+<p>We will adopt a <strong>“Robotic Login”</strong> strategy for E2E
+tests.</p>
+<p>Instead of bypassing authentication, Playwright test scripts
+will:</p>
+<ol type="1">
+<li>Navigate to the <code>/login</code> page.</li>
+<li>Click the “Developer Login (Mock)” button (which is active in the
+<code>mocking</code> environment).</li>
+<li>Verify the redirect back to the dashboard before proceeding with the
+main test logic.</li>
+</ol>
+<h3 id="long-term-recommendation">Long-term Recommendation</h3>
+<p>While “Robotic Login” is sufficient for current development, we
+recommend transitioning to an <strong>Identity Provider Sidecar</strong>
+(using a dedicated instance of Pocket ID for testing) in the
+production-readiness phase. This will allow for testing real OIDC
+handshakes and “Bring Your Own Identity” scenarios with 100% environment
+parity.</p>
+<h2 id="options-considered">Options Considered</h2>
+<h3 id="middleware-bypass-negative-constraints">1. Middleware Bypass
+(Negative Constraints)</h3>
+<ul>
+<li><strong>Pros</strong>: Fastest test execution.</li>
+<li><strong>Cons</strong>: Creates a security “blind spot” where
+middleware misconfigurations are not caught by tests.</li>
+</ul>
+<h3 id="cookie-injection">2. Cookie Injection</h3>
+<ul>
+<li><strong>Pros</strong>: Avoids UI interaction.</li>
+<li><strong>Cons</strong>: Brittle; requires internal knowledge of
+NextAuth session encryption/hashing which frequently changes between
+versions.</li>
+</ul>
+<h3 id="robotic-ui-login-selected">3. Robotic UI Login (Selected)</h3>
+<ul>
+<li><strong>Pros</strong>: High fidelity; tests the real user
+experience; leverages existing “Mock Mode” infrastructure.</li>
+<li><strong>Cons</strong>: Adds minimal overhead (~500ms) to the test
+setup phase.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li><strong>Test Fidelity</strong>: Tests now explicitly cover the login
+and session establishment flow.</li>
+<li><strong>Maintenance</strong>: The E2E <code>beforeEach</code> hook
+must be updated to handle the login interaction.</li>
+<li><strong>Security</strong>: Ensures that the <code>mocking</code>
+environment’s developer bypass is correctly restricted and
+functional.</li>
+</ul>
+</body>
+</html>
