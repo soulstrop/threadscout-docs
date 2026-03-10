@@ -163,8 +163,64 @@ the backend will fetch JWKS via this URL to bypass reverse proxies.</li>
 <li><code>THREADSCOUT_OIDC_AUDIENCE</code>: Defaults to
 <code>threadscout</code>.</li>
 </ul>
-<h4 id="secret-management-fnox-pass">Secret Management
-(<code>fnox</code> &amp; <code>pass</code>)</h4>
+<h3 id="environment-variables-reference">1.3 Environment Variables
+Reference</h3>
+<p>ThreadScout uses strict environment variable naming. Backend
+configuration is managed via Pydantic Settings, while the Frontend uses
+a mix of Next.js public variables and secure server-side variables.</p>
+<ul>
+<li><strong>Core System Variables</strong>:
+<code>THREADSCOUT_APP_ENV</code> / <code>NEXT_PUBLIC_APP_ENV</code>,
+<code>THREADSCOUT_INGRESS_MODE</code> /
+<code>NEXT_PUBLIC_THREADSCOUT_INGRESS_MODE</code>,
+<code>THREADSCOUT_DEBUG</code> / <code>NEXT_PUBLIC_DEBUG</code>,
+<code>THREADSCOUT_LOG_LEVEL</code> / <code>NEXT_PUBLIC_LOG_LEVEL</code>,
+<code>THREADSCOUT_DEEP_TRACE</code>.</li>
+<li><strong>Security &amp; Authentication</strong>:
+<code>THREADSCOUT_SECRET_KEY</code>,
+<code>THREADSCOUT_ENCRYPTION_KEY</code>,
+<code>THREADSCOUT_NEXTAUTH_SECRET</code>,
+<code>THREADSCOUT_ENABLE_AUTH</code>,
+<code>THREADSCOUT_BYPASS_BETA_TOKEN</code>.</li>
+<li><strong>Identity (OIDC)</strong>:
+<code>THREADSCOUT_POCKET_ID_PUBLIC_URL</code>,
+<code>THREADSCOUT_POCKET_ID_INTERNAL_URL</code>,
+<code>THREADSCOUT_OIDC_AUDIENCE</code>,
+<code>THREADSCOUT_POCKET_ID_CLIENT_ID</code>,
+<code>THREADSCOUT_POCKET_ID_CLIENT_SECRET</code>,
+<code>THREADSCOUT_GOOGLE_CLIENT_ID</code>,
+<code>THREADSCOUT_GOOGLE_CLIENT_SECRET</code>,
+<code>THREADSCOUT_EBAY_OIDC_CLIENT_ID</code>,
+<code>THREADSCOUT_EBAY_OIDC_CLIENT_SECRET</code>.</li>
+<li><strong>Integrations</strong>:
+<ul>
+<li><strong>eBay APIs</strong>: <code>THREADSCOUT_EBAY_CLIENT_ID</code>,
+<code>THREADSCOUT_EBAY_CLIENT_SECRET</code>,
+<code>THREADSCOUT_EBAY_DEV_ID</code>,
+<code>THREADSCOUT_EBAY_RU_NAME</code>,
+<code>THREADSCOUT_EBAY_MARKETPLACE_ID</code>,
+<code>THREADSCOUT_EBAY_SANDBOX</code>.</li>
+<li><strong>Google Cloud / Vertex AI</strong>:
+<code>THREADSCOUT_GOOGLE_CLOUD_PROJECT</code>,
+<code>THREADSCOUT_GOOGLE_CLOUD_LOCATION</code>,
+<code>THREADSCOUT_MODEL_ANALYSIS</code>,
+<code>THREADSCOUT_MODEL_ENRICH</code>.</li>
+<li><strong>Stripe Billing</strong>:
+<code>THREADSCOUT_STRIPE_API_KEY</code>,
+<code>THREADSCOUT_STRIPE_WEBHOOK_SECRET</code>,
+<code>THREADSCOUT_STRIPE_PRO_PRICE_ID</code>.</li>
+</ul></li>
+<li><strong>Observability &amp; Telemetry</strong>:
+<code>THREADSCOUT_SENTRY_DSN</code> /
+<code>NEXT_PUBLIC_SENTRY_DSN</code>,
+<code>THREADSCOUT_ENABLE_METRICS</code>,
+<code>THREADSCOUT_OPS_WEBHOOK_URL</code>,
+<code>THREADSCOUT_OPS_TOKEN</code>.</li>
+<li><strong>Networking</strong>: <code>THREADSCOUT_FRONTEND_URL</code>,
+<code>NEXT_PUBLIC_API_URL</code>.</li>
+</ul>
+<h3 id="secret-management-fnox-pass">1.4 Secret Management
+(<code>fnox</code> &amp; <code>pass</code>)</h3>
 <p>ThreadScout uses a tiered secret architecture to isolate development
 and production credentials. Secrets are stored in a hierarchical
 <code>pass</code> store and mapped via <code>fnox.toml</code>.</p>
@@ -310,6 +366,18 @@ tunnels.</li>
 marked with <code>permanent: true</code> in
 <code>fnox-schema.json</code>.</li>
 </ul>
+<h3 id="ingress-repair-connectivity-checks-spec-50">3.6 Ingress Repair
+&amp; Connectivity Checks (SPEC-50)</h3>
+<p>If connectivity to the main app or OIDC service is interrupted, use
+the ingress repair tool.</p>
+<ul>
+<li><strong>Manual Trigger</strong>: Run
+<code>mise run ingress:repair</code>.</li>
+<li><strong>Behavior</strong>: Performs a multi-point reachability check
+for <code>localhost:3000</code>, <code>localhost:8080</code>, and the
+public tunnel URLs. If inconsistencies are found, it automatically
+regenerates the local Caddy configuration and restarts the proxy.</li>
+</ul>
 <hr />
 <h2 id="phase-4-crisis-response-triage">Phase 4: Crisis Response &amp;
 Triage</h2>
@@ -321,13 +389,28 @@ the timestamped prober.</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull 100 lines of context around a specific timestamp</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> all <span class="at">--grep</span> <span class="st">&quot;2026-03-03T10:15&quot;</span> <span class="at">--context</span> 50</span></code></pre></div>
-<h3 id="state-reset-the-nuclear-option">4.2 State Reset (The “Nuclear”
-Option)</h3>
-<p>If the application state becomes corrupted, perform a hard reset.
-This wipes the database and clears all image caches.</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">WARNING</span><span class="co">: This deletes all local user data and item records.</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run reset <span class="at">--hard</span></span></code></pre></div>
+<h3 id="state-reset-environment-purge-spec-53">4.2 State Reset &amp;
+Environment Purge (SPEC-53)</h3>
+<p>If the application state becomes corrupted or environment variables
+are inconsistent, perform a deep reset.</p>
+<ul>
+<li><strong>Soft Reset</strong>: <code>mise run reset</code>. Clears
+item database and local caches.</li>
+<li><strong>Deep Slate Reset</strong>:
+<code>mise run reset --hard</code>.
+<ul>
+<li><strong>Behavior</strong>: Performs a complete environment
+purge.</li>
+<li><strong>Actions</strong>: Wipes the database, deletes all binary
+storage, clears all Docker volumes, and removes the local Caddy
+configuration.</li>
+<li><strong>Integrity</strong>: Enforces root-level routing priority for
+the main application to resolve landing page conflicts.</li>
+</ul></li>
+<li><strong>WARNING</strong>: The <code>--hard</code> flag is
+destructive and non-reversible. It is intended for recovery from total
+system failure or for starting a clean development slate.</li>
+</ul>
 <hr />
 <h2 id="phase-5-public-connectivity-oauth">Phase 5: Public Connectivity
 &amp; OAuth</h2>
@@ -359,6 +442,34 @@ are deployed as static assets to GitHub Pages.</p>
 compliance even during local backend maintenance, allowing identity
 providers (Google, eBay) to always access required legal
 documentation.</li>
+</ul>
+<h3 id="project-app-static-separation-spec-52">5.4. Project-App Static
+Separation (SPEC-52)</h3>
+<p>To improve performance and security, ThreadScout separates
+application binaries from documentation and marketing assets.</p>
+<ul>
+<li><strong>Frontend Assets</strong>: Managed by Next.js and served from
+the <code>frontend/.next</code> directory.</li>
+<li><strong>Project Assets</strong>: Documentation, ADRs, and analysis
+reports are processed into static HTML and served via a separate
+pipeline.</li>
+<li><strong>Benefit</strong>: This separation ensures that application
+updates do not interfere with documentation availability and reduces the
+attack surface of the main application.</li>
+</ul>
+<h3 id="secure-shadow-docs-deployment-spec-51">5.5. Secure Shadow Docs
+Deployment (SPEC-51)</h3>
+<p>Internal documentation and pre-release feature specifications are
+managed via a “Shadow Docs” strategy.</p>
+<ul>
+<li><strong>Pipeline</strong>: These docs are built into a non-publicly
+indexed directory.</li>
+<li><strong>Access</strong>: Access is restricted to authenticated
+developers and operations staff via the <code>/ops</code>
+dashboard.</li>
+<li><strong>Purpose</strong>: Allows the squad to maintain a single
+source of truth for upcoming features without leaking competitive
+intelligence to the public landing page.</li>
 </ul>
 </body>
 </html>

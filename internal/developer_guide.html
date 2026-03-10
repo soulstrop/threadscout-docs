@@ -225,18 +225,22 @@ stack with <code>mise run check:docker</code>.</li>
 <hr />
 <h2 id="quality-standards-verification">4. Quality Standards &amp;
 Verification</h2>
-<p>Every PR must pass the <code>mise run check</code> suite, which
-executes:</p>
+<p>ThreadScout enforces a “Green Gate” policy. Every PR must pass the
+<code>mise run check</code> suite, which orchestrates the following
+quality layers:</p>
+<h3 id="the-testing-tempo">4.1. The Testing Tempo</h3>
 <table>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Tool</th>
-<th style="text-align: left;">Phase</th>
+<th style="text-align: left;">Layer</th>
+<th style="text-align: left;">Scope</th>
 <th style="text-align: left;">Goal</th>
 </tr>
 </thead>
@@ -244,32 +248,77 @@ executes:</p>
 <tr class="odd">
 <td style="text-align: left;"><strong>Ruff</strong></td>
 <td style="text-align: left;">Linting</td>
-<td style="text-align: left;">Consistent code style and formatting.</td>
+<td style="text-align: left;">Backend</td>
+<td style="text-align: left;">Structural integrity and PEP-8
+consistency.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Mypy</strong></td>
-<td style="text-align: left;">Type-checking</td>
-<td style="text-align: left;">Static type safety in the backend.</td>
+<td style="text-align: left;"><strong>Biome</strong></td>
+<td style="text-align: left;">Linting</td>
+<td style="text-align: left;">Frontend</td>
+<td style="text-align: left;">High-performance style enforcement
+(Replacing ESLint/Prettier).</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Radon</strong></td>
-<td style="text-align: left;">Complexity</td>
-<td style="text-align: left;">Monitor cyclomatic complexity
-(Maintainability).</td>
+<td style="text-align: left;"><strong>Mypy</strong></td>
+<td style="text-align: left;">Typing</td>
+<td style="text-align: left;">Backend</td>
+<td style="text-align: left;">Strict static type checking
+(<code>strict = true</code>).</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;"><strong>Zod</strong></td>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: left;">Frontend</td>
+<td style="text-align: left;">Runtime schema validation for API
+responses and state.</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;"><strong>Pytest</strong></td>
-<td style="text-align: left;">Unit/Logic</td>
-<td style="text-align: left;">100% coverage on core service logic.</td>
+<td style="text-align: left;">Logic</td>
+<td style="text-align: left;">Backend</td>
+<td style="text-align: left;">Business logic and API contract
+verification.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Vitest</strong></td>
+<td style="text-align: left;">Logic</td>
+<td style="text-align: left;">Frontend</td>
+<td style="text-align: left;">Fast component-level unit and integration
+testing.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Locust</strong></td>
+<td style="text-align: left;">Performance</td>
+<td style="text-align: left;">Backend</td>
+<td style="text-align: left;">Baseline latency (P95 &lt; 200ms) and
+throughput verification.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Axe-Core</strong></td>
+<td style="text-align: left;">Access</td>
+<td style="text-align: left;">Frontend</td>
+<td style="text-align: left;">Automated accessibility auditing
+(integrated into Playwright).</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Playwright</strong></td>
 <td style="text-align: left;">E2E</td>
+<td style="text-align: left;">Full Stack</td>
 <td style="text-align: left;">Functional verification of <a
 href="user_journeys.html">User Journeys</a>.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="verification-commands">4.2. Verification Commands</h3>
+<ul>
+<li><strong><code>mise run check</code></strong>: The master gate. Runs
+linting, typing, and unit tests for both layers.</li>
+<li><strong><code>mise run check:docker</code></strong>: Executes the
+full E2E suite against the containerized stack.</li>
+<li><strong><code>mise run perf</code></strong>: Triggers a
+Locust-driven performance audit (Backend only).</li>
+</ul>
 <hr />
 <h2 id="secret-management-fnox">5. Secret Management
 (<code>fnox</code>)</h2>
@@ -285,11 +334,101 @@ injects <code>fnox</code> secrets as environment variables into all
 <code>mise run</code> tasks.</li>
 </ol>
 <hr />
-<h2 id="observability-forensic-tooling">6. Observability &amp; Forensic
+<h2 id="environment-variables-reference">6. Environment Variables
+Reference</h2>
+<p>ThreadScout relies on strict environment variable naming. Backend
+configuration is managed via Pydantic Settings, while the Frontend uses
+a mix of Next.js public variables and secure server-side variables.</p>
+<h3 id="core-system-variables">Core System Variables</h3>
+<ul>
+<li><code>THREADSCOUT_APP_ENV</code> / <code>NEXT_PUBLIC_APP_ENV</code>:
+Defines the running environment (<code>mocking</code>,
+<code>development</code>, <code>production</code>).</li>
+<li><code>THREADSCOUT_INGRESS_MODE</code> /
+<code>NEXT_PUBLIC_THREADSCOUT_INGRESS_MODE</code>: Defines the network
+path (<code>DIRECT</code>, <code>PROXY</code>,
+<code>TUNNEL</code>).</li>
+<li><code>THREADSCOUT_DEBUG</code> / <code>NEXT_PUBLIC_DEBUG</code>:
+Enable debug features and logging (<code>true</code> or
+<code>false</code>).</li>
+<li><code>THREADSCOUT_LOG_LEVEL</code> /
+<code>NEXT_PUBLIC_LOG_LEVEL</code>: Base logging verbosity
+(<code>INFO</code>, <code>DEBUG</code>, etc).</li>
+<li><code>THREADSCOUT_DEEP_TRACE</code>: Enables deep flight-recorder
+style event tracking when set to <code>true</code>.</li>
+</ul>
+<h3 id="security-authentication">Security &amp; Authentication</h3>
+<ul>
+<li><code>THREADSCOUT_SECRET_KEY</code>: High-entropy secret used for
+backend session signing.</li>
+<li><code>THREADSCOUT_ENCRYPTION_KEY</code>: Fernet (AES-128) key for
+encrypting stored OAuth tokens.</li>
+<li><code>THREADSCOUT_NEXTAUTH_SECRET</code>: Used by the Next.js
+frontend to securely sign session cookies.</li>
+<li><code>THREADSCOUT_ENABLE_AUTH</code>: Controls if real OIDC
+authentication is required (<code>true</code>/<code>false</code>).</li>
+<li><code>THREADSCOUT_BYPASS_BETA_TOKEN</code>: A secure token used to
+bypass login during automated E2E testing.</li>
+<li><code>THREADSCOUT_POCKET_ID_PUBLIC_URL</code> /
+<code>THREADSCOUT_POCKET_ID_INTERNAL_URL</code>: URLs for the primary
+PocketID Identity Provider.</li>
+<li><code>THREADSCOUT_OIDC_AUDIENCE</code>: Defaults to
+<code>threadscout</code>.</li>
+</ul>
+<h3 id="oidc-identity-providers">OIDC Identity Providers</h3>
+<ul>
+<li><code>THREADSCOUT_POCKET_ID_CLIENT_ID</code> /
+<code>THREADSCOUT_POCKET_ID_CLIENT_SECRET</code>: Credentials for the
+local PocketID sidecar.</li>
+<li><code>THREADSCOUT_GOOGLE_CLIENT_ID</code> /
+<code>THREADSCOUT_GOOGLE_CLIENT_SECRET</code>: Credentials for Google
+OAuth login.</li>
+<li><code>THREADSCOUT_EBAY_OIDC_CLIENT_ID</code> /
+<code>THREADSCOUT_EBAY_OIDC_CLIENT_SECRET</code>: Credentials for eBay
+OAuth login.</li>
+</ul>
+<h3 id="integrations">Integrations</h3>
+<ul>
+<li><strong>eBay APIs</strong>: <code>THREADSCOUT_EBAY_CLIENT_ID</code>,
+<code>THREADSCOUT_EBAY_CLIENT_SECRET</code>,
+<code>THREADSCOUT_EBAY_DEV_ID</code>,
+<code>THREADSCOUT_EBAY_RU_NAME</code>,
+<code>THREADSCOUT_EBAY_MARKETPLACE_ID</code>,
+<code>THREADSCOUT_EBAY_SANDBOX</code></li>
+<li><strong>Google Cloud / Vertex AI</strong>:
+<code>THREADSCOUT_GOOGLE_CLOUD_PROJECT</code>,
+<code>THREADSCOUT_GOOGLE_CLOUD_LOCATION</code>,
+<code>THREADSCOUT_MODEL_ANALYSIS</code> (default: gemini-2.5-flash),
+<code>THREADSCOUT_MODEL_ENRICH</code></li>
+<li><strong>Stripe Billing</strong>:
+<code>THREADSCOUT_STRIPE_API_KEY</code>,
+<code>THREADSCOUT_STRIPE_WEBHOOK_SECRET</code>,
+<code>THREADSCOUT_STRIPE_PRO_PRICE_ID</code></li>
+</ul>
+<h3 id="observability-telemetry">Observability &amp; Telemetry</h3>
+<ul>
+<li><code>THREADSCOUT_SENTRY_DSN</code> /
+<code>NEXT_PUBLIC_SENTRY_DSN</code>: Sentry project DSN for error
+tracking.</li>
+<li><code>THREADSCOUT_ENABLE_METRICS</code>: Toggles Prometheus metrics
+endpoint (<code>true</code>/<code>false</code>).</li>
+<li><code>THREADSCOUT_OPS_WEBHOOK_URL</code> /
+<code>THREADSCOUT_OPS_TOKEN</code>: For pushing alerts to an external
+ops dashboard.</li>
+</ul>
+<h3 id="networking">Networking</h3>
+<ul>
+<li><code>THREADSCOUT_FRONTEND_URL</code>: URL of the Next.js frontend
+(used by backend for CORS/Redirects).</li>
+<li><code>NEXT_PUBLIC_API_URL</code>: Direct URL to the backend API used
+by the Next.js frontend.</li>
+</ul>
+<hr />
+<h2 id="observability-forensic-tooling">7. Observability &amp; Forensic
 Tooling</h2>
 <p>ThreadScout implements an “Agent-First” observability stack designed
 for high-fidelity debugging.</p>
-<h3 id="unified-log-probing">6.1. Unified Log Probing</h3>
+<h3 id="unified-log-probing">7.1. Unified Log Probing</h3>
 <p>Instead of tailing raw files, use the prober to search for patterns
 across service boundaries.</p>
 <div class="sourceCode" id="cb3"><pre
@@ -298,13 +437,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor errors in a specific service</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> backend <span class="at">--level</span> ERROR</span></code></pre></div>
-<h3 id="security-auditing">6.2. Security Auditing</h3>
+<h3 id="security-auditing">7.2. Security Auditing</h3>
 <p>Verify that the log scrubber is correctly masking PII (emails,
 secrets) before logs leave the local environment.</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/audit-logs.sh</span> <span class="at">--all</span></span></code></pre></div>
 <hr />
-<h2 id="hardware-isolation-the-sandbox">7. Hardware Isolation (The
+<h2 id="hardware-isolation-the-sandbox">8. Hardware Isolation (The
 Sandbox)</h2>
 <p>For dangerous or unverified AI processing tasks, use the isolated
 MicroVM.</p>
@@ -315,7 +454,7 @@ AppArmor profiles and Virtio-9p file sharing, ensuring the host machine
 remains secure during unverified code execution.</li>
 </ul>
 <hr />
-<h2 id="documentation-workflow">7. Documentation Workflow</h2>
+<h2 id="documentation-workflow">9. Documentation Workflow</h2>
 <p>We treat documentation as code. All <code>.md</code> files in
 <code>docs/</code> are automatically processed into HTML for the
 documentation hub.</p>
@@ -327,7 +466,7 @@ documentation hub.</p>
 href="https://localhost:3443/docs">https://localhost:3443/docs</a></li>
 </ul>
 <hr />
-<h2 id="operational-awareness-ops-pulse">8. Operational Awareness (Ops
+<h2 id="operational-awareness-ops-pulse">10. Operational Awareness (Ops
 Pulse)</h2>
 <p>Developers are expected to monitor the <strong>Ops Pulse
 Dashboard</strong> in the application (<code>/ops</code>).</p>

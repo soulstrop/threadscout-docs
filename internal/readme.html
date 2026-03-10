@@ -53,8 +53,12 @@ for running AI tasks in a secure, restricted sandbox.</li>
 <p>Get the app running locally for personal use in less than 5
 minutes.</p>
 <ol type="1">
+<li><strong>Clone &amp; Enter</strong>:
+<code>git clone https://github.com/mikeco/threadscout.git &amp;&amp; cd threadscout</code></li>
 <li><strong>Install Mise</strong>:
 <code>curl https://mise.jdx.dev/install.sh | sh</code></li>
+<li><strong>Trust Configuration</strong>: <code>mise trust</code>
+(Approves the orchestration tasks)</li>
 <li><strong>Setup Environment</strong>: <code>mise run setup</code>
 (Installs CA certs and browsers)</li>
 <li><strong>Launch</strong>: <code>mise run dev</code></li>
@@ -67,8 +71,12 @@ href="deployment.html">DEPLOYMENT</a>.</p>
 Onboarding</h2>
 <p>For those looking to contribute or customize the internals.</p>
 <ol type="1">
-<li><strong>Clone &amp; Install</strong>:
-<code>git clone ... &amp;&amp; mise run install</code></li>
+<li><strong>Clone &amp; Enter</strong>:
+<code>git clone https://github.com/mikeco/threadscout.git &amp;&amp; cd threadscout</code></li>
+<li><strong>Trust &amp; Setup</strong>:
+<code>mise trust &amp;&amp; mise run setup</code></li>
+<li><strong>Install Dependencies</strong>:
+<code>mise run install</code></li>
 <li><strong>Secrets</strong>: Initialize your <code>fnox</code> store
 and add your <code>EBAY_CLIENT_ID</code>.</li>
 <li><strong>Mock Mode</strong>: Run

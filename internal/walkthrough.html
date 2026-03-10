@@ -103,7 +103,9 @@ Environment</h2>
 ensures consistency across development, mocking, and production
 environments.</p>
 <p>The global <code>mise.toml</code> defines the core tools and
-environment variables:</p>
+environment variables. After cloning, you must run
+<code>mise trust</code> to unlock these configurations before running
+<code>mise run setup</code>:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> mise.toml <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 30</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre

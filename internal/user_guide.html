@@ -201,6 +201,23 @@ ThreadScout Dashboard (Desktop) to select the synced photos.</li>
 <code>ingest/</code> directory on your host machine. The backend watcher
 will process them automatically.</li>
 </ol>
+<h3 id="deep-system-reset-the-slate-option">7.5. Deep System Reset (The
+“Slate” Option)</h3>
+<p>If your application environment becomes inconsistent or you encounter
+persistent startup errors that manual cleaning cannot resolve:</p>
+<ol type="1">
+<li><strong>The Command</strong>: Run <code>mise run reset --hard</code>
+from your terminal.</li>
+<li><strong>The Impact</strong>: This is a destructive operation. It
+will:
+<ul>
+<li>Purge all local environment variables.</li>
+<li>Delete your local database and binary storage.</li>
+<li>Remove all local proxy (Caddy) and tunnel configurations.</li>
+</ul></li>
+<li><strong>When to use</strong>: Only as a last resort or when starting
+a completely fresh development cycle.</li>
+</ol>
 <h2 id="getting-help-reporting-issues">8. Getting Help &amp; Reporting
 Issues</h2>
 <p>Every operation in ThreadScout generates a <strong>Debug

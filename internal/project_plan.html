@@ -164,8 +164,8 @@ Virtio-9p.</li>
 <li><label><input type="checkbox" checked="" /><strong>Environment
 Parity</strong>:</label>
 <ul>
-<li>Unified secret injection via <code>fnox</code> and <code>mise</code>
-across host, docker, and VM.</li>
+<li>Unified secret injection via <code>fnox</code> and `mise across
+host, docker, and VM.</li>
 </ul></li>
 </ul>
 <h2 id="phase-6-polish-scale-completed">Phase 6: Polish &amp; Scale
@@ -358,8 +358,9 @@ Developer Experience (DX)</strong>:</label>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" />Implement environment
 profiles (<code>MISE_ENV</code>).</label></li>
-<li><label><input type="checkbox" checked="" />Add surgical cache
-clearing (<code>reset --hard</code>).</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Deep Slate
+Reset</strong>: Add surgical cache clearing and environment purge
+(<code>reset --hard</code>) (SPEC-53).</label></li>
 </ul></li>
 <li><label><input type="checkbox" checked="" /><strong>Telemetry &amp;
 Monitoring</strong>:</label>
@@ -378,13 +379,29 @@ Integration</strong>:</label>
 <li><label><input type="checkbox" checked="" />Link Stripe webhooks to
 user <code>tier</code> updates.</label></li>
 </ul></li>
-<li><label><input type="checkbox" /><strong>CI/CD
+<li><label><input type="checkbox" checked="" /><strong>QA &amp; Quality
+Gates</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Achieve consistent
+green-gate status for all tests (SPEC-54).</label></li>
+<li><label><input type="checkbox" checked="" />Implement Frontend
+Quality &amp; Accessibility Guardrails (SPEC-58).</label></li>
+<li><label><input type="checkbox" checked="" />Implement Backend Quality
+&amp; Performance Guardrails (SPEC-59).</label></li>
+</ul></li>
+<li><label><input type="checkbox" checked="" /><strong>Onboarding &amp;
+Bootstrap</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Automate monorepo
+recursive trust (SPEC-55).</label></li>
+</ul></li>
+<li><label><input type="checkbox" checked="" /><strong>CI/CD
 Pipeline</strong>:</label>
 <ul class="task-list">
-<li><label><input type="checkbox" />GitHub Actions for automated testing
-and container builds.</label></li>
-<li><label><input type="checkbox" />Automated deployment to K8s staging
-environment.</label></li>
+<li><label><input type="checkbox" checked="" />GitHub Actions for
+automated testing and container builds.</label></li>
+<li><label><input type="checkbox" checked="" />Automated deployment to
+K8s staging environment.</label></li>
 </ul></li>
 </ul>
 <h2 id="phase-9-mobile-experience-pwa-completed">Phase 9: Mobile

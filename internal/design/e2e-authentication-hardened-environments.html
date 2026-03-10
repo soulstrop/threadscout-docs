@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>E2e Authentication Hardened Environments</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">E2e Authentication Hardened Environments</h1>
+</header>
+<h1 id="e2e-authentication-in-hardened-environments">E2E Authentication
+in Hardened Environments</h1>
+<h2 id="problem-statement">Problem Statement</h2>
+<p>During our CI/CD and local check pipelines
+(<code>mise run check</code>), Playwright runs E2E tests to verify the
+application’s behavior. In the <code>dev</code> profile, we rely on the
+“Developer Login (Mock)” button provided by the NextAuth configuration
+to bypass the complexities of real OIDC providers.</p>
+<p>However, in hardened profiles (such as <code>hybrid</code> or
+<code>production</code>), the <code>THREADSCOUT_INGRESS_MODE</code> is
+set to <code>PROXY</code> or <code>TUNNEL</code>, and
+<code>NEXT_PUBLIC_APP_ENV</code> may not be <code>mocking</code>. Under
+these conditions, the mock login provider is intentionally omitted from
+the UI for security reasons.</p>
+<p>This causes the <code>auth.setup.ts</code> script in Playwright to
+time out and fail, as it waits for a “Developer Login (Mock)” button
+that never renders, thereby failing the entire test suite.</p>
+<h2 id="analysis-of-alternatives">Analysis of Alternatives</h2>
+<p>To test hardened environments effectively without relying on the mock
+provider UI, we evaluated the following approaches:</p>
+<h3 id="programmatic-session-injection-recommended">1. Programmatic
+Session Injection (Recommended)</h3>
+<p>Instead of interacting with the frontend UI to log in, Playwright
+bypasses the frontend entirely by generating a valid session behind the
+scenes.</p>
+<ul>
+<li><strong>Mechanism:</strong> A dedicated, test-only API endpoint
+(protected by a secure token like
+<code>THREADSCOUT_BYPASS_BETA_TOKEN</code>) is used to issue a valid JWT
+or NextAuth session cookie. Playwright fetches this cookie, sets it in
+the browser context via <code>page.context().addCookies()</code>, and
+navigates directly to the dashboard.</li>
+<li><strong>Pros:</strong> Highly reliable, extremely fast, completely
+decoupled from the UI, and works universally across all profiles without
+exposing a mock provider to end users.</li>
+<li><strong>Cons:</strong> Requires maintaining a dedicated testing
+endpoint in the backend/Next.js routes.</li>
+</ul>
+<h3 id="dedicated-localtest-oidc-provider">2. Dedicated “Local/Test”
+OIDC Provider</h3>
+<p>Spinning up a localized Identity Provider (e.g., a test instance of
+PocketID, Keycloak, or Dex) via Docker during the E2E check.</p>
+<ul>
+<li><strong>Mechanism:</strong> NextAuth points to this local provider.
+Playwright clicks the standard “Sign in with…” button, fills in a
+hardcoded test credential, and completes the OAuth redirect loop.</li>
+<li><strong>Pros:</strong> Tests the actual OAuth redirect and callback
+logic natively.</li>
+<li><strong>Cons:</strong> Slower, heavier infrastructure overhead for
+testing, and prone to flakiness during automated typing/redirects.</li>
+</ul>
+<h3 id="segregation-of-test-suites">3. Segregation of Test Suites</h3>
+<p>Separating tests into “Workflow E2E” (which requires auth) and
+“Hardened/Security E2E” (which only tests unauthenticated states and
+security omissions).</p>
+<ul>
+<li><strong>Mechanism:</strong> Run the full E2E suite only in the
+<code>dev</code> profile. For
+<code>hybrid</code>/<code>production</code> profiles, run a subset of
+Playwright tests that assert the <em>absence</em> of the mock provider
+and verify redirect boundaries.</li>
+<li><strong>Pros:</strong> Aligns testing goals perfectly with the
+environment’s capabilities.</li>
+<li><strong>Cons:</strong> Does not test the authenticated workflow
+under hardened infrastructure configurations (like through the Caddy
+proxy).</li>
+</ul>
+<h2 id="conclusion-and-immediate-action">Conclusion and Immediate
+Action</h2>
+<p><strong>Long-term Strategy:</strong> We will adopt <strong>Option 1
+(Programmatic Session Injection)</strong> to enable robust,
+authenticated E2E testing across all environments. A specification for
+this implementation has been created.</p>
+<p><strong>Short-term Fix:</strong> To immediately unblock the check
+pipeline for hardened environments, the login steps in
+<code>auth.setup.ts</code> will be conditionally wrapped. If the
+environment detects non-DIRECT ingress or a non-mocking configuration,
+it will gracefully skip the mock login sequence.</p>
+</body>
+</html>
