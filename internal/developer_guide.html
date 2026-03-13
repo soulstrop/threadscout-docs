@@ -368,7 +368,9 @@ frontend to securely sign session cookies.</li>
 <li><code>THREADSCOUT_ENABLE_AUTH</code>: Controls if real OIDC
 authentication is required (<code>true</code>/<code>false</code>).</li>
 <li><code>THREADSCOUT_BYPASS_BETA_TOKEN</code>: A secure token used to
-bypass login during automated E2E testing.</li>
+bypass the beta invitation wall. This allows for automated E2E testing
+and can be provided as a URL parameter to allow selected users to create
+an initial account in non-production environments.</li>
 <li><code>THREADSCOUT_POCKET_ID_PUBLIC_URL</code> /
 <code>THREADSCOUT_POCKET_ID_INTERNAL_URL</code>: URLs for the primary
 PocketID Identity Provider.</li>

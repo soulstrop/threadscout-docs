@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026 03 12 Image Provenance C2pa</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">2026 03 12 Image Provenance C2pa</h1>
+</header>
+<h1 id="threadscout-image-provenance-ai-authenticity">ThreadScout Image
+Provenance &amp; AI Authenticity</h1>
+<p><strong>Date:</strong> 2026-03-12<br />
+<strong>Status:</strong> Accepted<br />
+<strong>Authors:</strong> Architecture Squad</p>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>ThreadScout relies heavily on visual data to automate the clothing
+resale workflow. Users upload raw photographs, which the system then
+processes, enhances (via background removal), and analyzes using
+generative AI (Gemini Vision) to extract structured product data (brand,
+size, material, condition).</p>
+<p>As AI tools become more prevalent in modifying imagery, maintaining
+trust on secondary marketplaces (like eBay) is paramount. Buyers need
+assurance that the item they see in a photograph accurately represents
+the physical item they will receive. To address this, ThreadScout
+implements a transparent <strong>Image Provenance Pipeline</strong>
+utilizing the Coalition for Content Provenance and Authenticity (C2PA)
+standard.</p>
+<p>This document outlines our strategy for balancing the efficiency and
+aesthetic benefits of AI image manipulation with the critical need for
+cryptographic authenticity.</p>
+<hr />
+<h2 id="the-problem-space">2. The Problem Space</h2>
+<h3 id="the-need-for-manipulation">2.1 The Need for Manipulation</h3>
+<p>Raw photos ingested from mobile devices are rarely
+“marketplace-ready”:</p>
+<ul>
+<li><strong>Clutter:</strong> Backgrounds (bedrooms, floors) distract
+buyers and trigger algorithm penalties on platforms like eBay.</li>
+<li><strong>Orientation:</strong> Overhead flat-lays often lack reliable
+EXIF rotation data.</li>
+<li><strong>Cost/Latency:</strong> Sending 12-megapixel raw images to an
+LLM for data extraction is slow and token-inefficient.</li>
+</ul>
+<p>Therefore, ThreadScout <em>must</em> manipulate these images (resize,
+rotate, mask backgrounds) to operate effectively and produce
+high-converting listings.</p>
+<h3 id="the-risk-to-trust">2.2 The Risk to Trust</h3>
+<p>When a system automatically removes a background or “enhances” a
+photo, it introduces the risk of misrepresenting the item. If a
+background removal algorithm accidentally clips a tear on a shirt, or if
+an AI enhancement smooths out a stain, the buyer is deceived.</p>
+<p>We need a standardized way to say: <em>“This image was resized and
+the background was removed by AI, but the pixels representing the actual
+garment were untouched.”</em></p>
+<hr />
+<h2 id="design-decisions">3. Design Decisions</h2>
+<h3 id="c2pa-content-credentials-as-the-standard">3.1 C2PA (Content
+Credentials) as the Standard</h3>
+<p>We have adopted the <strong>C2PA standard</strong> (via the
+<code>c2pa-python</code> SDK) to cryptographically sign every image
+manipulated by ThreadScout.</p>
+<p><strong>Why C2PA?</strong></p>
+<ul>
+<li><strong>Industry Standard:</strong> Backed by the Content
+Authenticity Initiative (CAI), it is the emerging standard supported by
+major hardware manufacturers and software platforms.</li>
+<li><strong>Granular Assertions:</strong> It allows us to specify
+<em>exactly</em> what was changed (e.g., <code>c2pa.resized</code>,
+<code>c2pa.removed.background</code>) rather than a binary “AI
+Generated” flag.</li>
+<li><strong>Tamper-Evident:</strong> Cryptographic signatures ensure
+that if a user manually downloads a ThreadScout photo and doctors a
+stain out in Photoshop, the signature breaks, breaking the chain of
+trust.</li>
+</ul>
+<h3 id="non-destructive-storage-architecture">3.2 Non-Destructive
+Storage Architecture</h3>
+<p>Transparency requires a verifiable source of truth.</p>
+<p><strong>Decision:</strong> ThreadScout enforces a strict
+<strong>non-destructive storage model</strong>. When an image is
+ingested to the siloed storage
+(<code>storage/{user_id}/{item_id}/</code>), it is saved in a
+<code>/raw/</code> directory exactly as received from the device
+(preserving the original hash and EXIF data).</p>
+<p>The C2PA-signed, processed images used for the final eBay listing are
+stored in a parallel <code>/processed/</code> directory. The C2PA
+manifest embedded in the processed image explicitly references the
+original raw image as an “ingredient,” creating a verifiable audit trail
+back to the untouched original.</p>
+<h3 id="strict-no-in-filling-policy-for-subjects">3.3 Strict “No
+In-Filling” Policy for Subjects</h3>
+<p>While ThreadScout aggressively manipulates backgrounds, we impose a
+strict architectural boundary on the <em>subject</em> (the clothing item
+itself).</p>
+<p><strong>Decision:</strong> We do not use generative AI to in-fill,
+upscale, or “heal” the pixels of the actual garment.</p>
+<ul>
+<li>Background removal uses deterministic masking (e.g., U-Net
+segmentation).</li>
+<li>Any AI used on the image is purely analytical (Gemini Vision
+extracting data, categorizing the view as “Front” or “Tag”) rather than
+generative (altering the pixels).</li>
+</ul>
+<hr />
+<h2 id="the-processing-pipeline-flow">4. The Processing Pipeline
+Flow</h2>
+<p>From a technical perspective, the provenance story unfolds
+automatically upon ingestion:</p>
+<ol type="1">
+<li><strong>Ingest &amp; Preserve:</strong> The mobile app uploads the
+raw <code>.heic</code> or <code>.jpg</code>. It is saved to
+<code>/raw/</code>. If the original file already has a C2PA manifest
+(e.g., from a modern smartphone camera), it is preserved as the
+foundation.</li>
+<li><strong>Optimize &amp; Orient:</strong> The backend resizes the
+image (to optimize LLM token costs) and corrects rotation.
+<ul>
+<li><em>Action appended:</em> <code>c2pa.resized</code>,
+<code>c2pa.orientation.changed</code></li>
+</ul></li>
+<li><strong>Mask Background:</strong> A specialized model segments the
+garment and replaces the background with a neutral solid color.
+<ul>
+<li><em>Action appended:</em> <code>c2pa.removed.background</code></li>
+</ul></li>
+<li><strong>Sign &amp; Embed:</strong> The <code>c2pa-python</code>
+service compiles these actions, signs them using ThreadScout’s X.509
+certificate, and embeds the manifest into the final
+<code>.jpg</code>.</li>
+<li><strong>Analyze (Read-Only):</strong> The signed, optimized image is
+then sent to Gemini Vision to extract the item’s brand, size, and
+condition.</li>
+</ol>
+<hr />
+<h2 id="summary">5. Summary</h2>
+<p>By strictly separating the <em>raw source of truth</em> from the
+<em>marketplace-optimized asset</em>, and by cryptographically linking
+them via C2PA, ThreadScout provides a robust defense against
+misrepresentation. Buyers (and marketplace algorithms) can verify that
+while the presentation was enhanced for clarity, the physical condition
+of the garment remains authentic to the original capture.</p>
+</body>
+</html>

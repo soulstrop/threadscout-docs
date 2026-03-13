@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Analysis Llm Optimization</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Analysis Llm Optimization</h1>
+</header>
+<h1
+id="engineering-analysis-llm-optimization-and-pipeline-cost-efficiency">Engineering
+Analysis: LLM Optimization and Pipeline Cost-Efficiency</h1>
+<p><strong>Date:</strong> 2026-03-12 <strong>Status:</strong> Under
+Consideration <strong>Authors:</strong> Architecture Squad</p>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>ThreadScout relies heavily on Large Language Models (LLMs) to
+automate the translation of raw product photography into structured,
+highly converting eBay listings. While the current pipeline is
+functional, the core challenge of any AI-augmented pipeline is the
+inherent tension between <strong>Quality/Accuracy</strong> and
+<strong>Cost/Latency per Item</strong>.</p>
+<p>This document analyzes ThreadScout’s current use of LLMs, explores
+optimization levers available within the ingestion pipeline, and
+evaluates long-term strategic investments, such as fine-tuning, model
+distillation, and self-hosting. Finally, it proposes a rigorous testing
+framework to empiricaly evaluate these architectural decisions.</p>
+<hr />
+<h2 id="current-architecture-llm-usage">2. Current Architecture &amp;
+LLM Usage</h2>
+<p>ThreadScout currently utilizes a two-tiered AI strategy via managed
+cloud providers:</p>
+<ol type="1">
+<li><strong>Vision &amp; Extraction (Gemini 2.0 Flash):</strong>
+Processes pre-processed images (resized and background-removed) to
+identify brand, size, material composition, and condition. This is the
+most computationally expensive and token-heavy operation.</li>
+<li><strong>Synthesis &amp; Enrichment (Gemini 2.5 Flash-Lite):</strong>
+Handles text-based processing. This includes taking raw OCR data,
+cross-referencing extracted details with external eBay Comp data,
+generating SEO-optimized titles, and writing human-readable
+descriptions.</li>
+</ol>
+<h3 id="the-ingestion-pipeline">The Ingestion Pipeline</h3>
+<ol type="1">
+<li><strong>Upload:</strong> Mobile client uploads images.</li>
+<li><strong>Pre-processing (Deterministic):</strong> Resizing (down to
+1536px), rotation correction, and U-Net-based background removal.</li>
+<li><strong>Vision Extraction:</strong> Images + Structured Prompt -&gt;
+Gemini 2.0 Flash -&gt; JSON Payload.</li>
+<li><strong>Enrichment:</strong> Extracted JSON + Web Scrape Data -&gt;
+Gemini 2.5 Flash-Lite -&gt; Enhanced Listing Details.</li>
+<li><strong>Draft Creation:</strong> Push structured data to eBay
+Inventory API.</li>
+</ol>
+<hr />
+<h2 id="the-optimization-levers-cost-vs.-quality">3. The Optimization
+Levers (Cost vs. Quality)</h2>
+<p>To achieve the best quality at the minimum cost per item, we have
+several architectural “levers” we can pull dynamically:</p>
+<h3 id="input-resolution-and-image-count">3.1 Input Resolution and Image
+Count</h3>
+<ul>
+<li><strong>Lever:</strong> The resolution of images sent to the Vision
+model, and the number of images required.</li>
+<li><strong>Trade-off:</strong> High resolution (e.g., native 12MP) and
+multiple angles improve OCR accuracy (especially for tiny tags) and
+condition spotting, but exponentially increase input token costs and
+latency.</li>
+<li><strong>Current State:</strong> Resizing to max 1536px. We can
+optimize further by sending <em>only</em> the cropped region of interest
+(e.g., just the tag) to the Vision model instead of the whole garment,
+drastically reducing tokens.</li>
+</ul>
+<h3 id="model-tiering-and-routing">3.2 Model Tiering and Routing</h3>
+<ul>
+<li><strong>Lever:</strong> Choosing which model handles which task
+(e.g., Flash vs. Pro vs. Flash-Lite).</li>
+<li><strong>Trade-off:</strong> Smaller models (Flash-Lite) are
+extremely cheap and fast but may hallucinate details or fail on complex
+unstructured text. Larger models (Pro) are accurate but economically
+unviable for low-margin clothing items.</li>
+<li><strong>Strategy:</strong> Implement a “Cascade” approach. Attempt
+extraction with the cheapest model first. If confidence is low or schema
+validation fails, escalate to a more expensive, capable model.</li>
+</ul>
+<h3 id="prompt-engineering-and-context-length">3.3 Prompt Engineering
+and Context Length</h3>
+<ul>
+<li><strong>Lever:</strong> The size and complexity of the prompt and
+few-shot examples.</li>
+<li><strong>Trade-off:</strong> Providing 10 examples of perfectly
+formatted listings improves output stability but consumes input tokens
+on every request.</li>
+<li><strong>Strategy:</strong> Utilize prompt caching (where supported
+by the provider) for static system instructions to drastically reduce
+the amortized cost of input tokens.</li>
+</ul>
+<hr />
+<h2 id="strategic-investments-specialized-assets">4. Strategic
+Investments: Specialized Assets</h2>
+<p>As volume scales, relying solely on generic foundation models may
+become suboptimal.</p>
+<h3 id="fine-tuning-and-post-training">4.1 Fine-Tuning and
+Post-Training</h3>
+<ul>
+<li><strong>Opportunity:</strong> The task of converting clothing tags
+and physical traits into structured JSON is a highly specific,
+repetitive domain.</li>
+<li><strong>Cost/Benefit:</strong> Fine-tuning a smaller model (like an
+8B parameter model) on tens of thousands of ThreadScout’s successful
+extractions can result in a model that matches the accuracy of a massive
+foundation model (like GPT-4o or Gemini 1.5 Pro) but at a fraction of
+the inference cost and latency. It also reduces the need for massive
+prompts, saving input tokens.</li>
+</ul>
+<h3 id="distillation-and-sparse-models">4.2 Distillation and Sparse
+Models</h3>
+<ul>
+<li><strong>Opportunity:</strong> Creating a specialized sparse model
+(e.g., using Mixture of Experts) or distilling a fundamental model down
+to a highly constrained schema-extraction engine.</li>
+<li><strong>Cost/Benefit:</strong> High upfront R&amp;D cost to create
+the dataset and perform the distillation. However, the runtime inference
+cost becomes near zero compared to API calls. This is only viable if the
+domain (clothing resale) remains relatively static and the volume is
+massive (millions of items/month).</li>
+</ul>
+<h3 id="guardrails-and-deterministic-fallbacks">4.3 Guardrails and
+Deterministic Fallbacks</h3>
+<ul>
+<li><strong>Opportunity:</strong> Investing in rigid programmatic
+guardrails (e.g., Pydantic schema validation, brand dictionaries, fuzzy
+matching against eBay’s specific category trees).</li>
+<li><strong>Cost/Benefit:</strong> High ROI. Instead of asking the LLM
+to strictly adhere to an eBay category ID, ask it for a textual
+description and use a fast, deterministic local search (like
+Elasticsearch or Typesense) to map it to the exact ID. This offloads
+work from the expensive LLM to cheap traditional compute.</li>
+</ul>
+<hr />
+<h2 id="cloud-apis-vs.-self-hosting">5. Cloud APIs vs. Self-Hosting</h2>
+<p>At what scale does it make sense to abandon managed providers
+(Google, OpenAI) and host our own weights on raw cloud compute (AWS EC2,
+RunPod)?</p>
+<ul>
+<li><strong>Managed Providers (Current):</strong> Best for variable
+workloads, low operational overhead, and access to state-of-the-art
+vision models. Pricing is per-token.</li>
+<li><strong>Self-Hosting (e.g., vLLM on A100s):</strong> Pricing is
+per-hour regardless of token volume.</li>
+<li><strong>The Tipping Point:</strong> Self-hosting only makes economic
+sense when:
+<ol type="1">
+<li>The system has enough sustained, concurrent volume to keep the GPU
+utilization near 100% 24/7. Spiky, unpredictable workloads will result
+in paying for idle compute.</li>
+<li>We have successfully fine-tuned a smaller model (e.g., Llama 3 8B or
+Gemma 2 9B) that can perform the task accurately. Hosting a 70B+
+parameter model is computationally prohibitive for this use case.</li>
+</ol></li>
+<li><strong>Verdict:</strong> ThreadScout should remain on managed
+providers, utilizing the BYOM (Bring Your Own Model) architecture, until
+sustained volume exceeds the cost of a dedicated GPU instance (~$1,500 -
+$3,000/month per node) <em>and</em> a fine-tuned small model is proven
+to work.</li>
+</ul>
+<hr />
+<h2 id="testing-system-for-evaluating-vague-trade-offs">6. Testing
+System for Evaluating Vague Trade-offs</h2>
+<p>Because questions about “quality vs. cost” are vague, we must
+implement a rigorous, empirical evaluation harness before changing
+production routing.</p>
+<h3 id="the-golden-dataset">6.1 The “Golden Dataset”</h3>
+<p>We must curate a dataset of ~1,000 diverse, challenging real-world
+items (blurry tags, weird brands, vintage pieces) with human-verified
+“perfect” JSON outputs.</p>
+<h3 id="the-evaluation-harness-cicd-for-llms">6.2 The Evaluation Harness
+(CI/CD for LLMs)</h3>
+<p>We will build a testing script that runs the Golden Dataset through
+proposed pipeline changes and measures:</p>
+<ol type="1">
+<li><strong>Accuracy (F1 Score):</strong> Did it get the brand right?
+Did it miss a flaw? (Evaluated programmatically via strict matching or
+via “LLM-as-a-Judge”).</li>
+<li><strong>Cost per Item:</strong> Total tokens consumed * provider
+pricing.</li>
+<li><strong>Latency:</strong> Time from image ingest to JSON
+output.</li>
+</ol>
+<h3 id="ab-routing-shadow-mode">6.3 A/B Routing (Shadow Mode)</h3>
+<p>Before fully committing to a new model or prompt, we route 10% of
+production traffic through the new pipeline in “shadow mode.” We compare
+its output to the primary pipeline without affecting the actual user
+draft, allowing us to catch edge-case hallucinations in the wild.</p>
+<hr />
+<h2
+id="appendix-futurealternative-uses-of-llms-in-threadscout">Appendix:
+Future/Alternative Uses of LLMs in ThreadScout</h2>
+<p>Beyond the core ingestion pipeline, LLMs could be leveraged for:</p>
+<ol type="1">
+<li><strong>Conversational Support (Chatbot):</strong> Helping users
+debug eBay API connection issues or explaining why an item was rejected
+by eBay’s policy.</li>
+<li><strong>Dynamic Pricing Strategy:</strong> Analyzing historical eBay
+sold comps (unstructured text) and generating a narrative recommendation
+for pricing (e.g., “Price higher because this vintage tag is highly
+sought after”).</li>
+<li><strong>Trend Forecasting:</strong> Scraping fashion blogs or TikTok
+metadata and generating weekly reports for resellers on what
+brands/styles to source.</li>
+<li><strong>Auto-Replies for Buyers:</strong> Drafting polite,
+contextual responses to incoming eBay buyer messages (e.g., “Can you
+measure the inseam?”) by referencing the item’s stored metadata.</li>
+<li><strong>Multi-Lingual Localization:</strong> Automatically
+translating the final listing into multiple languages for cross-border
+trade, adapting idioms appropriately.</li>
+</ol>
+</body>
+</html>
