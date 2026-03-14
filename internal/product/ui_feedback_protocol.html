@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Ui Feedback Protocol</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Ui Feedback Protocol</h1>
+</header>
+<h1 id="threadscout-ui-feedback-bug-triage-protocol">ThreadScout UI
+Feedback &amp; Bug Triage Protocol</h1>
+<p>This document outlines the systematic testing procedure for verifying
+the visual and behavioral integrity of the ThreadScout application.
+Please follow these steps when performing a Beta test or a
+post-deployment verification.</p>
+<h2 id="phase-1-onboarding-auth">Phase 1: Onboarding &amp; Auth</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>First Land</strong>:
+Navigate to the root URL while logged out. Verify you are redirected to
+<code>/login</code>.</label></li>
+<li><label><input type="checkbox" /><strong>OIDC Login</strong>: Sign in
+using your provider (e.g., PocketID). Verify the transition is
+smooth.</label></li>
+<li><label><input type="checkbox" /><strong>Onboarding
+Tutorial</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />On your first login ever, verify the
+swipeable tutorial (UJ-00b) triggers automatically.</label></li>
+<li><label><input type="checkbox" />Verify you can swipe through all
+slides.</label></li>
+<li><label><input type="checkbox" />Verify you can dismiss the
+tutorial.</label></li>
+<li><label><input type="checkbox" />Navigate to the Admin dashboard and
+manually re-trigger the tutorial.</label></li>
+</ul></li>
+</ul>
+<h2 id="phase-2-the-core-loop-uj-01">Phase 2: The Core Loop (UJ-01)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Ingest
+Gallery</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Verify images load with “shimmering
+skeleton” placeholders while fetching.</label></li>
+<li><label><input type="checkbox" />Verify the “Pull to Refresh” or
+manual sync button works.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>Multi-Image
+Selection</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Select multiple photos of a single
+item.</label></li>
+<li><label><input type="checkbox" />Verify the “Analyze” button appears
+and shows the correct count of selected items.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>Automated
+Extraction</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Trigger “Analyze”.</label></li>
+<li><label><input type="checkbox" />Verify Brand, Size, Material, and
+Condition are extracted accurately by the AI.</label></li>
+<li><label><input type="checkbox" />Verify “Sonner” toast notifications
+appear for success or errors.</label></li>
+</ul></li>
+</ul>
+<h2 id="phase-3-research-enrichment-uj-02">Phase 3: Research &amp;
+Enrichment (UJ-02)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Deep
+Linking</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Click “Images” to open Google Lens
+in a new tab.</label></li>
+<li><label><input type="checkbox" />Click “Sold” to open eBay Sold Comps
+in a new tab.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>Paste &amp; Scrape
+Enrichment</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Find an eBay “Sold” listing and
+paste its URL into the research field.</label></li>
+<li><label><input type="checkbox" />Verify the AI successfully scrapes
+and incorporates the data.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>Strictness
+Toggle</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Test the “Strictness” toggle
+(Permissive/Moderate/Strict).</label></li>
+<li><label><input type="checkbox" />Verify that “Strict” mode correctly
+rejects mismatched items during enrichment.</label></li>
+</ul></li>
+</ul>
+<h2 id="phase-4-synthesis-ebay-push-uj-05">Phase 4: Synthesis &amp; eBay
+Push (UJ-05)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Synthesis
+Editor</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Manually override the Title, Price,
+and Category.</label></li>
+<li><label><input type="checkbox" />Verify that specs (Color, Style,
+etc.) are correctly merged.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>eBay Push</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Trigger “Push to eBay”.</label></li>
+<li><label><input type="checkbox" />Verify the sequential API calls
+(Inventory Item created -&gt; Offer created).</label></li>
+<li><label><input type="checkbox" />Verify the success toast contains a
+direct link to the eBay draft.</label></li>
+<li><label><input type="checkbox" />Click the draft link and verify the
+eBay site loads the correct draft.</label></li>
+</ul></li>
+</ul>
+<h2 id="phase-5-administration-uj-04">Phase 5: Administration
+(UJ-04)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Theme
+Support</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Switch between Light, Dark, and
+System modes.</label></li>
+<li><label><input type="checkbox" />Verify all UI elements (cards, text,
+buttons) remain legible and aesthetically pleasing.</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>Storage
+Configuration</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Navigate to Storage
+Settings.</label></li>
+<li><label><input type="checkbox" />Verify the “Bring Your Own Storage”
+(BYOS) UI allows switching between Local and S3 (if
+enabled).</label></li>
+</ul></li>
+<li><label><input type="checkbox" /><strong>AI Token
+Usage</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Verify the usage card accurately
+reflects your recent analysis/enrichment activities.</label></li>
+</ul></li>
+</ul>
+<h2 id="phase-6-negative-testing-reporting">Phase 6: Negative Testing
+&amp; Reporting</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>404 Handling</strong>:
+Navigate to a non-existent URL (e.g., <code>/lost-in-threads</code>).
+Verify the custom 404 page appears.</label></li>
+<li><label><input type="checkbox" /><strong>500 Handling</strong>:
+Simulate a server crash (e.g., stop the backend process) and perform an
+action. Verify the custom 500 error page or toast appears.</label></li>
+<li><label><input type="checkbox" /><strong>Report
+Incident</strong>:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open the “Report UI Issue” modal
+from the Admin dashboard.</label></li>
+<li><label><input type="checkbox" />Submit a report with a
+description.</label></li>
+<li><label><input type="checkbox" />Verify that “Debug Info” (current
+state snapshot) is correctly attached to the report in the Ops Pulse
+dashboard.</label></li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="ops-triage-instructions">Ops Triage Instructions</h2>
+<p>When reports are submitted, the Operations team should use the
+following tools:</p>
+<ul>
+<li><strong>Inspect Reports</strong>:
+<code>./scripts/probe-logs.sh backend --grep "incident" --tail 50</code></li>
+<li><strong>Security Audit</strong>:
+<code>./scripts/audit-logs.sh --all</code></li>
+</ul>
+</body>
+</html>

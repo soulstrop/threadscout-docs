@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 66</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 66</h1>
+</header>
+<h1 id="spec-66-domain-driven-model-splitting">SPEC-66: Domain-Driven
+Model Splitting</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Refactor the monolithic <code>models.py</code> into a structured
+package organized by business domain. This eliminates the “god file”
+anti-pattern and makes it easier to find and modify data structures.</p>
+<h2 id="traceability">2. Traceability</h2>
+<ul>
+<li><strong>Phase</strong>: Phase 8: Production Readiness (DX).</li>
+<li><strong>Objective</strong>: Improve code discoverability and reduce
+merge conflicts in a multi-contributor environment.</li>
+</ul>
+<h2 id="target-files">3. Target Files</h2>
+<ul>
+<li><code>backend/src/threadscout/models/__init__.py</code>: (New)
+Export all models for backward compatibility.</li>
+<li><code>backend/src/threadscout/models/user.py</code>: (New)
+<code>User</code>, <code>UserTier</code>.</li>
+<li><code>backend/src/threadscout/models/item.py</code>: (New)
+<code>Item</code>, <code>ItemState</code>.</li>
+<li><code>backend/src/threadscout/models/incident.py</code>: (New)
+<code>Incident</code>, <code>IncidentSeverity</code>.</li>
+<li><code>backend/src/threadscout/models/auth.py</code>: (New)
+<code>OAuthToken</code>, <code>Session</code>.</li>
+</ul>
+<h2 id="implementation-strategy">4. Implementation Strategy</h2>
+<ol type="1">
+<li><strong>Create Package</strong>: Convert <code>models.py</code> into
+a directory <code>models/</code>.</li>
+<li><strong>Logical Split</strong>: Distribute classes based on their
+primary domain.</li>
+<li><strong>Circular Dependency Guard</strong>: Use the
+<code>__init__.py</code> or local imports within methods to prevent
+circular references between related models (e.g., User and Item).</li>
+<li><strong>Verification</strong>: Ensure all existing imports
+(<code>from threadscout.models import ...</code>) continue to work via
+<code>__init__.py</code> exports.</li>
+</ol>
+</body>
+</html>

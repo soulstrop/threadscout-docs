@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>INDEX</title>
+  <title>Index</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -26,89 +26,54 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">INDEX</h1>
+<h1 class="title">Index</h1>
 </header>
 <h1 id="threadscout-documentation">ThreadScout Documentation</h1>
 <p>Welcome to the central documentation hub for ThreadScout. Use the
 categories below to find the information most relevant to your
 needs.</p>
 <hr />
-<h2 id="vision-design">🎨 <a href="product_ux.html">Vision &amp;
-Design</a></h2>
-<p><strong>The “Who” &amp; the “Soul”</strong> Understand the reseller
-personas, our visual language (branding), and the core product vision
-that drives our technical decisions. Includes the primary <strong>User
-Journeys</strong>.</p>
-<h2 id="user-guide">🚀 <a href="user_guide.html">User Guide</a></h2>
-<p><strong>The “Why” &amp; Intent</strong> Learn about the core reseller
-loops, the value of AI enrichment, and how to maintain operational
-resilience if the system goes offline.</p>
-<h2 id="deployment-guide">🛠️ <a href="deployment.html">Deployment
-Guide</a></h2>
-<p><strong>The “How” &amp; Configuration</strong> Technical instructions
-for installation, environment variables, Docker orchestration, and
-setting up stable eBay OAuth callbacks via Cloudflare.</p>
-<h2 id="developer-guide">💻 <a href="developer_guide.html">Developer
-Guide</a></h2>
-<p><strong>The Squad’s “Source of Truth”</strong> The standard developer
-workflow, unified orchestration via <code>mise</code>, and the
-“Zero-Friction” setup guide.</p>
-<h2 id="architecture-hub">🏗️ <a href="architecture.html">Architecture
-Hub</a></h2>
-<p><strong>The Internals &amp; Philosophy</strong> A deep dive into the
-system’s design, component maps, state machines, and multi-tenancy
-foundations.</p>
-<h2 id="runbooks">📓 Runbooks</h2>
-<p><strong>Operational Procedures</strong></p>
-<ul>
-<li><strong><a
-href="runbooks/registering-oidc-providers.html">Registering OIDC
-Providers</a></strong>: Exact technical metadata and redirect URIs for
-Google, Apple, eBay, and more.</li>
-<li><strong><a href="runbooks/hosting-pocket-id.html">Self-Hosting
-PocketID</a></strong>: Deployment and configuration of the OIDC
-provider.</li>
-<li><strong><a href="runbooks/pocket-id-identity-flow.html">PocketID
-Identity Flow</a></strong>: Sequence diagrams and troubleshooting for
-the identity lifecycle.</li>
-</ul>
+<h2 id="architecture-philosophy">🏗️ <a
+href="architecture/index.html">Architecture &amp; Philosophy</a></h2>
+<p>Deep dives into the system’s design, component maps, state machines,
+and multi-tenancy foundations. Includes all architectural analyses and
+the master <strong>Architecture Record</strong>.</p>
+<h2 id="product-vision">🎨 <a href="product/index.html">Product &amp;
+Vision</a></h2>
+<p>Understand the reseller personas, our visual language (branding), and
+the core product vision. Includes <strong>User Journeys</strong>,
+<strong>Profiles</strong>, and <strong>UX Guidelines</strong>.</p>
+<h2 id="user-developer-guides">🚀 <a href="guides/index.html">User &amp;
+Developer Guides</a></h2>
+<p>The “How-To” section. From first-time setup and local development to
+production deployment and a complete codebase walkthrough.</p>
+<h2 id="compliance-privacy">📋 <a
+href="compliance/index.html">Compliance &amp; Privacy</a></h2>
+<p>Legal and compliance documentation, including the <strong>Privacy
+Policy</strong> and <strong>About</strong> pages.</p>
 <hr />
-<h2 id="supporting-resources">📚 Supporting Resources</h2>
-<h3 id="decisions-analyses">Decisions &amp; Analyses</h3>
-<!-- AUTO_GEN_ADR_START -->
+<h2 id="operational-resources">📓 Operational Resources</h2>
+<h3 id="runbooks"><a href="runbooks/index.html">Runbooks</a></h3>
+<p>Step-by-step procedures for common operational tasks like OIDC
+provider registration and self-hosting identity services.</p>
+<h3 id="technical-design-specs"><a href="design/index.html">Technical
+Design Specs</a></h3>
+<p>Detailed implementation specifications for complex features and
+migrations.</p>
+<h3 id="architecture-decision-records-adrs"><a
+href="adr/index.html">Architecture Decision Records (ADRs)</a></h3>
+<p>Historical records of why specific technologies or patterns were
+chosen.</p>
+<h3 id="specifications-specs"><a href="specs/index.html">Specifications
+(Specs)</a></h3>
+<p>Completed and active development specifications (Mirror of
+.gemini/squad/).</p>
+<hr />
+<h2 id="internal-tools">🛠️ Internal Tools</h2>
 <ul>
-<li><strong><a href="adr/index.html">Architecture Decision Records
-(ADRs)</a></strong>: Historical records of why specific technologies or
-patterns were chosen.</li>
-<li><strong><a href="analysis-ai-image-enhancement.html">Engineering
-Analysis: AI-Assisted Image Enhancement</a></strong></li>
-<li><strong><a href="analysis-byom.html">Engineering Analysis: Bring
-Your Own Model (BYOM)</a></strong></li>
-<li><strong><a href="analysis-image-captions.html">Feature Analysis:
-AI-Generated Image Captions</a></strong></li>
-<li><strong><a href="analysis-kubernetes-readiness.html">Engineering
-Analysis: Kubernetes &amp; Observability Readiness</a></strong></li>
-<li><strong><a href="analysis-llm-optimization.html">Engineering
-Analysis: LLM Optimization and Pipeline
-Cost-Efficiency</a></strong></li>
-<li><strong><a href="analysis-llm-security.html">Engineering Analysis:
-LLM Security &amp; Resource Protection</a></strong></li>
-<li><strong><a href="analysis-multitenancy.html">Engineering Analysis:
-Multitenancy Migration</a></strong></li>
-<li><strong><a href="analysis-tailscale-https.html">Analysis: Tailscale
-HTTPS Investigation (Tabling)</a></strong>
-<!-- AUTO_GEN_ADR_END --></li>
-</ul>
-<h3 id="resources">Resources</h3>
-<ul>
-<li><strong><a href="walkthrough.html">Codebase
-Walkthrough</a></strong>: A linear, step-by-step guide explaining how
-the ThreadScout codebase works in detail.</li>
-<li><strong><a href="design/index.html">Technical Design
-Specs</a></strong>: Detailed implementation specifications for complex
-features and migrations.</li>
-<li><strong><a href="api.html">API Reference</a></strong>: (Coming Soon)
-Detailed documentation of the FastAPI endpoints.</li>
+<li><strong><a href="style-guide/index.html">Living Style
+Guide</a></strong>: Interactive UI component library (Requires local
+frontend build).</li>
 </ul>
 <hr />
 <p>Return to the <a href="readme.html">Project Root</a>.</p>

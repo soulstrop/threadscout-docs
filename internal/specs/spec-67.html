@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 67</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 67</h1>
+</header>
+<h1 id="spec-67-unified-auth-architecture">SPEC-67: Unified Auth
+Architecture</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Consolidate fragmented authentication logic spread across
+<code>auth.py</code>, <code>auth_strategies.py</code>, and
+<code>security.py</code>. This provides a single, cohesive source of
+truth for identity management, token verification, and password
+hashing.</p>
+<h2 id="traceability">2. Traceability</h2>
+<ul>
+<li><strong>Phase</strong>: Phase 8: Production Readiness (DX).</li>
+<li><strong>Objective</strong>: Lower the barrier to adding new auth
+providers (e.g., Apple, Microsoft) and simplify auth debugging.</li>
+<li><strong>User Journey</strong>: [UJ-00] SaaS Authentication.</li>
+</ul>
+<h2 id="target-files">3. Target Files</h2>
+<ul>
+<li><code>backend/src/threadscout/auth/</code>: (New Package)</li>
+<li><code>backend/src/threadscout/auth/core.py</code>: Token
+verification, hashing (from <code>security.py</code>).</li>
+<li><code>backend/src/threadscout/auth/strategies/</code>: OAuth
+implementations (from <code>auth_strategies.py</code>).</li>
+<li><code>backend/src/threadscout/auth/dependencies.py</code>: FastAPI
+<code>Depends</code> (from <code>auth.py</code>).</li>
+</ul>
+<h2 id="implementation-strategy">4. Implementation Strategy</h2>
+<ol type="1">
+<li><strong>Unify Security</strong>: Move Fernet and hashing utilities
+into a clean <code>auth/crypto.py</code> or
+<code>auth/core.py</code>.</li>
+<li><strong>Strategy Pattern</strong>: Formalize the OAuth strategy
+pattern to make it strictly interface-driven.</li>
+<li><strong>Dependency Cleanup</strong>: Ensure the
+<code>get_current_user</code> logic is consolidated and doesn’t rely on
+global state outside of the <code>Settings</code>.</li>
+</ol>
+</body>
+</html>

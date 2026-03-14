@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 62</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 62</h1>
+</header>
+<h1 id="spec-62-environment-feature-toggles">SPEC-62: Environment
+Feature Toggles</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Replace the fragmented and manual management of multiple
+<code>mise.*.toml</code> profiles with a single,
+environment-variable-driven configuration. This simplifies the
+development “Mental Model” and reduces configuration drift.</p>
+<h2 id="traceability">2. Traceability</h2>
+<ul>
+<li><strong>Phase</strong>: Phase 8: Production Readiness (DX).</li>
+<li><strong>Objective</strong>: Eliminate the manual burden of switching
+between <code>hybrid</code>, <code>live</code>, <code>local</code>, and
+other environment profiles.</li>
+</ul>
+<h2 id="implementation-strategy">3. Implementation Strategy</h2>
+<ol type="1">
+<li><strong>Unified Configuration</strong>: Centralize environment
+variable management in a single <code>mise.local.toml</code> (ignored by
+git).</li>
+<li><strong>Feature Flags</strong>: Use a primary variable like
+<code>THREADSCOUT_MODE</code> (e.g., <code>mock</code>,
+<code>local</code>, <code>production</code>) to toggle behaviors like
+eBay mocks or OAuth providers.</li>
+<li><strong>Cleanup</strong>: Deprecate and remove redundant
+<code>mise.hybrid.toml</code>, <code>mise.tailnet.toml</code>, etc.</li>
+</ol>
+</body>
+</html>

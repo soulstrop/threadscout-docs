@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 72</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 72</h1>
+</header>
+<h1
+id="spec-72-automated-image-processing-c2pa-provenance-pipeline">SPEC-72:
+Automated Image Processing &amp; C2PA Provenance Pipeline</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Design an automated image processing pipeline for ingested product
+photographs. The pipeline will optimize images for cost and speed,
+automatically correct orientation, remove distracting backgrounds, label
+the image, and cryptographically certify every structural change using
+the C2PA standard defined in SPEC-71.</p>
+<p>This spec enables Journey [UJ-01] Item Ingest (Mobile) and [UJ-02] AI
+Extraction.</p>
+<h2 id="background">2. Background</h2>
+<p>Raw photos ingested from mobile devices are often large (leading to
+high LLM token costs and latency), unoriented, and contain cluttered
+backgrounds that degrade the aesthetic of the final eBay draft.
+Furthermore, multiple photos in an item group need to be semantically
+distinguished (e.g., “Front”, “Tag”, “Flaw”) for automated listing
+generation.</p>
+<h2 id="implementation-strategy">3. Implementation Strategy</h2>
+<p>The pipeline will be executed asynchronously when a batch of images
+is uploaded to <code>storage/{user_id}/{item_id}/</code>.</p>
+<h3 id="pipeline-steps">Pipeline Steps</h3>
+<ol type="1">
+<li><strong>Optimization (Resize)</strong>:
+<ul>
+<li>Load raw image using <code>Pillow</code>.</li>
+<li>Downscale the image so its longest edge is at a maximum threshold
+(e.g., 1024px or 1536px), maintaining aspect ratio. This is the optimal
+resolution for Gemini Vision token usage without losing legible
+detail.</li>
+<li><strong>C2PA Action</strong>: <code>c2pa.resized</code></li>
+</ul></li>
+<li><strong>Rotation (Right-Side Up)</strong>:
+<ul>
+<li>First pass: Read EXIF orientation tags and apply correction.</li>
+<li>Second pass (Optional/AI): If no EXIF exists or if the photo is
+still suspected to be sideways (common with overhead flat-lays), use a
+lightweight vision model to predict the correct “up” vector and
+rotate.</li>
+<li><strong>C2PA Action</strong>:
+<code>c2pa.orientation.changed</code></li>
+</ul></li>
+<li><strong>Background Masking &amp; Replacement</strong>:
+<ul>
+<li>Use a dedicated background removal model (e.g., <code>rembg</code>
+with U-Net architecture) or an equivalent LLM/Vision tool to segment the
+primary clothing item.</li>
+<li>Create a composite image where the masked subject is placed onto a
+neutral, solid background (e.g., solid white <code>#FFFFFF</code> or a
+light studio gray).</li>
+<li><strong>C2PA Action</strong>: <code>c2pa.removed.background</code>
+(or <code>c2pa.edited</code>)</li>
+</ul></li>
+<li><strong>Keyword Labeling (AI Tagging)</strong>:
+<ul>
+<li>Pass the <em>processed</em> image to the Gemini Vision model (via
+<code>services/ai.py</code>) to generate contextual labels.</li>
+<li>Prompt the LLM to classify the photo relative to the item group
+(e.g., <code>"front_full"</code>, <code>"back_full"</code>,
+<code>"label_detail"</code>, <code>"fabric_texture"</code>,
+<code>"flaw_stain"</code>).</li>
+<li>These labels will be saved as metadata alongside the image in the
+database.</li>
+</ul></li>
+<li><strong>C2PA Certification</strong>:
+<ul>
+<li>Compile the list of actions performed (<code>c2pa.resized</code>,
+<code>c2pa.orientation.changed</code>,
+<code>c2pa.removed.background</code>).</li>
+<li>Invoke <code>sign_image_with_c2pa()</code> (from SPEC-71) to embed
+the final cryptographic manifest into the optimized <code>.jpg</code> or
+<code>.png</code>.</li>
+</ul></li>
+</ol>
+<h2 id="target-files-modifications">4. Target Files &amp;
+Modifications</h2>
+<h3 id="backend">Backend</h3>
+<ul>
+<li><strong><code>backend/pyproject.toml</code></strong>:
+<ul>
+<li>Add <code>Pillow</code> (if not present) and <code>rembg</code> (or
+equivalent background removal dependency).</li>
+</ul></li>
+<li><strong><code>backend/src/threadscout/services/image_pipeline.py</code></strong>
+(New File):
+<ul>
+<li>The orchestrator for the pipeline steps.</li>
+</ul></li>
+<li><strong><code>backend/src/threadscout/models/item.py</code></strong>
+(Existing):
+<ul>
+<li>Update the database schema to store the generated keyword labels for
+each image asset (e.g., adding a <code>labels: list[str]</code> or
+<code>view_type: str</code> column to the <code>ItemImage</code>
+table).</li>
+</ul></li>
+<li><strong><code>backend/src/threadscout/api/ingest.py</code></strong>
+(Existing):
+<ul>
+<li>Integrate the pipeline into the ingestion endpoint, dispatching the
+work as a background task.</li>
+</ul></li>
+</ul>
+<h2 id="data-models-schemas">5. Data Models &amp; Schemas</h2>
+<h3 id="pipeline-result-model">Pipeline Result Model</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ProcessedImageResult(BaseModel):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    original_path: Path</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    processed_path: Path</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    labels: <span class="bu">list</span>[<span class="bu">str</span>]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    c2pa_signed: <span class="bu">bool</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    actions_applied: <span class="bu">list</span>[<span class="bu">str</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    width: <span class="bu">int</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    height: <span class="bu">int</span></span></code></pre></div>
+<h2 id="function-signatures-backend">6. Function Signatures
+(Backend)</h2>
+<p><strong><code>backend/src/threadscout/services/image_pipeline.py</code></strong>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> threadscout.services.provenance <span class="im">import</span> sign_image_with_c2pa</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> process_ingested_image(image_path: Path, output_dir: Path) <span class="op">-&gt;</span> ProcessedImageResult:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Executes the full image processing pipeline:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">    1. Resizes the image to an optimal dimension.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">    2. Corrects EXIF/AI orientation.</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">    3. Masks the background and replaces it with a neutral color.</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">    4. Gathers C2PA actions and signs the final asset.</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">    5. Calls the AI service to generate keyword labels based on the final asset.</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _resize_image(image: Image.Image, max_dimension: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1536</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Image.Image, <span class="bu">bool</span>]:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Returns the resized image and a boolean indicating if a resize occurred.&quot;&quot;&quot;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _correct_orientation(image: Image.Image) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Image.Image, <span class="bu">bool</span>]:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Returns the rotated image and a boolean indicating if rotation occurred.&quot;&quot;&quot;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _remove_background(image: Image.Image, bg_color: <span class="bu">tuple</span>[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>] <span class="op">=</span> (<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>)) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Image.Image, <span class="bu">bool</span>]:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Returns the background-replaced image and a boolean indicating success.&quot;&quot;&quot;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> _generate_labels(image_path: Path) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Uses Gemini Vision to categorize the photo (e.g., &#39;front_view&#39;, &#39;tag_detail&#39;).&quot;&quot;&quot;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span></code></pre></div>
+<h2 id="error-handling-failsafes">7. Error Handling &amp; Failsafes</h2>
+<ul>
+<li><strong>Non-Destructive Processing</strong>: The original raw
+ingested file must <em>always</em> be preserved in
+<code>storage/{user_id}/{item_id}/raw/</code>. Processed images should
+be saved in an <code>optimized/</code> or <code>processed/</code>
+subdirectory.</li>
+<li><strong>Background Removal Failure</strong>: If <code>rembg</code>
+or the AI masking tool fails or times out, the pipeline should
+gracefully fall back to the original (resized) background, logging the
+failure, and omitting the <code>c2pa.removed.background</code>
+action.</li>
+<li><strong>AI Rate Limits</strong>: If the keyword labeling call hits
+LLM rate limits, the image should still be saved and signed. The system
+should mark the image’s labels as <code>["pending"]</code> for a retry
+queue or default to <code>["unclassified"]</code>.</li>
+<li><strong>Async Processing</strong>: Given the CPU-intensive nature of
+background removal and the latency of LLM calls, this pipeline must be
+run asynchronously (e.g., via FastAPI <code>BackgroundTasks</code> or a
+dedicated queue like Celery/RQ in the future) to avoid blocking the
+client upload.</li>
+</ul>
+</body>
+</html>

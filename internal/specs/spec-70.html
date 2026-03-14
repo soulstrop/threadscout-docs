@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 70</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 70</h1>
+</header>
+<h1 id="spec-70-programmatic-session-injection-for-e2e-tests">SPEC-70:
+Programmatic Session Injection for E2E Tests</h1>
+<h2 id="objective">Objective</h2>
+<p>Implement a secure, headless authentication bypass mechanism for
+Playwright to allow end-to-end (E2E) tests to authenticate in hardened
+environments (e.g., <code>hybrid</code>, <code>production</code>) where
+the “Developer Login (Mock)” UI is intentionally disabled.</p>
+<h2 id="background">Background</h2>
+<p>Currently, Playwright relies on clicking the “Developer Login (Mock)”
+button in the UI. In hardened environments, this button is removed to
+prevent security risks. Consequently, E2E tests fail during the
+<code>auth.setup.ts</code> phase. To test the fully authenticated
+application behind a reverse proxy (e.g., <code>hybrid</code> profile),
+Playwright needs a reliable way to inject a valid NextAuth session.</p>
+<h2 id="requirements">Requirements</h2>
+<ol type="1">
+<li><strong>Test-Only Authentication Endpoint:</strong>
+<ul>
+<li>Create a specialized Next.js API route (e.g.,
+<code>app/api/auth/e2e-inject/route.ts</code>).</li>
+<li>This endpoint must <strong>ONLY</strong> allow access if a specific,
+highly secure secret (e.g., <code>THREADSCOUT_BYPASS_BETA_TOKEN</code>
+or a dedicated <code>E2E_INJECTION_SECRET</code>) is provided in the
+Authorization header.</li>
+<li>The endpoint should generate a valid NextAuth session token (JWT)
+for a mock user.</li>
+</ul></li>
+<li><strong>Playwright Context Integration:</strong>
+<ul>
+<li>Update <code>frontend/tests/auth.setup.ts</code>.</li>
+<li>Instead of visiting <code>/login</code> and clicking the mock
+button, Playwright should make a server-to-server HTTP POST request to
+the injection endpoint.</li>
+<li>Extract the <code>next-auth.session-token</code> (or
+<code>__Secure-next-auth.session-token</code>) cookie from the
+response.</li>
+<li>Inject this cookie directly into the Playwright browser context
+using <code>page.context().addCookies([...])</code>.</li>
+</ul></li>
+<li><strong>Security Measures:</strong>
+<ul>
+<li>Ensure the injection endpoint explicitly checks
+<code>process.env.NODE_ENV !== 'production'</code> OR strictly validates
+the shared secret to prevent malicious session generation in real
+production deployments.</li>
+<li>Preferably, disable the route entirely in true production builds if
+possible, relying purely on the secret for hybrid/staging checks.</li>
+</ul></li>
+</ol>
+<h2 id="implementation-steps">Implementation Steps</h2>
+<ol type="1">
+<li><strong>Backend/Next.js Auth Route:</strong>
+<ul>
+<li>Analyze the current NextAuth configuration to understand how the JWT
+is encoded (usually using the <code>NEXTAUTH_SECRET</code>).</li>
+<li>Write a utility function or API route that signs a mock user payload
+using the same NextAuth JWT logic.</li>
+</ul></li>
+<li><strong>Playwright Refactor:</strong>
+<ul>
+<li>Refactor <code>auth.setup.ts</code> to implement the new fetch -&gt;
+inject cookie -&gt; navigate sequence.</li>
+<li>Ensure <code>auth.setup.ts</code> falls back to the new method
+transparently across <code>dev</code> and <code>hybrid</code>
+profiles.</li>
+</ul></li>
+<li><strong>Validation:</strong>
+<ul>
+<li>Run <code>FNOX_PROFILE=dev mise run check:e2e</code> to verify
+standard operation.</li>
+<li>Run <code>FNOX_PROFILE=hybrid mise run check:e2e</code> to verify
+tests pass without the UI mock button.</li>
+</ul></li>
+</ol>
+<h2 id="success-criteria">Success Criteria</h2>
+<p>The Playwright E2E suite successfully logs in and runs all
+authenticated workflow tests in the <code>hybrid</code> profile without
+relying on any visible mock provider buttons on the login page.</p>
+</body>
+</html>

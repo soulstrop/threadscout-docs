@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 74</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 74</h1>
+</header>
+<h1 id="spec-74-unified-smoke-test-profile-verification">SPEC-74:
+Unified Smoke Test &amp; Profile Verification</h1>
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>This specification establishes a “fail-fast” smoke test suite
+(<code>check:smoke</code>) for ThreadScout. It verifies that the active
+profile (<code>mocking</code>, <code>local</code>, <code>hybrid</code>,
+or <code>live</code>) is correctly provisioned, connected to its
+required sidecars/external services, and adheres to its specific
+security and architectural constraints.</p>
+<h2 id="profile-architectural-layouts">2. Profile Architectural
+Layouts</h2>
+<h3 id="mocking-profile">2.1. <code>mocking</code> Profile</h3>
+<p><strong>Intent</strong>: Fast, offline-first UI/UX development with
+predictable data.</p>
+<ul>
+<li><strong>Workstation (Host)</strong>: Frontend (Next.js), Backend
+(FastAPI with <code>mock_ebay=True</code>), SQLite (Mocked
+dataset).</li>
+<li><strong>Sidecars (Docker)</strong>: None required.</li>
+<li><strong>External/Edge</strong>:
+<ul>
+<li>GitHub Pages: Serves static assets/documentation.</li>
+<li>Cloudflare Worker: Simulated routing/maintenance segment.</li>
+</ul></li>
+<li><strong>OAuth Flow</strong>: Mocked logic within the application;
+stubs satisfied locally.</li>
+</ul>
+<h3 id="local-profile">2.2. <code>local</code> Profile</h3>
+<p><strong>Intent</strong>: Full-stack integration testing on the local
+workstation.</p>
+<ul>
+<li><strong>Workstation (Host)</strong>: Frontend, Backend, SQLite
+(Development DB).</li>
+<li><strong>Sidecars (Docker/Process)</strong>: PocketID (OIDC
+Provider), Caddy (Reverse Proxy for Local HTTPS on :3443).</li>
+<li><strong>External/Edge</strong>:
+<ul>
+<li>GitHub Pages: Serves static assets/documentation.</li>
+<li>Cloudflare Worker: Simulated routing/maintenance segment.</li>
+</ul></li>
+<li><strong>OAuth Flow</strong>: Local PocketID instance satisfying OIDC
+requirements.</li>
+</ul>
+<h3 id="hybrid-profile">2.3. <code>hybrid</code> Profile</h3>
+<p><strong>Intent</strong>: Local development with public visibility for
+external webhook/callback verification.</p>
+<ul>
+<li><strong>Workstation (Host)</strong>: Frontend, Backend, SQLite,
+PocketID, Caddy.</li>
+<li><strong>Sidecars (Process)</strong>: Cloudflared (Inbound
+Tunnel).</li>
+<li><strong>External/Edge</strong>:
+<ul>
+<li>Cloudflare Tunnel: Routes public traffic to the workstation.</li>
+<li>eBay API: Connected to Sandbox or Production environments.</li>
+<li>Google/Apple OAuth: Live OIDC providers.</li>
+</ul></li>
+<li><strong>OAuth Flow</strong>: Live/Sandbox credentials issued to the
+local application via public URLs.</li>
+</ul>
+<h3 id="live-profile">2.4. <code>live</code> Profile</h3>
+<p><strong>Intent</strong>: Production-parity security and performance
+verification.</p>
+<ul>
+<li><strong>Workstation (Host)</strong>: Hardened Frontend/Backend,
+SQLite (Encrypted at-rest), PocketID, Caddy (Strict SSL/TLS).</li>
+<li><strong>Sidecars (Process)</strong>: Cloudflared (Strict
+Tunnel).</li>
+<li><strong>External/Edge</strong>:
+<ul>
+<li>Same as Hybrid, but with strict production credentials and
+locked-down endpoints.</li>
+</ul></li>
+<li><strong>Security Constraint</strong>: <code>debug=False</code>,
+non-default <code>secret_key</code>, and strict JWT verification.</li>
+</ul>
+<h3 id="edge-routing-logic-the-appropriate-flow">2.5. Edge Routing Logic
+(The “Appropriate” Flow)</h3>
+<p>The “Outside World” perspective (Edge) must route traffic based on
+path and session state:</p>
+<ul>
+<li><strong>Root (<code>/</code>)</strong>:
+<ul>
+<li>Logged In -&gt; Workstation (App).</li>
+<li>Logged Out -&gt; Static Asset Host (GitHub Pages: Landing
+Page).</li>
+</ul></li>
+<li><strong>Documentation (<code>/docs/*</code>)</strong>:
+<ul>
+<li>Always -&gt; Static Asset Host (GitHub Pages).</li>
+</ul></li>
+<li><strong>Compliance (<code>/privacy</code>,
+<code>/about</code>)</strong>:
+<ul>
+<li>Always -&gt; Static Asset Host (GitHub Pages).</li>
+</ul></li>
+<li><strong>API/Auth (<code>/api/*</code>, <code>/login</code>,
+<code>/_next</code>)</strong>:
+<ul>
+<li>Always -&gt; Workstation (App).</li>
+</ul></li>
+</ul>
+<h2 id="implementation-requirements">3. Implementation Requirements</h2>
+<h3 id="command-orchestration">3.1. Command Orchestration</h3>
+<ul>
+<li><strong>Task</strong>: <code>check:smoke</code> in root
+<code>mise.toml</code>.</li>
+<li><strong>Script</strong>: <code>scripts/smoke-test.sh</code>
+(Bash).</li>
+<li><strong>Dependencies</strong>: The script should be runnable
+independently or via <code>mise</code>.</li>
+</ul>
+<h3 id="verification-logic-the-smoke-checks">3.2. Verification Logic
+(The “Smoke” Checks)</h3>
+<p>The implementation must verify the following layers based on the
+active <code>FNOX_PROFILE</code>:</p>
+<h4 id="a.-environment-handshake">A. Environment Handshake</h4>
+<ul>
+<li>Verify <code>THREADSCOUT_APP_ENV</code> matches the intended
+profile.</li>
+<li>Verify <code>THREADSCOUT_INGRESS_MODE</code> (DIRECT vs PROXY vs
+TUNNEL) is consistent with the profile definition.</li>
+</ul>
+<h4 id="b.-service-connectivity-internal">B. Service Connectivity
+(Internal)</h4>
+<ul>
+<li><strong>Backend</strong>: GET <code>/api/health</code> returns 200
+OK and valid JSON with <code>database: ok</code>.</li>
+<li><strong>Frontend</strong>: GET <code>/api/health-check</code>
+returns 200 OK and valid JSON.</li>
+</ul>
+<h4 id="c.-edge-routing-verification-the-outside-world-perspective">C.
+Edge Routing Verification (The “Outside World” Perspective)</h4>
+<p>Verify the routing logic through the active “Edge” entry point
+(Wrangler, Caddy, or App):</p>
+<ul>
+<li><strong>Root Path (<code>/</code>)</strong>:
+<ul>
+<li>In <code>live</code>/<code>hybrid</code>, ensure it returns the
+“Appropriate” content (Landing Page if unauthenticated).</li>
+<li>In <code>mocking</code>, ensure it returns the App/Dashboard (as it
+is DIRECT).</li>
+</ul></li>
+<li><strong>Documentation Path (<code>/docs/</code>)</strong>:
+<ul>
+<li>Verify it returns “ThreadScout Documentation” from the intended
+source.</li>
+<li>Differentiate between local <code>docs/gen</code> (Caddy) and remote
+GitHub Pages (Worker).</li>
+</ul></li>
+</ul>
+<h4 id="d.-identity-oauth">D. Identity &amp; OAuth</h4>
+<ul>
+<li><strong>OIDC Provider</strong>: Verify the
+<code>.well-known/openid-configuration</code> endpoint is
+responsive.</li>
+<li><strong>Auth Mode</strong>: Ensure
+<code>THREADSCOUT_ENABLE_AUTH</code> is correctly set.</li>
+</ul>
+<h4 id="e.-production-hardening-live-profile-only">E. Production
+Hardening (Live Profile Only)</h4>
+<ul>
+<li>Fail if <code>THREADSCOUT_DEBUG</code> is <code>true</code>.</li>
+<li>Fail if <code>THREADSCOUT_SECRET_KEY</code> is a development/mock
+string.</li>
+<li>Fail if <code>THREADSCOUT_ENCRYPTION_KEY</code> is missing.</li>
+<li>Verify <code>THREADSCOUT_ENABLE_AUTH</code> is
+<code>true</code>.</li>
+</ul>
+<h4 id="f.-edge-segment-consistency">F. Edge Segment Consistency</h4>
+<ul>
+<li>Verify reachability of <code>threadscout.constans.dev</code> (if
+configured).</li>
+<li>Verify that the hostname maps to <code>127.0.0.1</code> locally to
+prevent production leak.</li>
+</ul>
+<h2 id="acceptance-criteria">4. Acceptance Criteria</h2>
+<ul class="task-list">
+<li><label><input type="checkbox"
+checked="" /><code>mise run check:smoke</code> passes for all four
+profiles when correctly provisioned.</label></li>
+<li><label><input type="checkbox" checked="" />The script provides
+clear, color-coded output (🟢/🔴) for each check.</label></li>
+<li><label><input type="checkbox" checked="" />The script fails-fast
+with a non-zero exit code on any critical error.</label></li>
+<li><label><input type="checkbox" checked="" />No “Direct” use of
+secrets; all environment data must be sourced via the established
+<code>mise</code>/<code>fnox</code> hierarchy.</label></li>
+</ul>
+</body>
+</html>

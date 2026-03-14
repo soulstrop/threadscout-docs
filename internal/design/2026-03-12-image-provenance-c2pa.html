@@ -108,20 +108,33 @@ stored in a parallel <code>/processed/</code> directory. The C2PA
 manifest embedded in the processed image explicitly references the
 original raw image as an “ingredient,” creating a verifiable audit trail
 back to the untouched original.</p>
-<h3 id="strict-no-in-filling-policy-for-subjects">3.3 Strict “No
-In-Filling” Policy for Subjects</h3>
-<p>While ThreadScout aggressively manipulates backgrounds, we impose a
-strict architectural boundary on the <em>subject</em> (the clothing item
-itself).</p>
-<p><strong>Decision:</strong> We do not use generative AI to in-fill,
-upscale, or “heal” the pixels of the actual garment.</p>
+<h3 id="strict-no-in-filling-policy-for-subjects-with-one-exception">3.3
+Strict “No In-Filling” Policy for Subjects (With One Exception)</h3>
+<p>While ThreadScout aggressively manipulates backgrounds for the
+primary gallery images, we impose a strict architectural boundary on the
+<em>subject</em> (the clothing item itself).</p>
+<p><strong>Decision:</strong> For standard gallery photos, we do not use
+generative AI to in-fill, upscale, or “heal” the pixels of the actual
+garment.</p>
 <ul>
 <li>Background removal uses deterministic masking (e.g., U-Net
 segmentation).</li>
 <li>Any AI used on the image is purely analytical (Gemini Vision
-extracting data, categorizing the view as “Front” or “Tag”) rather than
-generative (altering the pixels).</li>
+extracting data) rather than generative.</li>
 </ul>
+<p><strong>The “Hero Image” Exception:</strong> To maximize marketplace
+CTR, ThreadScout generates one purely synthetic “Hero” image per item
+(visualizing the garment on a translucent or stylistic mannequin via
+Nano Banana). This specific image <em>does</em> involve generative AI
+altering the presentation of the garment. However:</p>
+<ol type="1">
+<li>It is used strictly as the primary search-index image (the cover of
+the book).</li>
+<li>It is explicitly watermarked/declared as an AI visualization in the
+metadata and description.</li>
+<li>The remaining gallery images adhere strictly to the “No In-Filling”
+rule.</li>
+</ol>
 <hr />
 <h2 id="the-processing-pipeline-flow">4. The Processing Pipeline
 Flow</h2>
@@ -140,16 +153,23 @@ image (to optimize LLM token costs) and corrects rotation.
 <code>c2pa.orientation.changed</code></li>
 </ul></li>
 <li><strong>Mask Background:</strong> A specialized model segments the
-garment and replaces the background with a neutral solid color.
+garment and replaces the background with a neutral solid/black color.
 <ul>
 <li><em>Action appended:</em> <code>c2pa.removed.background</code></li>
 </ul></li>
+<li><strong>Hero Generation (Branch):</strong> One optimized image is
+routed to a Generative Model to synthesize the “worn on mannequin” Hero
+shot.
+<ul>
+<li><em>Action appended (Hero Only):</em>
+<code>c2pa.created.generative.ai</code></li>
+</ul></li>
 <li><strong>Sign &amp; Embed:</strong> The <code>c2pa-python</code>
 service compiles these actions, signs them using ThreadScout’s X.509
-certificate, and embeds the manifest into the final
-<code>.jpg</code>.</li>
-<li><strong>Analyze (Read-Only):</strong> The signed, optimized image is
-then sent to Gemini Vision to extract the item’s brand, size, and
+certificate, and embeds the manifests into the final <code>.jpg</code>
+assets.</li>
+<li><strong>Analyze (Read-Only):</strong> The signed, optimized images
+are sent to Gemini Vision to extract the item’s brand, size, and
 condition.</li>
 </ol>
 <hr />

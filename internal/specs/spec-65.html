@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 65</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 65</h1>
+</header>
+<h1 id="spec-65-configuration-telemetry-separation">SPEC-65:
+Configuration &amp; Telemetry Separation</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Decouple the static application settings from the dynamic telemetry,
+logging, and PII-redaction logic. This refactoring restores
+<code>config.py</code> to a clean Pydantic Settings manifest and
+centralizes observability logic in a dedicated package.</p>
+<h2 id="traceability">2. Traceability</h2>
+<ul>
+<li><strong>Phase</strong>: Phase 8: Production Readiness (DX).</li>
+<li><strong>Objective</strong>: Reduce cognitive load by separating
+“What is configured” (Settings) from “How we observe” (Telemetry).</li>
+<li><strong>User Journey</strong>: [UJ-08] Operations &amp; Incident
+Triage (by clarifying log-scrubbing boundaries).</li>
+</ul>
+<h2 id="target-files">3. Target Files</h2>
+<ul>
+<li><code>backend/src/threadscout/config.py</code>: Remove logging and
+redaction logic; keep only <code>Settings</code> and
+<code>IngressMode</code>.</li>
+<li><code>backend/src/threadscout/telemetry/logging.py</code>: (New)
+Host for <code>redact_pii_processor</code> and <code>structlog</code>
+configuration.</li>
+<li><code>backend/src/threadscout/telemetry/sentry.py</code>: (New) Host
+for Sentry initialization and scrubbing callbacks.</li>
+</ul>
+<h2 id="implementation-strategy">4. Implementation Strategy</h2>
+<ol type="1">
+<li><strong>Extract Redaction</strong>: Move
+<code>redact_pii_processor</code> and its associated regex/whitelists to
+<code>telemetry/logging.py</code>.</li>
+<li><strong>Centralize Logging Configuration</strong>: Create a
+<code>setup_logging(settings: Settings)</code> function in the new
+package.</li>
+<li><strong>Update Main</strong>: Import and call the new telemetry
+setup in the application bootstrap phase.</li>
+</ol>
+<h2 id="error-handling">5. Error Handling</h2>
+<ul>
+<li>Ensure that if telemetry setup fails (e.g., invalid Sentry DSN), the
+application still boots with basic <code>logging.basicConfig</code> to
+ensure errors are captured.</li>
+</ul>
+</body>
+</html>

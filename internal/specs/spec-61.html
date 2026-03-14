@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spec 61</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../custom.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Spec 61</h1>
+</header>
+<h1 id="spec-61-unified-root-orchestration">SPEC-61: Unified Root
+Orchestration</h1>
+<h2 id="goal">1. Goal</h2>
+<p>Consolidate all core backend, frontend, and infrastructure tasks into
+a single root-level <code>mise.toml</code>. This allows developers to
+manage the entire application stack from the project root using unified
+commands.</p>
+<h2 id="traceability">2. Traceability</h2>
+<ul>
+<li><strong>Phase</strong>: Phase 8: Production Readiness (DX).</li>
+<li><strong>Objective</strong>: Simplify onboarding and CI/CD by
+providing a single point of entry for all project operations.</li>
+</ul>
+<h2 id="implementation-strategy">3. Implementation Strategy</h2>
+<ol type="1">
+<li><strong>Orchestration Tasks</strong>: Move <code>dev</code>,
+<code>test</code>, <code>lint</code>, and <code>build</code> tasks to
+the root <code>mise.toml</code>.</li>
+<li><strong>Parallel Execution</strong>: Leverage <code>mise</code> task
+dependencies or <code>concurrently</code> (if needed) to start both
+backend and frontend services with one command
+(<code>mise run dev</code>).</li>
+<li><strong>Path Normalization</strong>: Ensure all root-level tasks
+correctly reference the <code>backend/</code> and <code>frontend/</code>
+subdirectories.</li>
+</ol>
+</body>
+</html>
