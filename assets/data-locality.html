@@ -5,20 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThreadScout Data Locality</title>
   <style>
-    /* Reset and fill viewport */
+    /* Absolute reset to fill the iframe viewport exactly */
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     svg {
-      display: block;
       width: 100%;
       height: 100%;
+      max-width: 100%;
+      max-height: 100%;
     }
 
     .subgraph { opacity: 0; animation: fadeIn 0.5s ease forwards; }
