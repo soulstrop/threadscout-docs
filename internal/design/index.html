@@ -36,6 +36,31 @@ high-level ADRs or engineering analyses, these documents provide the
 granular “Blueprints” (JSON schemas, sequence diagrams, function
 signatures) used during the active development phase.</p>
 <h2 id="section">2026</h2>
+<h3 id="q1-march">Q1 (March)</h3>
+<ul>
+<li><strong><a
+href="2026-03-12-data-movement-and-cost-shifting.html">2026-03-12: Data
+Movement &amp; Cost Shifting</a></strong>: Strategy for minimizing
+egress costs and optimizing data locality between local storage and
+R2.</li>
+<li><strong><a href="2026-03-12-image-provenance-c2pa.html">2026-03-12:
+Image Provenance &amp; C2PA</a></strong>: Implementation of C2PA/CAI
+standards for AI-generated and AI-enhanced product photography.</li>
+<li><strong><a
+href="2026-03-05-launch-contexts-visualized.html">2026-03-05: Launch
+Contexts Visualized</a></strong>: Design for the visual “Launch Control”
+UI, explaining how different environment profiles are orchestrated.</li>
+<li><strong><a
+href="2026-03-01-incident-reporting-triage.html">2026-03-01: Incident
+Reporting &amp; Triage System (Ops Pulse)</a></strong>: Full-stack
+design for capturing user feedback and debugging system-wide bugs with
+high-fidelity context.</li>
+<li><strong><a href="2026-03-01-multi-provider-auth.html">2026-03-01:
+Multi-Provider Authentication (Google &amp; eBay OIDC)</a></strong>:
+Implementation plan for a Multi-Issuer Identity Broker supporting Google
+and eBay login.</li>
+</ul>
+<h3 id="q1-february">Q1 (February)</h3>
 <ul>
 <li><strong><a
 href="2026-02-28-hybrid-deployment-unified-routing.html">2026-02-28:
@@ -47,15 +72,18 @@ href="2026-02-28-telemetry-monitoring-observability.html">2026-02-28:
 Telemetry &amp; Monitoring (The Operations Pulse)</a></strong>:
 Implementation spec for Prometheus, Grafana, and Sentry integration
 across the full stack.</li>
-<li><strong><a
-href="2026-03-01-incident-reporting-triage.html">2026-03-01: Incident
-Reporting &amp; Triage System (Ops Pulse)</a></strong>: Full-stack
-design for capturing user feedback and debugging system-wide bugs with
-high-fidelity context.</li>
-<li><strong><a href="2026-03-01-multi-provider-auth.html">2026-03-01:
-Multi-Provider Authentication (Google &amp; eBay OIDC)</a></strong>:
-Implementation plan for a Multi-Issuer Identity Broker supporting Google
-and eBay login.</li>
 </ul>
+<h2 id="core-architectural-designs">Core Architectural Designs</h2>
+<ul>
+<li><strong><a href="account-recovery-identity-migration.html">Account
+Recovery &amp; Identity Migration</a></strong>: Procedures for handling
+lost Passkeys and migrating users between OIDC providers.</li>
+<li><strong><a href="e2e-authentication-hardened-environments.html">E2E
+Authentication in Hardened Environments</a></strong>: Strategy for
+running automated Playwright tests through strict OIDC and Cloudflare
+Tunnel barriers.</li>
+</ul>
+<hr />
+<p><a href="../index.html">Return to Documentation Index</a></p>
 </body>
 </html>

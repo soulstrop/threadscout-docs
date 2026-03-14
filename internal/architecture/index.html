@@ -304,89 +304,87 @@ Architecture</a>.</li>
 <hr />
 <h2 id="design-specifications">Design Specifications</h2>
 <p>For granular implementation details, technical blueprints, and
-operational specs, see the <strong><a href="../design/index.html">Design
-Directory</a></strong>.</p>
+operational specs, please refer to the central <strong><a
+href="../design/index.html">Design Directory</a></strong>.</p>
+<p>Key Active Designs include:</p>
 <ul>
-<li><a
-href="../design/2026-02-28-hybrid-deployment-unified-routing.html">Hybrid
-Deployment &amp; Unified Routing</a>: Spec for dual-ingress routing via
-Cloudflare Workers.</li>
-<li><a
-href="../design/2026-02-28-telemetry-monitoring-observability.html">Telemetry
-&amp; Monitoring</a>: Implementation blueprint for full-stack
-observability.</li>
-<li><a
-href="../design/2026-03-01-incident-reporting-triage.html">Incident
-Reporting &amp; Triage System</a>: Full-stack design for capturing user
-feedback and debugging system-wide bugs.</li>
-<li><a
+<li><strong><a
+href="../design/2026-03-12-data-movement-and-cost-shifting.html">Data
+Movement &amp; Cost Shifting</a></strong>: Optimizing data locality and
+egress costs.</li>
+<li><strong><a
+href="../design/2026-03-12-image-provenance-c2pa.html">Image Provenance
+&amp; C2PA</a></strong>: Implementing industry standards for AI content
+authenticity.</li>
+<li><strong><a
+href="../design/2026-03-05-launch-contexts-visualized.html">Launch
+Contexts Visualized</a></strong>: User-facing orchestration
+visualization.</li>
+<li><strong><a
 href="../design/2026-03-01-multi-provider-auth.html">Multi-Provider
-Authentication</a>: Implementation plan for a Multi-Issuer Identity
-Broker.</li>
-</ul>
-<hr />
-<h2 id="incident-triage-monitoring">Incident Triage &amp;
-Monitoring</h2>
-<p>ThreadScout incorporates a self-contained <strong>Ops Pulse</strong>
-system for managing the application’s health and user feedback.</p>
-<ul>
-<li><strong>Incident Capture</strong>: Users can report bugs,
-performance issues, or accuracy concerns via a sidebar modal.</li>
-<li><strong>High-Fidelity Context</strong>: Every incident report is
-automatically linked to the current <strong>Debug Snapshot</strong>,
-capturing the full state of the frontend and AI context at the time of
-the report.</li>
-<li><strong>Deep Health Checks</strong>: The system performs tiered
-health monitoring (Liveness, Readiness, and Deep). The <strong>Deep
-Health Check</strong> (<code>/api/health</code>) verifies connectivity
-to downstream dependencies like Gemini, SQLite, and the OIDC Identity
-Provider (PocketID).</li>
-<li><strong>Sentry Integration</strong>: All unhandled exceptions and
-performance bottlenecks are traced via <strong>Sentry</strong>, with
-events linked back to the user’s Incident report when applicable.</li>
-<li><strong>Metrics</strong>: A <strong>Prometheus</strong> endpoint
-(<code>/api/metrics</code>) provides granular telemetry on AI token
-usage, storage growth, and eBay draft success rates.</li>
-</ul>
-<hr />
-<h2 id="environment-execution-matrix">Environment &amp; Execution
-Matrix</h2>
-<p>The application’s behavior is determined by its <strong>Identity
-Posture</strong> and <strong>Dependency Mode</strong>.</p>
-<ul>
-<li><strong><code>mocking</code></strong>: Uses
-<code>MockEBayService</code> and <code>MockVertexService</code> (No
-network egress).</li>
-<li><strong><code>development</code></strong>: Real APIs, verbose
-logging.</li>
-<li><strong><code>production</code></strong>: Real APIs, hardened
-security, structured logging.</li>
+Authentication</a></strong>: Support for Google, eBay, and Apple
+OIDC.</li>
+<li><strong><a
+href="../design/2026-02-28-hybrid-deployment-unified-routing.html">Hybrid
+Deployment &amp; Unified Routing</a></strong>: Edge routing via
+Cloudflare Workers.</li>
 </ul>
 <hr />
 <h2 id="decision-records-analyses">Decision Records &amp; Analyses</h2>
-<!-- AUTO_GEN_ADR_START -->
+<p>ThreadScout maintains a rigorous record of architectural decisions
+and engineering trade-offs.</p>
+<h3 id="architecture-decision-records-adrs">Architecture Decision
+Records (ADRs)</h3>
+<p>Historical records of why specific technologies or patterns were
+chosen. See the full <strong><a href="../adr/index.html">ADR
+Index</a></strong>.</p>
 <ul>
-<li><strong><a href="../adr/index.html">Architecture Decision Records
-(ADRs)</a></strong>: Historical records of why specific technologies or
-patterns were chosen.</li>
-<li><strong><a href="analysis-ai-image-enhancement.html">Engineering
-Analysis: AI-Assisted Image Enhancement</a></strong></li>
-<li><strong><a href="analysis-byom.html">Engineering Analysis: Bring
-Your Own Model (BYOM)</a></strong></li>
-<li><strong><a href="analysis-image-captions.html">Feature Analysis:
-AI-Generated Image Captions</a></strong></li>
-<li><strong><a href="analysis-kubernetes-readiness.html">Engineering
-Analysis: Kubernetes &amp; Observability Readiness</a></strong></li>
-<li><strong><a href="analysis-llm-optimization.html">Engineering
-Analysis: LLM Optimization and Pipeline
-Cost-Efficiency</a></strong></li>
-<li><strong><a href="analysis-llm-security.html">Engineering Analysis:
-LLM Security &amp; Resource Protection</a></strong></li>
-<li><strong><a href="analysis-multitenancy.html">Engineering Analysis:
-Multitenancy Migration</a></strong></li>
-<li><strong><a href="analysis-tailscale-https.html">Analysis: Tailscale
-HTTPS Investigation (Tabling)</a></strong>
-<!-- AUTO_GEN_ADR_END --></li>
+<li><strong><a
+href="../adr/0001-enrichment-workflow-paste-and-scrape.html">0001:
+Enrichment Workflow (Paste &amp; Scrape)</a></strong></li>
+<li><strong><a href="../adr/0003-pluggable-ingest-backends.html">0003:
+Pluggable Ingest Backends</a></strong></li>
+<li><strong><a
+href="../adr/0005-secure-authentication-and-environment-strategy.html">0005:
+Secure Authentication Strategy</a></strong></li>
+<li><strong><a href="../adr/0009-hybrid-hosting-strategy.html">0009:
+Hybrid Hosting Strategy</a></strong></li>
+<li><strong><a
+href="../adr/0010-subpath-proxy-routing-cloudflare-workers.html">0010:
+Subpath Proxy Routing</a></strong></li>
+</ul>
+<h3 id="engineering-analyses">Engineering Analyses</h3>
+<p>Deep-dive investigations into infrastructure, scale, and
+cross-cutting concerns.</p>
+<ul>
+<li><strong><a href="analysis-ai-image-enhancement.html">AI-Assisted
+Image Enhancement</a></strong>: Investigation into upscaling and
+denoising.</li>
+<li><strong><a href="analysis-byom.html">Bring Your Own Model
+(BYOM)</a></strong>: Architectural path for multi-model LLM
+support.</li>
+<li><strong><a href="analysis-llm-optimization.html">LLM Optimization
+&amp; Cost-Efficiency</a></strong>: Token usage and latency reduction
+strategies.</li>
+<li><strong><a href="analysis-llm-security.html">LLM Security &amp;
+Resource Protection</a></strong>: Guardrails against prompt
+injection.</li>
+<li><strong><a href="analysis-multitenancy.html">Multitenancy
+Migration</a></strong>: Shifting from single-user SQLite to global
+SaaS.</li>
+<li><strong><a href="analysis-kubernetes-readiness.html">Kubernetes
+&amp; Observability Readiness</a></strong>: Path to cloud-native
+operations.</li>
+<li><strong><a href="analysis-tailscale-https.html">Tailscale HTTPS
+Investigation</a></strong>: Evaluation of private mesh networking.</li>
+</ul>
+<h3 id="feature-analyses">Feature Analyses</h3>
+<p>Detailed breakdown of specific user-facing capabilities and their
+technical impact.</p>
+<ul>
+<li><strong><a href="analysis-image-captions.html">AI-Generated Image
+Captions</a></strong>: Automating photo classification for eBay
+SEO.</li>
 </ul>
 </body>
 </html>
