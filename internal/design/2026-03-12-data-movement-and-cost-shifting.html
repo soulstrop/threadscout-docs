@@ -94,57 +94,59 @@ style="width: 100%; height: 900px; margin: 20px 0; border: 1px solid #e2e8f0; bo
 <p><iframe src="../assets/data-locality.html" width="100%" height="100%" frameborder="0"></iframe></p>
 </div>
 <!--
-```mermaid
-flowchart TD
-    subgraph UserEdge [User Device - Edge Network / User Cost]
-        Camera[Raw Photos 📸]
-        MobileApp[Mobile Client]
-        LocalGallery[(Local Gallery Storage)]
-    end
-
-    subgraph TSCore [ThreadScout Backend - Local Compute / Fixed Cost]
-        IngestAPI[Ingest API]
-        RawStorage[(Ephemeral Raw Storage)]
-        ImageProc["Local Image Processor<br/>(Resize, Mask, Sign)"]
-        OptStorage[(Ephemeral Optimized Storage)]
-        MetadataDB[(Postgres Metadata DB)]
-    end
-
-    subgraph ThirdParty [Third Party Clouds - Metered Egress]
-        Gemini[Gemini Vision API]
-        NanoBanana[Nano Banana API]
-        EBay[eBay API]
-    end
-
-    %% Phase 1: Ingest (User Cost)
-    Camera -->
-<p>|“(1) 20MB Raw”| MobileApp MobileApp –&gt;|“(2) 20MB Raw Upload”|
-IngestAPI MobileApp –&gt;|“(11) Save Local”| LocalGallery IngestAPI
-–&gt;|“(3) Store”| RawStorage</p>
-<pre><code>%% Phase 2: Local Processing (Zero Network Cost)
-RawStorage -.-&gt;|&quot;(4) Local I/O&quot;| ImageProc
-ImageProc -.-&gt;|&quot;(5) Local I/O&quot;| OptStorage
-ImageProc --&gt;|&quot;(8) Extracted Labels&quot;| MetadataDB
-
-%% Phase 3: AI (Optimized TS Cost)
-ImageProc --&gt;|&quot;(6) 1.5MB Resized&quot;| Gemini
-Gemini --&gt;|&quot;(6.1) 5KB JSON&quot;| MetadataDB
-ImageProc --&gt;|&quot;(7) 300KB Masked&quot;| NanoBanana
-NanoBanana --&gt;|&quot;(7.1) 800KB Hero&quot;| OptStorage
-
-%% Phase 4: Publish (Cost Shifted back to User)
-OptStorage --&gt;|&quot;(9) 3MB Processed D/L&quot;| MobileApp
-MobileApp --&gt;|&quot;(12) Save Enhanced&quot;| LocalGallery
-MobileApp --&gt;|&quot;(10) 3MB Upload to EPS&quot;| EBay
-
-classDef edge fill:#e1f5fe,stroke:#333,stroke-width:2px;
-classDef core fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-classDef cloud fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-
-class UserEdge edge;
-class TSCore core;
-class ThirdParty cloud;</code></pre>
-<p>``` –&gt;</p>
+<!-- ```mermaid
+ !-- flowchart TD
+ !--     subgraph UserEdge [User Device - Edge Network / User Cost]
+ !--         Camera[Raw Photos 📸]
+ !--         MobileApp[Mobile Client]
+ !--         LocalGallery[(Local Gallery Storage)]
+ !--     end
+ !-- 
+ !--     subgraph TSCore [ThreadScout Backend - Local Compute / Fixed Cost]
+ !--         IngestAPI[Ingest API]
+ !--         RawStorage[(Ephemeral Raw Storage)]
+ !--         ImageProc["Local Image Processor<br/>(Resize, Mask, Sign)"]
+ !--         OptStorage[(Ephemeral Optimized Storage)]
+ !--         MetadataDB[(Postgres Metadata DB)]
+ !--     end
+ !-- 
+ !--     subgraph ThirdParty [Third Party Clouds - Metered Egress]
+ !--         Gemini[Gemini Vision API]
+ !--         NanoBanana[Nano Banana API]
+ !--         EBay[eBay API]
+ !--     end
+ !-- 
+ !--     %% Phase 1: Ingest (User Cost)
+ !--     Camera -\->|"(1) 20MB Raw"| MobileApp
+ !--     MobileApp -\->|"(2) 20MB Raw Upload"| IngestAPI
+ !--     MobileApp -\->|"(11) Save Local"| LocalGallery
+ !--     IngestAPI -\->|"(3) Store"| RawStorage
+ !-- 
+ !--     %% Phase 2: Local Processing (Zero Network Cost)
+ !--     RawStorage -.->|"(4) Local I/O"| ImageProc
+ !--     ImageProc -.->|"(5) Local I/O"| OptStorage
+ !--     ImageProc -\->|"(8) Extracted Labels"| MetadataDB
+ !-- 
+ !--     %% Phase 3: AI (Optimized TS Cost)
+ !--     ImageProc -\->|"(6) 1.5MB Resized"| Gemini
+ !--     Gemini -\->|"(6.1) 5KB JSON"| MetadataDB
+ !--     ImageProc -\->|"(7) 300KB Masked"| NanoBanana
+ !--     NanoBanana -\->|"(7.1) 800KB Hero"| OptStorage
+ !-- 
+ !--     %% Phase 4: Publish (Cost Shifted back to User)
+ !--     OptStorage -\->|"(9) 3MB Processed D/L"| MobileApp
+ !--     MobileApp -\->|"(12) Save Enhanced"| LocalGallery
+ !--     MobileApp -\->|"(10) 3MB Upload to EPS"| EBay
+ !--     
+ !--     classDef edge fill:#e1f5fe,stroke:#333,stroke-width:2px;
+ !--     classDef core fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+ !--     classDef cloud fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+ !--     
+ !--     class UserEdge edge;
+ !--     class TSCore core;
+ !--     class ThirdParty cloud;
+ !-- ``` -->
+<p>!– -&gt;</p>
 <hr />
 <h2 id="edge-cases-optional-upsells">4. Edge Cases &amp; Optional
 Upsells</h2>
