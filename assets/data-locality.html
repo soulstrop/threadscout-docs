@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ThreadScout Data Locality</title>
   <style>
-    /* Ensure the HTML and Body take up the full iframe viewport */
+    /* Force the document to fill the iframe exactly */
     html, body {
       margin: 0;
       padding: 0;
@@ -13,12 +13,15 @@
       height: 100%;
       overflow: hidden;
       background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     svg {
-      /* Explicitly fill the entire viewport */
-      width: 100vw;
-      height: 100vh;
+      /* Force SVG to fill available container space while maintaining internal viewBox ratio */
+      width: 100%;
+      height: 100%;
       display: block;
     }
 
@@ -106,8 +109,8 @@
   </style>
 </head>
 <body>
-  <!-- Added width and height attributes to the tag to ensure browser scaling -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <!-- Use standard attributes + meet strategy -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="1000" height="900" preserveAspectRatio="xMidYMid meet">
     <defs>
       <marker id="arr-u" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
         <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
