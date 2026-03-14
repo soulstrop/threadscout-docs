@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="100%" height="100%">
+  <defs>
+    <marker id="arr-u" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+    </marker>
+    <marker id="arr-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" />
+    </marker>
+    <marker id="arr-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" />
+    </marker>
+  </defs>
+
+  <style>
+    .subgraph { opacity: 0; animation: fadeIn 0.5s ease forwards; }
+    .node { opacity: 0; animation: fadeIn 0.4s ease forwards; }
+    
+    /* Base path animation (extended dasharray to ensure long lines finish) */
+    .path {
+      fill: none;
+      stroke-dasharray: 2000; stroke-dashoffset: 2000;
+      animation: drawLine 0.6s ease-in-out forwards;
+    }
+    
+    /* Dashed lines fade in */
+    .path-dashed {
+      fill: none;
+      stroke-dasharray: 8 8;
+      opacity: 0;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    /* Invisible path that holds the marker */
+    .arrowhead {
+      fill: none; stroke: transparent;
+      opacity: 0;
+      animation: fadeIn 0.1s forwards;
+    }
+
+    /* Colors by Cost Domain */
+    .c-user { stroke: #3b82f6; }
+    .c-ts { stroke: #16a34a; }
+    .c-metered { stroke: #f97316; }
+
+    /* Stroke Widths by Data Size */
+    .s-sm { stroke-width: 2px; }
+    .s-md { stroke-width: 4px; }
+    .s-lg { stroke-width: 7px; }
+
+    .label { opacity: 0; font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #334155; background: white; animation: fadeIn 0.4s ease forwards; }
+
+    /* Node Themes */
+    .edge-box { fill: #e1f5fe; stroke: #0284c7; stroke-width: 2px; rx: 8; }
+    .core-box { fill: #e8f5e9; stroke: #059669; stroke-width: 2px; rx: 8; }
+    .cloud-box { fill: #fff3e0; stroke: #ea580c; stroke-width: 2px; rx: 8; }
+    .node-text { font-family: sans-serif; font-size: 12px; font-weight: bold; text-anchor: middle; fill: #0f172a; }
+    .subgraph-text { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #64748b; }
+
+    /* --- Calculated Timings --- */
+    #sg-user, #sg-core, #sg-cloud, #legend { animation-delay: 0s; }
+    #n-cam { animation-delay: 0.2s; }
+
+    /* Step 1 */
+    #p1 { animation-delay: 0.5s; } #a1 { animation-delay: 1.1s; } #l1 { animation-delay: 0.9s; }
+    #n-mob { animation-delay: 1.0s; }
+
+    /* Step 2 */
+    #p2 { animation-delay: 1.5s; } #a2 { animation-delay: 2.1s; } #l2 { animation-delay: 1.9s; }
+    #n-ing { animation-delay: 2.0s; }
+
+    /* Step 3 */
+    #p3 { animation-delay: 2.5s; } #a3 { animation-delay: 3.1s; } #l3 { animation-delay: 2.9s; }
+    #n-raw { animation-delay: 3.0s; }
+
+    /* Step 4 (Dashed - Fades in) */
+    #p4 { animation-delay: 3.5s; } #l4 { animation-delay: 3.9s; }
+    #n-img { animation-delay: 4.0s; }
+
+    /* Step 5 (Dashed - Fades in) */
+    #p5 { animation-delay: 4.5s; } #l5 { animation-delay: 4.9s; }
+    #n-store2 { animation-delay: 5.0s; }
+
+    /* Step 6 */
+    #p6 { animation-delay: 5.5s; } #a6 { animation-delay: 6.1s; } #l6 { animation-delay: 5.9s; }
+    #n-api1 { animation-delay: 6.0s; }
+
+    /* Step 6.1 */
+    #p6-1 { animation-delay: 6.5s; } #a6-1 { animation-delay: 7.1s; } #l6-1 { animation-delay: 6.9s; }
+    #n-db { animation-delay: 7.0s; }
+
+    /* Step 7 */
+    #p7 { animation-delay: 7.5s; } #a7 { animation-delay: 8.1s; } #l7 { animation-delay: 7.9s; }
+    #n-api2 { animation-delay: 8.0s; }
+
+    /* Step 7.1 */
+    #p7-1 { animation-delay: 8.5s; } #a7-1 { animation-delay: 9.1s; } #l7-1 { animation-delay: 8.9s; }
+
+    /* Step 8 */
+    #p8 { animation-delay: 9.5s; } #a8 { animation-delay: 10.1s; } #l8 { animation-delay: 9.9s; }
+
+    /* Step 9 */
+    #p9 { animation-delay: 10.5s; } #a9 { animation-delay: 11.1s; } #l9 { animation-delay: 10.9s; }
+
+    /* Step 10 */
+    #p10 { animation-delay: 11.5s; } #a10 { animation-delay: 12.1s; } #l10 { animation-delay: 11.9s; }
+    #n-shop { animation-delay: 12.0s; }
+
+    /* Step 11 */
+    #p11 { animation-delay: 12.5s; } #a11 { animation-delay: 13.1s; } #l11 { animation-delay: 12.9s; }
+    #n-gal { animation-delay: 13.0s; }
+
+    /* Step 12 */
+    #p12 { animation-delay: 13.5s; } #a12 { animation-delay: 14.1s; } #l12 { animation-delay: 13.9s; }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes drawLine { to { stroke-dashoffset: 0; } }
+  </style>
+
+  <g id="sg-user" class="subgraph">
+    <rect x="20" y="20" width="240" height="740" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5 5" rx="10" />
+    <text x="140" y="40" class="subgraph-text" text-anchor="middle">User Device - Edge Network</text>
+  </g>
+  <g id="sg-core" class="subgraph">
+    <rect x="280" y="20" width="400" height="740" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5 5" rx="10" />
+    <text x="480" y="40" class="subgraph-text" text-anchor="middle">ThreadScout Backend - Local Compute</text>
+  </g>
+  <g id="sg-cloud" class="subgraph">
+    <rect x="700" y="20" width="280" height="740" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="5 5" rx="10" />
+    <text x="840" y="40" class="subgraph-text" text-anchor="middle">Third Party Clouds</text>
+  </g>
+
+  <g id="legend" class="subgraph">
+    <rect x="20" y="780" width="960" height="80" fill="#f8fafc" stroke="#cbd5e1" rx="8" />
+    <text x="40" y="805" font-family="sans-serif" font-size="14" font-weight="bold" fill="#475569">Legend</text>
+    
+    <line x1="40" y1="835" x2="80" y2="835" class="c-user s-md" />
+    <text x="90" y="840" font-family="sans-serif" font-size="12" fill="#3b82f6" font-weight="bold">User / Edge Cost</text>
+    
+    <line x1="240" y1="835" x2="280" y2="835" class="c-ts s-md" />
+    <text x="290" y="840" font-family="sans-serif" font-size="12" fill="#16a34a" font-weight="bold">Fixed Local Cost</text>
+    
+    <line x1="440" y1="835" x2="480" y2="835" class="c-metered s-md" />
+    <text x="490" y="840" font-family="sans-serif" font-size="12" fill="#ea580c" font-weight="bold">Metered API Cost</text>
+
+    <line x1="680" y1="805" x2="720" y2="805" stroke="#94a3b8" class="s-sm" />
+    <text x="730" y="810" font-family="sans-serif" font-size="12" fill="#475569">Small Payload (&lt; 1 MB)</text>
+
+    <line x1="680" y1="825" x2="720" y2="825" stroke="#94a3b8" class="s-md" />
+    <text x="730" y="830" font-family="sans-serif" font-size="12" fill="#475569">Medium Payload (1 - 5 MB)</text>
+
+    <line x1="680" y1="845" x2="720" y2="845" stroke="#94a3b8" class="s-lg" />
+    <text x="730" y="850" font-family="sans-serif" font-size="12" fill="#475569">Large Payload (&gt; 5 MB)</text>
+  </g>
+
+  <path id="p1" class="path c-user s-lg" d="M 140 120 L 140 340" />
+  <path id="a1" class="arrowhead" style="marker-end: url(#arr-u);" d="M 140 120 L 140 340" />
+  <text id="l1" class="label" x="145" y="230">(1) 20MB Raw</text>
+
+  <path id="p2" class="path c-user s-lg" d="M 220 370 L 400 110" />
+  <path id="a2" class="arrowhead" style="marker-end: url(#arr-u);" d="M 220 370 L 400 110" />
+  <text id="l2" class="label" x="250" y="210">(2) 20MB Raw Upload</text>
+
+  <path id="p3" class="path c-ts s-lg" d="M 480 140 L 480 220" />
+  <path id="a3" class="arrowhead" style="marker-end: url(#arr-t);" d="M 480 140 L 480 220" />
+  <text id="l3" class="label" x="485" y="185">(3) Store</text>
+
+  <path id="p4" class="path-dashed c-ts s-lg" style="marker-end: url(#arr-t);" d="M 480 280 L 480 340" />
+  <text id="l4" class="label" x="485" y="315">(4) Local I/O</text>
+
+  <path id="p5" class="path-dashed c-ts s-md" style="marker-end: url(#arr-t);" d="M 480 400 L 480 480" />
+  <text id="l5" class="label" x="485" y="445">(5) Local I/O</text>
+
+  <path id="p6" class="path c-metered s-md" d="M 560 370 L 760 250" />
+  <path id="a6" class="arrowhead" style="marker-end: url(#arr-m);" d="M 560 370 L 760 250" />
+  <text id="l6" class="label" x="660" y="300">(6) 1.5MB Resized</text>
+
+  <path id="p6-1" class="path c-metered s-sm" d="M 840 280 L 560 650" />
+  <path id="a6-1" class="arrowhead" style="marker-end: url(#arr-m);" d="M 840 280 L 560 650" />
+  <text id="l6-1" class="label" x="730" y="490">(6.1) 5KB JSON</text>
+
+  <path id="p7" class="path c-metered s-sm" d="M 560 380 L 760 380" />
+  <path id="a7" class="arrowhead" style="marker-end: url(#arr-m);" d="M 560 380 L 760 380" />
+  <text id="l7" class="label" x="610" y="375">(7) 300KB Masked</text>
+
+  <path id="p7-1" class="path c-metered s-md" d="M 760 395 L 560 500" />
+  <path id="a7-1" class="arrowhead" style="marker-end: url(#arr-m);" d="M 760 395 L 560 500" />
+  <text id="l7-1" class="label" x="650" y="445">(7.1) 800KB Hero</text>
+
+  <path id="p8" class="path c-ts s-sm" d="M 400 380 Q 300 510 400 650" />
+  <path id="a8" class="arrowhead" style="marker-end: url(#arr-t);" d="M 400 380 Q 300 510 400 650" />
+  <text id="l8" class="label" x="310" y="520">(8) Extracted Labels</text>
+
+  <path id="p9" class="path c-user s-md" d="M 400 510 L 220 380" />
+  <path id="a9" class="arrowhead" style="marker-end: url(#arr-u);" d="M 400 510 L 220 380" />
+  <text id="l9" class="label" x="270" y="470">(9) 3MB Processed D/L</text>
+
+  <path id="p10" class="path c-user s-md" d="M 220 390 Q 500 780 760 660" />
+  <path id="a10" class="arrowhead" style="marker-end: url(#arr-u);" d="M 220 390 Q 500 780 760 660" />
+  <text id="l10" class="label" x="460" y="700">(10) 3MB Upload to EPS</text>
+
+  <path id="p11" class="path c-user s-lg" d="M 120 400 L 120 620" />
+  <path id="a11" class="arrowhead" style="marker-end: url(#arr-u);" d="M 120 400 L 120 620" />
+  <text id="l11" class="label" x="45" y="510">(11) Save Local</text>
+
+  <path id="p12" class="path c-user s-md" d="M 160 400 L 160 620" />
+  <path id="a12" class="arrowhead" style="marker-end: url(#arr-u);" d="M 160 400 L 160 620" />
+  <text id="l12" class="label" x="165" y="510">(12) Save Enhanced</text>
+
+
+  <g id="n-cam" class="node" transform="translate(60, 60)">
+    <rect width="160" height="60" class="edge-box"/>
+    <text x="80" y="35" class="node-text">Raw Photos 📸</text>
+  </g>
+  <g id="n-mob" class="node" transform="translate(60, 340)">
+    <rect width="160" height="60" class="edge-box"/>
+    <text x="80" y="35" class="node-text">Mobile Client</text>
+  </g>
+  <g id="n-gal" class="node" transform="translate(60, 620)">
+    <rect width="160" height="60" class="edge-box"/>
+    <text x="80" y="35" class="node-text">Local Gallery Storage</text>
+  </g>
+
+  <g id="n-ing" class="node" transform="translate(400, 80)">
+    <rect width="160" height="60" class="core-box"/>
+    <text x="80" y="35" class="node-text">Ingest API</text>
+  </g>
+  <g id="n-raw" class="node" transform="translate(400, 220)">
+    <rect width="160" height="60" class="core-box"/>
+    <text x="80" y="35" class="node-text">Ephemeral Raw Storage</text>
+  </g>
+  <g id="n-img" class="node" transform="translate(400, 340)">
+    <rect width="160" height="60" class="core-box"/>
+    <text x="80" y="25" class="node-text">Local Image Processor</text>
+    <text x="80" y="45" class="node-text" font-size="10" fill="#475569">(Resize, Mask, Sign)</text>
+  </g>
+  <g id="n-store2" class="node" transform="translate(400, 480)">
+    <rect width="160" height="60" class="core-box"/>
+    <text x="80" y="35" class="node-text">Ephemeral Opt Storage</text>
+  </g>
+  <g id="n-db" class="node" transform="translate(400, 640)">
+    <rect width="160" height="60" class="core-box"/>
+    <text x="80" y="35" class="node-text">Postgres Metadata DB</text>
+  </g>
+
+  <g id="n-api1" class="node" transform="translate(760, 220)">
+    <rect width="160" height="60" class="cloud-box"/>
+    <text x="80" y="35" class="node-text">Gemini Vision API</text>
+  </g>
+  <g id="n-api2" class="node" transform="translate(760, 360)">
+    <rect width="160" height="60" class="cloud-box"/>
+    <text x="80" y="35" class="node-text">Nano Banana API</text>
+  </g>
+  <g id="n-shop" class="node" transform="translate(760, 640)">
+    <rect width="160" height="60" class="cloud-box"/>
+    <text x="80" y="35" class="node-text">eBay API</text>
+  </g>
+</svg>
