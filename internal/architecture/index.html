@@ -78,17 +78,17 @@ highly optimized AI models (Gemini) via secure APIs.</li>
 <li><strong>Modular Isolation</strong>: The backend is strictly
 separated from the frontend. Operations like AI analysis and eBay
 pushing are treated as “Pluggable Services,” allowing for easy swaps
-(e.g., <a href="adr/0003-pluggable-ingest-backends.html">ADR 0003:
+(e.g., <a href="../adr/0003-pluggable-ingest-backends.html">ADR 0003:
 Pluggable Ingest Backends</a>).</li>
 <li><strong>Provable Identity</strong>: Every request is scoped to a
 verified user, even in “Local Mode,” ensuring a seamless transition to
 multi-user SaaS environments (<a
-href="adr/0005-secure-authentication-and-environment-strategy.html">ADR
+href="../adr/0005-secure-authentication-and-environment-strategy.html">ADR
 0005: Secure Authentication</a>).</li>
 <li><strong>Hardware-Level Security</strong>: The system is designed to
 run within restricted environments (Docker/MicroVMs) without sacrificing
 functionality (<a
-href="adr/0007-modular-reverse-proxy-configuration.html">ADR 0007:
+href="../adr/0007-modular-reverse-proxy-configuration.html">ADR 0007:
 Modular Reverse Proxy</a>).</li>
 </ol>
 <hr />
@@ -109,7 +109,7 @@ and local reverse proxying via <code>Caddy</code>.</li>
 execution.</li>
 </ul>
 <p>For detailed workflows, setup instructions, and quality standards,
-see the <strong><a href="developer_guide.html">Developer
+see the <strong><a href="../guides/developer_guide.html">Developer
 Guide</a></strong>.</p>
 <hr />
 <h2 id="security-network-topology">Security &amp; Network Topology</h2>
@@ -127,8 +127,8 @@ that ensures browseability across environments. It utilizes:
 <li><strong>Link Translation</strong>: Lua filters to rewrite internal
 <code>.md</code> links to <code>.html</code> in the generated
 output.</li>
-<li><strong>Index Normalization</strong>: Ensures <code>INDEX.md</code>
-is served as <code>index.html</code> at
+<li><strong>Index Normalization</strong>: Ensures <code>index.md</code>
+is served as <code>index.md</code> at
 <code>https://localhost:3443/docs</code> and
 <code>https://threadscout.constans.dev/docs</code>.</li>
 <li><strong>Auto-indexing</strong>: Dynamically generates index pages
@@ -136,9 +136,9 @@ for subdirectories like <code>adr/</code> and
 <code>analysis/</code>.</li>
 </ul></li>
 <li><strong>See Also</strong>: <a
-href="adr/0009-hybrid-hosting-strategy.html">ADR 0009: Hybrid Hosting
+href="../adr/0009-hybrid-hosting-strategy.html">ADR 0009: Hybrid Hosting
 Strategy</a> and <a
-href="design/2026-02-28-hybrid-deployment-unified-routing.html">Design:
+href="../design/2026-02-28-hybrid-deployment-unified-routing.html">Design:
 Hybrid Deployment &amp; Unified Routing</a>.</li>
 </ul>
 <h3 id="mobile-ingress-pwa">Mobile Ingress &amp; PWA</h3>
@@ -180,7 +180,7 @@ style="text-align: left;"><strong><code>services/</code></strong></td>
 <td style="text-align: left;">Prompt construction, scraping, and eBay
 client wrappers.</td>
 <td style="text-align: left;"><a
-href="adr/0002-choosing-beautifulsoup-for-scraping.html">ADR 0002:
+href="../adr/0002-choosing-beautifulsoup-for-scraping.html">ADR 0002:
 BeautifulSoup for Scraping</a></td>
 </tr>
 <tr class="odd">
@@ -206,8 +206,8 @@ style="text-align: left;"><strong><code>security.py</code></strong></td>
 <td style="text-align: left;">Fernet (AES-128) at-rest protection for
 tokens.</td>
 <td style="text-align: left;"><a
-href="adr/0004-at-rest-encryption-with-fernet.html">ADR 0004: Encryption
-with Fernet</a></td>
+href="../adr/0004-at-rest-encryption-with-fernet.html">ADR 0004:
+Encryption with Fernet</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong><code>ingest/</code></strong></td>
@@ -215,7 +215,7 @@ with Fernet</a></td>
 <td style="text-align: left;">Pluggable backends (Local FS
 vs. Cloud).</td>
 <td style="text-align: left;"><a
-href="adr/0003-pluggable-ingest-backends.html">ADR 0003: Ingest
+href="../adr/0003-pluggable-ingest-backends.html">ADR 0003: Ingest
 Backends</a></td>
 </tr>
 </tbody>
@@ -251,7 +251,7 @@ rather than the legacy Trading API.</p>
 <li><strong>Policy Sync</strong>: Shipping, Payment, and Return policies
 are cached locally.</li>
 <li><strong>Token Management</strong>: <a
-href="adr/0006-stable-dev-oauth-callback.html">ADR 0006: Stable Dev
+href="../adr/0006-stable-dev-oauth-callback.html">ADR 0006: Stable Dev
 OAuth Callback</a> explains how we maintain a stable endpoint for eBay’s
 redirect.</li>
 </ul>
@@ -270,7 +270,7 @@ high-fidelity error reproduction.</li>
 <li><strong>Logging</strong>: We use OTel-compatible structured logging
 (Structlog) across the entire stack.</li>
 <li><strong>Operations</strong>: See <a
-href="design/2026-02-28-telemetry-monitoring-observability.html">Design:
+href="../design/2026-02-28-telemetry-monitoring-observability.html">Design:
 Telemetry &amp; Monitoring</a>.</li>
 </ul>
 <hr />
@@ -304,21 +304,23 @@ Architecture</a>.</li>
 <hr />
 <h2 id="design-specifications">Design Specifications</h2>
 <p>For granular implementation details, technical blueprints, and
-operational specs, see the <strong><a href="design/index.html">Design
+operational specs, see the <strong><a href="../design/index.html">Design
 Directory</a></strong>.</p>
 <ul>
 <li><a
-href="design/2026-02-28-hybrid-deployment-unified-routing.html">Hybrid
+href="../design/2026-02-28-hybrid-deployment-unified-routing.html">Hybrid
 Deployment &amp; Unified Routing</a>: Spec for dual-ingress routing via
 Cloudflare Workers.</li>
 <li><a
-href="design/2026-02-28-telemetry-monitoring-observability.html">Telemetry
+href="../design/2026-02-28-telemetry-monitoring-observability.html">Telemetry
 &amp; Monitoring</a>: Implementation blueprint for full-stack
 observability.</li>
-<li><a href="design/2026-03-01-incident-reporting-triage.html">Incident
+<li><a
+href="../design/2026-03-01-incident-reporting-triage.html">Incident
 Reporting &amp; Triage System</a>: Full-stack design for capturing user
 feedback and debugging system-wide bugs.</li>
-<li><a href="design/2026-03-01-multi-provider-auth.html">Multi-Provider
+<li><a
+href="../design/2026-03-01-multi-provider-auth.html">Multi-Provider
 Authentication</a>: Implementation plan for a Multi-Issuer Identity
 Broker.</li>
 </ul>
@@ -364,7 +366,7 @@ security, structured logging.</li>
 <h2 id="decision-records-analyses">Decision Records &amp; Analyses</h2>
 <!-- AUTO_GEN_ADR_START -->
 <ul>
-<li><strong><a href="adr/index.html">Architecture Decision Records
+<li><strong><a href="../adr/index.html">Architecture Decision Records
 (ADRs)</a></strong>: Historical records of why specific technologies or
 patterns were chosen.</li>
 <li><strong><a href="analysis-ai-image-enhancement.html">Engineering
