@@ -30,11 +30,11 @@
 <h1 class="title">0001 Enrichment Workflow Paste And Scrape</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="adr-001-item-enrichment-workflow-via-paste-scrape">ADR 001: Item
-Enrichment Workflow via Paste &amp; Scrape</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-001-item-enrichment-workflow-via-paste-scrape">ADR 001: Item
+Enrichment Workflow via Paste &amp; Scrape</h2>
+<h3 id="status">Status</h3>
 <p>Accepted</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>The goal is to allow users to enrich extracted item metadata (Brand,
 Model, Material, etc.) by using external research. After performing a
 Google keyword search for images, the user needs to find a matching
@@ -51,14 +51,14 @@ into the app via API.</li>
 <li><strong>Browser Extension</strong>: A plugin to send data from
 resale sites directly to ThreadScout.</li>
 </ol>
-<h2 id="decision">Decision</h2>
+<h3 id="decision">Decision</h3>
 <p>We chose <strong>Option 1: Paste &amp; Scrape</strong>.</p>
 <p>Users will find a matching listing in a standard browser tab, copy
 the URL, and paste it into a “Research URL” field in ThreadScout. The
 backend will then fetch the HTML content, and an LLM (Gemini) will be
 used to extract highly specific garment details (e.g., technical names,
 style codes, MSRP) from the raw page text.</p>
-<h2 id="rationale">Rationale</h2>
+<h3 id="rationale">Rationale</h3>
 <ul>
 <li><strong>Robustness</strong>: Most retail and resale sites have
 aggressive anti-bot measures. By having the user navigate to the page
@@ -74,7 +74,7 @@ HTML allows the system to support a wide variety of sites (eBay,
 Grailed, Poshmark, Retailers) without writing site-specific
 scrapers.</li>
 </ul>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Positive</strong>: High accuracy of enriched data; support
 for almost any source URL; simplified backend logic.</li>

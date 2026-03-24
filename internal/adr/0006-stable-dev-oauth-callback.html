@@ -30,11 +30,11 @@
 <h1 class="title">0006 Stable Dev Oauth Callback</h1>
 <p class="author">Gemini CLI</p>
 </header>
-<h1 id="adr-0006-stable-development-oauth-callbacks-via-cloudflare">ADR
-0006: Stable Development OAuth Callbacks via Cloudflare</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-0006-stable-development-oauth-callbacks-via-cloudflare">ADR
+0006: Stable Development OAuth Callbacks via Cloudflare</h2>
+<h3 id="status">Status</h3>
 <p>Proposed</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>ThreadScout integrates with the eBay API, which requires a public
 HTTPS callback for OAuth2 authentication. Currently, we use temporary
 Cloudflare Tunnels (<code>trycloudflare.com</code>), which has several
@@ -51,12 +51,12 @@ provide HTTPS for <code>localhost</code> is often blocked by
 system-level permissions (e.g., binding to port 80/443) or browser
 certificate trust issues.</li>
 </ol>
-<h2 id="proposed-decision">Proposed Decision</h2>
+<h3 id="proposed-decision">Proposed Decision</h3>
 <p>We will use a stable, custom subdomain (e.g.,
 <code>threadscout.constans.dev</code>) managed by Cloudflare to route
 traffic to the developer’s local machine.</p>
-<h3 id="persistent-cloudflare-tunnel">1. Persistent Cloudflare
-Tunnel</h3>
+<h4 id="persistent-cloudflare-tunnel">1. Persistent Cloudflare
+Tunnel</h4>
 <p>Instead of a temporary tunnel, we will use a <strong>Named
 Tunnel</strong> via <code>cloudflared</code>.</p>
 <ul>
@@ -65,7 +65,7 @@ zone.</li>
 <li>A DNS CNAME record will point <code>threadscout.constans.dev</code>
 to the tunnel ID.</li>
 </ul>
-<h3 id="traffic-routing">2. Traffic Routing</h3>
+<h4 id="traffic-routing">2. Traffic Routing</h4>
 <ul>
 <li>Traffic arriving at <code>https://threadscout.constans.dev</code>
 will be proxied by Cloudflare to the local FastAPI backend (e.g.,
@@ -73,7 +73,7 @@ will be proxied by Cloudflare to the local FastAPI backend (e.g.,
 <li>This eliminates the need for a local Caddy proxy for external
 callbacks.</li>
 </ul>
-<h3 id="security-hardening">3. Security Hardening</h3>
+<h4 id="security-hardening">3. Security Hardening</h4>
 <p>To ensure this “hop” is safe:</p>
 <ol type="1">
 <li><p><strong>Cloudflare Access (Zero Trust)</strong>:</p>
@@ -99,8 +99,8 @@ the OAuth flow to prevent CSRF attacks. (Implemented in PR #XX).</li>
 <code>0.0.0.0</code>) to ensure only the tunnel can reach it.</li>
 </ul></li>
 </ol>
-<h2 id="alternatives-considered">Alternatives Considered</h2>
-<h3 id="tailscale-funnel">1. Tailscale Funnel</h3>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<h4 id="tailscale-funnel">1. Tailscale Funnel</h4>
 <p>Tailscale Funnel allows exposing a local port to the public internet
 via the Tailnet.</p>
 <ul>
@@ -112,8 +112,8 @@ subdomains (cannot use custom branded domains like
 <code>constans.dev</code>); all-or-nothing public access to the port
 (lacks granular path-level bypass rules like Cloudflare Access).</li>
 </ul>
-<h3 id="comparison-cloudflare-vs.-tailscale-funnel">2. Comparison:
-Cloudflare vs. Tailscale Funnel</h3>
+<h4 id="comparison-cloudflare-vs.-tailscale-funnel">2. Comparison:
+Cloudflare vs. Tailscale Funnel</h4>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -153,7 +153,7 @@ Cloudflare vs. Tailscale Funnel</h3>
 </tr>
 </tbody>
 </table>
-<h3 id="coexistence-strategy">3. Coexistence Strategy</h3>
+<h4 id="coexistence-strategy">3. Coexistence Strategy</h4>
 <p>ThreadScout will utilize both technologies for maximum flexibility
 and security:</p>
 <ul>
@@ -170,7 +170,7 @@ the application proxy layer, while Tailscale operates at the network
 interface layer. They can run concurrently on the same machine without
 interference.</li>
 </ul>
-<h2 id="decision-drivers">Decision Drivers</h2>
+<h3 id="decision-drivers">Decision Drivers</h3>
 <ul>
 <li><strong>Stability</strong>: Reduce developer friction by providing a
 “set it and forget it” callback URL.</li>
@@ -182,7 +182,7 @@ prerequisite for moving from Sandbox to Production API tiers.</li>
 Access <em>only</em> for the specific <code>/api/ebay/callback</code>
 path is critical for external IdP compatibility.</li>
 </ul>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Dependency</strong>: Requires a Cloudflare account and a
 registered domain.</li>

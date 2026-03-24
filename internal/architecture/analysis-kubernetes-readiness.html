@@ -30,13 +30,13 @@
 <h1 class="title">Analysis Kubernetes Readiness</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1
+<h2
 id="engineering-analysis-kubernetes-observability-readiness">Engineering
-Analysis: Kubernetes &amp; Observability Readiness</h1>
+Analysis: Kubernetes &amp; Observability Readiness</h2>
 <p><strong>Date</strong>: February 15, 2026 <strong>Status</strong>:
 Assessment Complete - Migration Planned</p>
-<h2 id="current-state-assessment">Current State Assessment</h2>
-<h3 id="kubernetes-compatibility">1. Kubernetes Compatibility</h3>
+<h3 id="current-state-assessment">Current State Assessment</h3>
+<h4 id="kubernetes-compatibility">1. Kubernetes Compatibility</h4>
 <ul>
 <li><strong>Probes</strong>: The FastAPI backend lacks dedicated
 <code>/health</code>, <code>/ready</code>, or <code>/live</code>
@@ -50,8 +50,8 @@ via environment variables and Pydantic Settings, which is K8s-friendly,
 but no manifests (<code>deployment.yaml</code>,
 <code>service.yaml</code>) are present.</li>
 </ul>
-<h3 id="observability-prometheusgrafana">2. Observability
-(Prometheus/Grafana)</h3>
+<h4 id="observability-prometheusgrafana">2. Observability
+(Prometheus/Grafana)</h4>
 <ul>
 <li><strong>Metrics</strong>: The application is not instrumented with a
 Prometheus exporter. There is no <code>/metrics</code> endpoint.</li>
@@ -62,8 +62,8 @@ integration (e.g., OpenTelemetry SDK).</li>
 but not exposed as Prometheus gauges/counters, preventing real-time
 alerting on AI costs.</li>
 </ul>
-<h2 id="technical-recommendations">Technical Recommendations</h2>
-<h3 id="phase-6-implementation-plan">Phase 6 Implementation Plan</h3>
+<h3 id="technical-recommendations">Technical Recommendations</h3>
+<h4 id="phase-6-implementation-plan">Phase 6 Implementation Plan</h4>
 <ol type="1">
 <li><p><strong>Health Module</strong>: Add a
 <code>threadscout.api.health</code> module to verify SQLite connectivity

@@ -94,17 +94,17 @@
 <h1 class="title">Developer Guide</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="threadscout-developer-guide">ThreadScout Developer Guide</h1>
+<h2 id="threadscout-developer-guide">ThreadScout Developer Guide</h2>
 <p>This guide defines the standard workflow and tooling for the
 ThreadScout engineering squad. Our goal is a
 <strong>Zero-Friction</strong> environment where any developer can go
 from <code>git clone</code> to a verified local environment in under 5
 minutes.</p>
 <hr />
-<h2 id="environment-toolchain">1. Environment &amp; Toolchain</h2>
+<h3 id="environment-toolchain">1. Environment &amp; Toolchain</h3>
 <p>ThreadScout uses <strong>mise</strong> as the single source of truth
 for the project’s toolchain and environment variables.</p>
-<h3 id="core-tools">1.1. Core Tools</h3>
+<h4 id="core-tools">1.1. Core Tools</h4>
 <ul>
 <li><strong>Python (uv)</strong>: High-performance package management
 and virtual environment isolation for the backend.</li>
@@ -116,7 +116,7 @@ and API routing.</li>
 <li><strong>Cloudflared</strong>: Public ingress tunnel for testing eBay
 OAuth callbacks locally.</li>
 </ul>
-<h3 id="setup">1.2. Setup</h3>
+<h4 id="setup">1.2. Setup</h4>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clone the repository</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="op">&lt;</span>repo-url<span class="op">&gt;</span> <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> threadscout</span>
@@ -124,7 +124,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Install all tools and project dependencies</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run setup    <span class="co"># One-time system setup (browsers, etc.)</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run install  <span class="co"># Frontend &amp; Backend dependencies</span></span></code></pre></div>
-<h3 id="environment-profiles">1.3. Environment Profiles</h3>
+<h4 id="environment-profiles">1.3. Environment Profiles</h4>
 <p>ThreadScout uses <code>MISE_ENV</code> to switch between standardized
 development profiles. Each profile has a corresponding
 <code>mise.&lt;profile&gt;.toml</code> file that defines its specific
@@ -141,7 +141,7 @@ public-domain UX.</li>
 <code>threadscout.constans.dev</code>. <strong>Handle with
 care.</strong></li>
 </ul>
-<h3 id="maintenance">1.4. Maintenance</h3>
+<h4 id="maintenance">1.4. Maintenance</h4>
 <ul>
 <li><strong><code>mise run reset</code></strong>: Clears local storage
 and databases.</li>
@@ -149,8 +149,8 @@ and databases.</li>
 clears all build caches (<code>.next</code>, <code>.ruff_cache</code>,
 <code>.venv</code>, etc.).</li>
 </ul>
-<h3 id="version-management-mise.lock">1.5. Version Management
-(mise.lock)</h3>
+<h4 id="version-management-mise.lock">1.5. Version Management
+(mise.lock)</h4>
 <p>To ensure environment stability while maintaining flexibility,
 ThreadScout uses a <strong>Lock/Upgrade/Re-lock</strong> workflow. This
 allows us to keep tool definitions as <code>latest</code> while
@@ -171,7 +171,7 @@ sequence:</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> mise.lock <span class="kw">&amp;&amp;</span> <span class="ex">mise</span> install <span class="kw">&amp;&amp;</span> <span class="ex">mise</span> lock</span></code></pre></div></li>
 </ul>
 <hr />
-<h2 id="codebase-walkthrough">2. Codebase Walkthrough</h2>
+<h3 id="codebase-walkthrough">2. Codebase Walkthrough</h3>
 <p>For a detailed, step-by-step explanation of how the ThreadScout
 codebase is structured and how data flows through the system, please
 refer to the:</p>
@@ -180,11 +180,11 @@ Walkthrough</a></strong></p>
 <p>This walkthrough covers everything from configuration and
 authentication to AI analysis and eBay integration.</p>
 <hr />
-<h2 id="standard-developer-workflow">3. Standard Developer Workflow</h2>
+<h3 id="standard-developer-workflow">3. Standard Developer Workflow</h3>
 <p>Our workflow is centered around the <strong>Unified Launch
 Task</strong>, which orchestrates all required services and sidecars
 based on your selected profile.</p>
-<h3 id="mock-mode-fast-iteration">3.1. Mock Mode (Fast Iteration)</h3>
+<h4 id="mock-mode-fast-iteration">3.1. Mock Mode (Fast Iteration)</h4>
 <p>Use this for UI/UX work or logic changes that don’t require real AI
 or eBay APIs.</p>
 <ul>
@@ -198,7 +198,7 @@ or eBay APIs.</p>
 <li>eBay API calls are simulated.</li>
 </ul></li>
 </ul>
-<h3 id="integrated-mode-hybrid">3.2. Integrated Mode (Hybrid)</h3>
+<h4 id="integrated-mode-hybrid">3.2. Integrated Mode (Hybrid)</h4>
 <p>Use this for testing real AI extraction, enrichment, and OIDC
 authentication via the local PocketID sidecar.</p>
 <ul>
@@ -213,8 +213,8 @@ Developer Portal.</li>
 the launch task).</li>
 </ul></li>
 </ul>
-<h3 id="containerized-mode-production-parity">3.3. Containerized Mode
-(Production Parity)</h3>
+<h4 id="containerized-mode-production-parity">3.3. Containerized Mode
+(Production Parity)</h4>
 <p>Use this to verify deployment readiness and cross-service
 orchestration.</p>
 <ul>
@@ -223,12 +223,12 @@ orchestration.</p>
 stack with <code>mise run check:docker</code>.</li>
 </ul>
 <hr />
-<h2 id="quality-standards-verification">4. Quality Standards &amp;
-Verification</h2>
+<h3 id="quality-standards-verification">4. Quality Standards &amp;
+Verification</h3>
 <p>ThreadScout enforces a “Green Gate” policy. Every PR must pass the
 <code>mise run check</code> suite, which orchestrates the following
 quality layers:</p>
-<h3 id="the-testing-tempo">4.1. The Testing Tempo</h3>
+<h4 id="the-testing-tempo">4.1. The Testing Tempo</h4>
 <table>
 <colgroup>
 <col style="width: 25%" />
@@ -310,7 +310,7 @@ href="../product/user_journeys.html">User Journeys</a>.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="verification-commands">4.2. Verification Commands</h3>
+<h4 id="verification-commands">4.2. Verification Commands</h4>
 <ul>
 <li><strong><code>mise run check</code></strong>: The master gate. Runs
 linting, typing, and unit tests for both layers.</li>
@@ -320,13 +320,13 @@ full E2E suite against the containerized stack.</li>
 Locust-driven performance audit (Backend only).</li>
 </ul>
 <hr />
-<h2 id="secret-management-fnox">5. Secret Management
-(<code>fnox</code>)</h2>
+<h3 id="secret-management-fnox">5. Secret Management
+(<code>fnox</code>)</h3>
 <p>ThreadScout uses a <strong>Federated/Hierarchical</strong> secret
 management model via <code>fnox</code>. This ensures that secrets are
 stored close to the service that uses them while allowing for shared
 global configuration.</p>
-<h3 id="secret-hierarchy">5.1. Secret Hierarchy</h3>
+<h4 id="secret-hierarchy">5.1. Secret Hierarchy</h4>
 <ol type="1">
 <li><strong>Root (<code>/fnox.toml</code>)</strong>: Contains shared
 infrastructure secrets (e.g., <code>THREADSCOUT_SECRET_KEY</code>,
@@ -338,7 +338,7 @@ Python-specific secrets (e.g., <code>THREADSCOUT_DATABASE_URL</code>,
 Contains Next.js-specific secrets (e.g., <code>NEXTAUTH_SECRET</code>,
 <code>NEXT_PUBLIC_API_URL</code>).</li>
 </ol>
-<h3 id="automatic-injection-mise">5.2. Automatic Injection (Mise)</h3>
+<h4 id="automatic-injection-mise">5.2. Automatic Injection (Mise)</h4>
 <p>ThreadScout uses the <code>jdx/mise-env-fnox</code> plugin to
 automatically inject secrets into your environment. There is <strong>no
 need</strong> to use <code>fnox run</code> or <code>fnox exec</code> for
@@ -352,7 +352,7 @@ service-specific secrets are merged.</li>
 <code>frontend/</code>, only the root and service-specific secrets are
 loaded.</li>
 </ul>
-<h3 id="managing-secrets">5.3. Managing Secrets</h3>
+<h4 id="managing-secrets">5.3. Managing Secrets</h4>
 <ul>
 <li><strong>Set a secret</strong>:
 <code>fnox set threadscout/category/key "value"</code></li>
@@ -363,12 +363,12 @@ manually move secrets into <code>[profiles.live.secrets]</code> or
 any directory to see the secrets currently in effect.</li>
 </ul>
 <hr />
-<h2 id="environment-variables-reference">6. Environment Variables
-Reference</h2>
+<h3 id="environment-variables-reference">6. Environment Variables
+Reference</h3>
 <p>ThreadScout relies on strict environment variable naming. Backend
 configuration is managed via Pydantic Settings, while the Frontend uses
 a mix of Next.js public variables and secure server-side variables.</p>
-<h3 id="core-system-variables">Core System Variables</h3>
+<h4 id="core-system-variables">Core System Variables</h4>
 <ul>
 <li><code>THREADSCOUT_APP_ENV</code> / <code>NEXT_PUBLIC_APP_ENV</code>:
 Defines the running environment (<code>mocking</code>,
@@ -386,7 +386,7 @@ Enable debug features and logging (<code>true</code> or
 <li><code>THREADSCOUT_DEEP_TRACE</code>: Enables deep flight-recorder
 style event tracking when set to <code>true</code>.</li>
 </ul>
-<h3 id="security-authentication">Security &amp; Authentication</h3>
+<h4 id="security-authentication">Security &amp; Authentication</h4>
 <ul>
 <li><code>THREADSCOUT_SECRET_KEY</code>: High-entropy secret used for
 backend session signing.</li>
@@ -406,7 +406,7 @@ PocketID Identity Provider.</li>
 <li><code>THREADSCOUT_OIDC_AUDIENCE</code>: Defaults to
 <code>threadscout</code>.</li>
 </ul>
-<h3 id="oidc-identity-providers">OIDC Identity Providers</h3>
+<h4 id="oidc-identity-providers">OIDC Identity Providers</h4>
 <ul>
 <li><code>THREADSCOUT_POCKET_ID_CLIENT_ID</code> /
 <code>THREADSCOUT_POCKET_ID_CLIENT_SECRET</code>: Credentials for the
@@ -418,7 +418,7 @@ OAuth login.</li>
 <code>THREADSCOUT_EBAY_OIDC_CLIENT_SECRET</code>: Credentials for eBay
 OAuth login.</li>
 </ul>
-<h3 id="integrations">Integrations</h3>
+<h4 id="integrations">Integrations</h4>
 <ul>
 <li><strong>eBay APIs</strong>: <code>THREADSCOUT_EBAY_CLIENT_ID</code>,
 <code>THREADSCOUT_EBAY_CLIENT_SECRET</code>,
@@ -436,7 +436,7 @@ OAuth login.</li>
 <code>THREADSCOUT_STRIPE_WEBHOOK_SECRET</code>,
 <code>THREADSCOUT_STRIPE_PRO_PRICE_ID</code></li>
 </ul>
-<h3 id="observability-telemetry">Observability &amp; Telemetry</h3>
+<h4 id="observability-telemetry">Observability &amp; Telemetry</h4>
 <ul>
 <li><code>THREADSCOUT_SENTRY_DSN</code> /
 <code>NEXT_PUBLIC_SENTRY_DSN</code>: Sentry project DSN for error
@@ -447,7 +447,7 @@ endpoint (<code>true</code>/<code>false</code>).</li>
 <code>THREADSCOUT_OPS_TOKEN</code>: For pushing alerts to an external
 ops dashboard.</li>
 </ul>
-<h3 id="networking">Networking</h3>
+<h4 id="networking">Networking</h4>
 <ul>
 <li><code>THREADSCOUT_FRONTEND_URL</code>: URL of the Next.js frontend
 (used by backend for CORS/Redirects).</li>
@@ -455,11 +455,11 @@ ops dashboard.</li>
 by the Next.js frontend.</li>
 </ul>
 <hr />
-<h2 id="observability-forensic-tooling">7. Observability &amp; Forensic
-Tooling</h2>
+<h3 id="observability-forensic-tooling">7. Observability &amp; Forensic
+Tooling</h3>
 <p>ThreadScout implements an “Agent-First” observability stack designed
 for high-fidelity debugging.</p>
-<h3 id="unified-log-probing">7.1. Unified Log Probing</h3>
+<h4 id="unified-log-probing">7.1. Unified Log Probing</h4>
 <p>Instead of tailing raw files, use the prober to search for patterns
 across service boundaries.</p>
 <div class="sourceCode" id="cb3"><pre
@@ -468,14 +468,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor errors in a specific service</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> backend <span class="at">--level</span> ERROR</span></code></pre></div>
-<h3 id="security-auditing">7.2. Security Auditing</h3>
+<h4 id="security-auditing">7.2. Security Auditing</h4>
 <p>Verify that the log scrubber is correctly masking PII (emails,
 secrets) before logs leave the local environment.</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/audit-logs.sh</span> <span class="at">--all</span></span></code></pre></div>
 <hr />
-<h2 id="hardware-isolation-the-sandbox">8. Hardware Isolation (The
-Sandbox)</h2>
+<h3 id="hardware-isolation-the-sandbox">8. Hardware Isolation (The
+Sandbox)</h3>
 <p>For dangerous or unverified AI processing tasks, use the isolated
 MicroVM.</p>
 <ul>
@@ -485,7 +485,7 @@ AppArmor profiles and Virtio-9p file sharing, ensuring the host machine
 remains secure during unverified code execution.</li>
 </ul>
 <hr />
-<h2 id="documentation-workflow">9. Documentation Workflow</h2>
+<h3 id="documentation-workflow">9. Documentation Workflow</h3>
 <p>We treat documentation as code. All <code>.md</code> files in
 <code>docs/</code> are automatically processed into HTML for the
 documentation hub.</p>
@@ -497,8 +497,8 @@ documentation hub.</p>
 href="https://localhost:3443/docs">https://localhost:3443/docs</a></li>
 </ul>
 <hr />
-<h2 id="operational-awareness-ops-pulse">10. Operational Awareness (Ops
-Pulse)</h2>
+<h3 id="operational-awareness-ops-pulse">10. Operational Awareness (Ops
+Pulse)</h3>
 <p>Developers are expected to monitor the <strong>Ops Pulse
 Dashboard</strong> in the application (<code>/ops</code>).</p>
 <ul>

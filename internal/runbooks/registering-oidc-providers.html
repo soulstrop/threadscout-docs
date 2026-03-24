@@ -94,14 +94,14 @@
 <h1 class="title">Registering Oidc Providers</h1>
 <p class="author">Gemini Architect</p>
 </header>
-<h1 id="runbook-registering-oidc-providers">Runbook: Registering OIDC
-Providers</h1>
+<h2 id="runbook-registering-oidc-providers">Runbook: Registering OIDC
+Providers</h2>
 <p>This document provides the exact technical metadata required to
 register ThreadScout as a “Relying Party” with various identity
 providers. <strong>Consistency in these strings is critical to
 preventing Authentication Loops.</strong></p>
 <hr />
-<h2 id="global-application-metadata">1. Global Application Metadata</h2>
+<h3 id="global-application-metadata">1. Global Application Metadata</h3>
 <p>Use these values for the “General Settings” or “OAuth Consent Screen”
 section of any developer console.</p>
 <ul>
@@ -116,8 +116,8 @@ section of any developer console.</p>
 <li><strong>Authorized Domain</strong>: <code>constans.dev</code></li>
 </ul>
 <hr />
-<h2 id="redirect-uris-nextauth-standard">2. Redirect URIs (NextAuth
-Standard)</h2>
+<h3 id="redirect-uris-nextauth-standard">2. Redirect URIs (NextAuth
+Standard)</h3>
 <p>NextAuth.js expects the callback to follow a specific pattern. You
 must register the <strong>exact</strong> string below for each
 provider.</p>
@@ -166,9 +166,9 @@ style="text-align: left;"><code>https://threadscout.constans.dev/api/auth/callba
 </tbody>
 </table>
 <hr />
-<h2 id="provider-specific-console-instructions">3. Provider-Specific
-Console Instructions</h2>
-<h3 id="google-google-cloud-console">Google (Google Cloud Console)</h3>
+<h3 id="provider-specific-console-instructions">3. Provider-Specific
+Console Instructions</h3>
+<h4 id="google-google-cloud-console">Google (Google Cloud Console)</h4>
 <ol type="1">
 <li>Navigate to <strong>APIs &amp; Services &gt;
 Credentials</strong>.</li>
@@ -178,8 +178,8 @@ Credentials</strong>.</li>
 <li><strong>Scopes</strong>: <code>openid</code>, <code>email</code>,
 <code>profile</code>.</li>
 </ol>
-<h3 id="apple-apple-developer-portal">Apple (Apple Developer
-Portal)</h3>
+<h4 id="apple-apple-developer-portal">Apple (Apple Developer
+Portal)</h4>
 <ol type="1">
 <li>Create an <strong>App ID</strong> (if not already present).</li>
 <li>Create a <strong>Services ID</strong> (e.g.,
@@ -190,7 +190,7 @@ Redirect URI.</li>
 <li>Generate a <strong>Private Key (.p8)</strong> and record the
 <strong>Key ID</strong> and <strong>Team ID</strong>.</li>
 </ol>
-<h3 id="ebay-ebay-developer-program">eBay (eBay Developer Program)</h3>
+<h4 id="ebay-ebay-developer-program">eBay (eBay Developer Program)</h4>
 <ol type="1">
 <li>Log in to the <strong>eBay Developer Portal</strong>.</li>
 <li>Navigate to <strong>Application Keys</strong>.</li>
@@ -201,8 +201,8 @@ environment.</li>
 <li><strong>Note</strong>: The RuName must be stored in
 <code>fnox</code> as <code>THREADSCOUT_EBAY_RU_NAME</code>.</li>
 </ol>
-<h3 id="github-github-developer-settings">GitHub (GitHub Developer
-Settings)</h3>
+<h4 id="github-github-developer-settings">GitHub (GitHub Developer
+Settings)</h4>
 <ol type="1">
 <li>Navigate to <strong>Settings &gt; Developer Settings &gt; OAuth
 Apps</strong>.</li>
@@ -212,8 +212,8 @@ Apps</strong>.</li>
 <li><strong>Authorization callback URL</strong>: See Table above.</li>
 </ol>
 <hr />
-<h2 id="post-registration-secret-storage">4. Post-Registration: Secret
-Storage</h2>
+<h3 id="post-registration-secret-storage">4. Post-Registration: Secret
+Storage</h3>
 <p>Once you have obtained the <code>Client ID</code> and
 <code>Client Secret</code>, they must be securely stored in
 <strong>fnox</strong>.</p>

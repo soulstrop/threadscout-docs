@@ -30,13 +30,13 @@
 <h1 class="title">User Journeys</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="threadscout-user-journeys">ThreadScout User Journeys</h1>
+<h2 id="threadscout-user-journeys">ThreadScout User Journeys</h2>
 <p>This document defines the primary paths a user takes through the
 application. These journeys serve as the source of truth for our
 Playwright E2E tests.</p>
 <hr />
-<h2 id="uj-00-saas-authentication-onboarding">[UJ-00] SaaS
-Authentication &amp; Onboarding</h2>
+<h3 id="uj-00-saas-authentication-onboarding">[UJ-00] SaaS
+Authentication &amp; Onboarding</h3>
 <p><strong>Goal</strong>: Access the reseller dashboard securely via
 Passkey or Mock login.</p>
 <p><img
@@ -57,8 +57,8 @@ receives the token, verifies it, and automatically creates a
 dashboard (<code>/</code>), ready for UJ-01.</li>
 </ol>
 <hr />
-<h2 id="uj-00b-beta-onboarding-growth">[UJ-00b] Beta Onboarding &amp;
-Growth</h2>
+<h3 id="uj-00b-beta-onboarding-growth">[UJ-00b] Beta Onboarding &amp;
+Growth</h3>
 <p><strong>Goal</strong>: Convert invited beta testers and capture
 interest from uninvited visitors through a guided, frictionless
 experience built on the <strong>ThreadScout Unified Design System
@@ -93,8 +93,8 @@ immediately. A “Show Tutorial” link remains available in the
 <li><strong>Activation</strong>: User enters the <code>IDLE</code> state
 of the core reseller loop (<code>UJ-01</code>).</li>
 </ol>
-<h2 id="uj-01-the-core-reseller-loop">[UJ-01] The Core Reseller
-Loop</h2>
+<h3 id="uj-01-the-core-reseller-loop">[UJ-01] The Core Reseller
+Loop</h3>
 <p><strong>Goal</strong>: Take a raw set of photos and convert them into
 a structured, stored item record ready for listing.</p>
 <p><img
@@ -113,8 +113,8 @@ ensure the AI interpreted the photos correctly.</li>
 moved to permanent <code>storage/</code> and a database record is
 created.</li>
 </ol>
-<h2 id="uj-02-iterative-market-research-enrichment">[UJ-02] Iterative
-Market Research &amp; Enrichment</h2>
+<h3 id="uj-02-iterative-market-research-enrichment">[UJ-02] Iterative
+Market Research &amp; Enrichment</h3>
 <p><strong>Goal</strong>: Iteratively improve the listing accuracy and
 set a competitive price using external data.</p>
 <p><img
@@ -143,8 +143,8 @@ and professional descriptions).</li>
 <li><p><strong>Final Review</strong>: User reviews the cumulative result
 before finishing.</p></li>
 </ol>
-<h2 id="uj-03-ebay-integration-setup">[UJ-03] eBay Integration
-Setup</h2>
+<h3 id="uj-03-ebay-integration-setup">[UJ-03] eBay Integration
+Setup</h3>
 <p><strong>Goal</strong>: Securely connect the local instance to the
 eBay API.</p>
 <p><img
@@ -162,7 +162,7 @@ SQLite.</li>
 <li><strong>Verification</strong>: Admin page now shows “Connected”
 status with an expiration date.</li>
 </ol>
-<h2 id="uj-04-system-administration">[UJ-04] System Administration</h2>
+<h3 id="uj-04-system-administration">[UJ-04] System Administration</h3>
 <p><strong>Goal</strong>: Monitor costs, configure application behavior,
 and customize the user experience.</p>
 <ol type="1">
@@ -179,8 +179,8 @@ sessions.</li>
 S3-compatible bucket (e.g., Cloudflare R2) via the Admin dashboard.
 Credentials are encrypted at-rest using Fernet.</li>
 </ol>
-<h2 id="uj-05-draft-synthesis-push">[UJ-05] Draft Synthesis &amp;
-Push</h2>
+<h3 id="uj-05-draft-synthesis-push">[UJ-05] Draft Synthesis &amp;
+Push</h3>
 <p><strong>Goal</strong>: Finalize listing metadata and publish it as a
 draft to the connected eBay account.</p>
 <p><img
@@ -201,8 +201,8 @@ Offer API to create a draft listing.</li>
 provided for final review and publishing.</li>
 </ol>
 <hr />
-<h2 id="uj-06-mobile-share-to-ingest">[UJ-06] Mobile
-Share-to-Ingest</h2>
+<h3 id="uj-06-mobile-share-to-ingest">[UJ-06] Mobile
+Share-to-Ingest</h3>
 <p><strong>Goal</strong>: Seamlessly transfer photos from a mobile
 device’s native gallery to the ThreadScout ingest queue.</p>
 <p><img
@@ -228,8 +228,8 @@ and sees the newly shared photos at the top of their Ingest Gallery,
 ready for UJ-01.</li>
 </ol>
 <hr />
-<h2 id="uj-07-billing-subscription-management">[UJ-07] Billing &amp;
-Subscription Management</h2>
+<h3 id="uj-07-billing-subscription-management">[UJ-07] Billing &amp;
+Subscription Management</h3>
 <p><strong>Goal</strong>: Manage user tiers (Free vs. Pro) and enforce
 corresponding AI token and listing quotas using Stripe.</p>
 <p><img
@@ -251,8 +251,8 @@ launch the Stripe Customer Portal for managing their subscription
 (upgrading, downgrading, or canceling).</li>
 </ol>
 <hr />
-<h2 id="uj-08-operations-incident-triage">[UJ-08] Operations &amp;
-Incident Triage</h2>
+<h3 id="uj-08-operations-incident-triage">[UJ-08] Operations &amp;
+Incident Triage</h3>
 <p><strong>Goal</strong>: Provide a highly integrated, AI-assisted
 workflow for incident reporting, triage, and resolution, bridging the
 gap between end users, operations managers, and the development squad.
@@ -316,8 +316,8 @@ the Ops Dashboard reflects the recently completed fix.</li>
 </ul></li>
 </ol>
 <hr />
-<h2 id="uj-09-account-recovery-identity-linking-spec-40">[UJ-09] Account
-Recovery &amp; Identity Linking (SPEC-40)</h2>
+<h3 id="uj-09-account-recovery-identity-linking-spec-40">[UJ-09] Account
+Recovery &amp; Identity Linking (SPEC-40)</h3>
 <p><strong>Goal</strong>: Ensure continuous access to the ThreadScout
 account by linking multiple social identities and configuring recovery
 methods.</p>

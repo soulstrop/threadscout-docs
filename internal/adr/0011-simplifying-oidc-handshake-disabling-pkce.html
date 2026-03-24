@@ -30,11 +30,11 @@
 <h1 class="title">0011 Simplifying Oidc Handshake Disabling Pkce</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="adr-0011-simplifying-oidc-handshake-by-disabling-pkce">ADR 0011:
-Simplifying OIDC Handshake by Disabling PKCE</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-0011-simplifying-oidc-handshake-by-disabling-pkce">ADR 0011:
+Simplifying OIDC Handshake by Disabling PKCE</h2>
+<h3 id="status">Status</h3>
 <p>Accepted</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>During the transition to a SaaS-capable architecture with
 <strong>PocketID</strong> as the primary identity provider, we
 encountered a technical failure in the OIDC handshake. Specifically,
@@ -47,12 +47,12 @@ both the verifier and the secret. The conflict appears to be related to
 how the OIDC provider handles hybrid state across subdomain boundaries
 or a strict validation rule within PocketID that rejects redundant
 verification methods.</p>
-<h2 id="decision">Decision</h2>
+<h3 id="decision">Decision</h3>
 <p>We will disable <strong>PKCE</strong> for the
 <code>threadscout</code> OIDC client in the PocketID configuration and
 rely strictly on the <strong>Client Secret</strong> for the
 authorization code exchange.</p>
-<h2 id="rationale">Rationale</h2>
+<h3 id="rationale">Rationale</h3>
 <ol type="1">
 <li><strong>Confidential Client Model</strong>: ThreadScout is a
 confidential client because it has a secure backend (FastAPI) capable of
@@ -73,7 +73,7 @@ moving parts in the security handshake makes the system easier to debug
 and maintain across different environment profiles (Local, Hybrid,
 Live).</li>
 </ol>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Security Configuration</strong>: The PocketID dashboard must
 have the <code>PKCE</code> toggle set to <strong>OFF</strong> for the

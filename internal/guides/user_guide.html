@@ -30,13 +30,13 @@
 <h1 class="title">User Guide</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="threadscout-user-guide">ThreadScout User Guide</h1>
+<h2 id="threadscout-user-guide">ThreadScout User Guide</h2>
 <p>This guide explains the <strong>intent</strong> and
 <strong>value</strong> behind the ThreadScout reseller experience. For
 technical setup and installation, see <a
 href="deployment.html">DEPLOYMENT</a>.</p>
 <hr />
-<h2 id="the-core-reseller-loop">1. The Core Reseller Loop</h2>
+<h3 id="the-core-reseller-loop">1. The Core Reseller Loop</h3>
 <p><strong>Goal</strong>: Convert raw photos into a structured listing
 in under 60 seconds.</p>
 <p>Traditional listing requires manual typing of brand, size, and
@@ -48,8 +48,8 @@ by ~80%.</li>
 <li><strong>Intent</strong>: The AI is your first draft. It provides a
 structured starting point that you simply verify and refine.</li>
 </ul>
-<h2 id="market-research-enrichment">2. Market Research &amp;
-Enrichment</h2>
+<h3 id="market-research-enrichment">2. Market Research &amp;
+Enrichment</h3>
 <p><strong>Goal</strong>: Optimize listing quality and pricing using the
 best of the web.</p>
 <p>Great listings aren’t just accurate; they are enriched with catalog
@@ -70,7 +70,7 @@ accepts URLs from public, non-internal websites. URLs pointing to local
 or private network addresses are blocked.</li>
 </ul></li>
 </ul>
-<h2 id="ebay-integration">3. eBay Integration</h2>
+<h3 id="ebay-integration">3. eBay Integration</h3>
 <p><strong>Goal</strong>: Eliminate the “copy-paste” tax.</p>
 <p>Once your metadata is finalized, ThreadScout pushes it directly to
 your eBay account as a draft.</p>
@@ -81,8 +81,8 @@ the listing on eBay.</li>
 category matching and policy application, so you can focus on inventory
 turnover.</li>
 </ul>
-<h2 id="mobile-experience-share-to-threadscout">4. Mobile Experience:
-Share to ThreadScout</h2>
+<h3 id="mobile-experience-share-to-threadscout">4. Mobile Experience:
+Share to ThreadScout</h3>
 <p><strong>Goal</strong>: Get photos from your phone to the ingest queue
 without manual transfers.</p>
 <p>Reselling starts with your phone’s camera. ThreadScout integrates
@@ -100,8 +100,8 @@ option to your iOS share sheet for multi-photo uploads.</li>
 <li><strong>Value</strong>: Eliminates manual transfers. Your photos are
 ready in the gallery before you even sit down at your desk.</li>
 </ul>
-<h2 id="beta-onboarding-the-waitlist">5. Beta Onboarding &amp; The
-Waitlist</h2>
+<h3 id="beta-onboarding-the-waitlist">5. Beta Onboarding &amp; The
+Waitlist</h3>
 <p><strong>Goal</strong>: Ensuring a high-quality experience for early
 adopters.</p>
 <p>ThreadScout is currently in a “Managed Beta” phase to ensure
@@ -131,8 +131,8 @@ waves.</li>
 tour (AI Vision, Enrichment, and eBay Integration). You can revisit this
 tour anytime from the <strong>Admin</strong> dashboard.</li>
 </ul>
-<h2 id="storage-bring-your-own-storage-byos">6. Storage &amp; Bring Your
-Own Storage (BYOS)</h2>
+<h3 id="storage-bring-your-own-storage-byos">6. Storage &amp; Bring Your
+Own Storage (BYOS)</h3>
 <p><strong>Goal</strong>: Maintain control and scalability of your
 binary data.</p>
 <p>ThreadScout supports multiple storage backends to suit your
@@ -146,14 +146,14 @@ binary storage from your local machine to the cloud.</li>
 <li><strong>Security</strong>: Your storage credentials are encrypted
 at-rest and never returned in plain text to the UI.</li>
 </ul>
-<h2 id="operational-resilience-manual-failover">7. Operational
-Resilience (Manual Failover)</h2>
+<h3 id="operational-resilience-manual-failover">7. Operational
+Resilience (Manual Failover)</h3>
 <p><strong>Goal</strong>: Maintain reseller productivity even if
 automated services (AI, eBay, APIs) are temporarily unavailable.</p>
 <p>ThreadScout is a tool, but your business shouldn’t stop if it’s
 “down.” Follow these manual failover procedures to keep listing.</p>
-<h3 id="ai-vision-failover-extraction">7.1. AI Vision Failover
-(Extraction)</h3>
+<h4 id="ai-vision-failover-extraction">7.1. AI Vision Failover
+(Extraction)</h4>
 <p>If the AI cannot “see” your garment (e.g., Vertex AI outage):</p>
 <ol type="1">
 <li><strong>Manual Foldering</strong>: Create a new folder in your
@@ -166,8 +166,8 @@ manually fill in the <code>brand</code>, <code>size</code>,
 <li><strong>UI Refresh</strong>: The ThreadScout dashboard will pick up
 these manual changes upon the next refresh.</li>
 </ol>
-<h3 id="research-enrichment-failover">7.2. Research &amp; Enrichment
-Failover</h3>
+<h4 id="research-enrichment-failover">7.2. Research &amp; Enrichment
+Failover</h4>
 <p>If “Paste &amp; Scrape” or deep linking fails:</p>
 <ol type="1">
 <li><strong>Google Lens</strong>: Upload your “Hero Shot” directly to <a
@@ -178,8 +178,8 @@ directly using the identified brand and model name.</li>
 MSRP, model name, and description into the ThreadScout Synthesis Editor.
 Your data is still siloed and organized for the future.</li>
 </ol>
-<h3 id="ebay-integration-failover-drafting">7.3. eBay Integration
-Failover (Drafting)</h3>
+<h4 id="ebay-integration-failover-drafting">7.3. eBay Integration
+Failover (Drafting)</h4>
 <p>If “Push to eBay” fails (e.g., eBay API maintenance):</p>
 <ol type="1">
 <li><strong>Export Metadata</strong>: Use the “Copy to Clipboard”
@@ -190,7 +190,7 @@ Paste the Title and Description from ThreadScout.</li>
 local <code>storage/{user_id}/{item_id}/</code> folder directly into the
 eBay listing editor.</li>
 </ol>
-<h3 id="mobile-ingest-failover">7.4. Mobile Ingest Failover</h3>
+<h4 id="mobile-ingest-failover">7.4. Mobile Ingest Failover</h4>
 <p>If the PWA Share Target or iOS Shortcut fails:</p>
 <ol type="1">
 <li><strong>Cloud Sync</strong>: Use Google Photos, iCloud, or Dropbox
@@ -201,8 +201,8 @@ ThreadScout Dashboard (Desktop) to select the synced photos.</li>
 <code>ingest/</code> directory on your host machine. The backend watcher
 will process them automatically.</li>
 </ol>
-<h3 id="deep-system-reset-the-slate-option">7.5. Deep System Reset (The
-“Slate” Option)</h3>
+<h4 id="deep-system-reset-the-slate-option">7.5. Deep System Reset (The
+“Slate” Option)</h4>
 <p>If your application environment becomes inconsistent or you encounter
 persistent startup errors that manual cleaning cannot resolve:</p>
 <ol type="1">
@@ -218,8 +218,8 @@ will:
 <li><strong>When to use</strong>: Only as a last resort or when starting
 a completely fresh development cycle.</li>
 </ol>
-<h2 id="getting-help-reporting-issues">8. Getting Help &amp; Reporting
-Issues</h2>
+<h3 id="getting-help-reporting-issues">8. Getting Help &amp; Reporting
+Issues</h3>
 <p>Every operation in ThreadScout generates a <strong>Debug
 Snapshot</strong>.</p>
 <ul>

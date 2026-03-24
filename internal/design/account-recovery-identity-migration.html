@@ -94,9 +94,9 @@
 <h1 class="title">Account Recovery Identity Migration</h1>
 <p class="author">Gemini Architect</p>
 </header>
-<h1 id="design-account-recovery-identity-migration">Design: Account
-Recovery &amp; Identity Migration</h1>
-<h2 id="overview">1. Overview</h2>
+<h2 id="design-account-recovery-identity-migration">Design: Account
+Recovery &amp; Identity Migration</h2>
+<h3 id="overview">1. Overview</h3>
 <p>As ThreadScout moves toward a multi-tenant SaaS model, the durability
 of user accounts is paramount. Since the application relies on external
 OpenID Connect (OIDC) providers (Google, PocketID, eBay) for
@@ -107,7 +107,7 @@ account.</p>
 Strategy</strong> to ensure users can maintain access to their listings,
 items, and billing data across identity transitions.</p>
 <hr />
-<h2 id="core-objectives">2. Core Objectives</h2>
+<h3 id="core-objectives">2. Core Objectives</h3>
 <ul>
 <li><strong>Durability</strong>: Protect user data from being orphaned
 due to external identity failures.</li>
@@ -119,10 +119,10 @@ high-trust verification (Email OTP) during the linking process.</li>
 administrative identity re-mappings.</li>
 </ul>
 <hr />
-<h2 id="architecture-the-multi-tier-strategy">3. Architecture: The
-Multi-Tier Strategy</h2>
-<h3 id="tier-1-multi-provider-identity-linking-user-driven">Tier 1:
-Multi-Provider Identity Linking (User-Driven)</h3>
+<h3 id="architecture-the-multi-tier-strategy">3. Architecture: The
+Multi-Tier Strategy</h3>
+<h4 id="tier-1-multi-provider-identity-linking-user-driven">Tier 1:
+Multi-Provider Identity Linking (User-Driven)</h4>
 <p>This is a preventative measure that allows a user to “Self-Heal”
 their account access.</p>
 <p><strong>Workflow</strong>:</p>
@@ -144,8 +144,8 @@ to the verified email on file.</li>
 <code>provider:sub</code> pair is added to the user’s
 <code>identity_mappings</code> list.</li>
 </ol>
-<h3 id="tier-2-ops-mediated-identity-re-mapping-admin-driven">Tier 2:
-Ops-Mediated Identity Re-mapping (Admin-Driven)</h3>
+<h4 id="tier-2-ops-mediated-identity-re-mapping-admin-driven">Tier 2:
+Ops-Mediated Identity Re-mapping (Admin-Driven)</h4>
 <p>This is a last-resort recovery method for cases where OIDC and Email
 access are both compromised or inaccessible.</p>
 <p><strong>Workflow</strong>:</p>
@@ -162,8 +162,8 @@ the user’s internal ID.</li>
 re-mapping.</li>
 </ol>
 <hr />
-<h2 id="technical-implementation">4. Technical Implementation</h2>
-<h3 id="data-model-evolution">4.1 Data Model Evolution</h3>
+<h3 id="technical-implementation">4. Technical Implementation</h3>
+<h4 id="data-model-evolution">4.1 Data Model Evolution</h4>
 <p>The <code>User</code> model transitions from an identity-bound
 primary key to a collection-based identity model.</p>
 <p><strong>User Schema (Conceptual)</strong>:</p>
@@ -184,7 +184,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h3 id="frontend-state-machine">4.2 Frontend State Machine</h3>
+<h4 id="frontend-state-machine">4.2 Frontend State Machine</h4>
 <p>The Identity Linking flow is managed as a distinct state machine in
 <code>lib/auth.ts</code>:</p>
 <ul>
@@ -198,7 +198,7 @@ code)</li>
 invalid/expired code)</li>
 </ul>
 <hr />
-<h2 id="security-guardrails">5. Security Guardrails</h2>
+<h3 id="security-guardrails">5. Security Guardrails</h3>
 <ol type="1">
 <li><strong>OTP Throttling</strong>: The backend must rate-limit OTP
 generation to 3 attempts per hour per account to prevent brute-force

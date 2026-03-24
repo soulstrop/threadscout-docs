@@ -94,14 +94,14 @@
 <h1 class="title">Deployment</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="threadscout-deployment-guide">ThreadScout Deployment Guide</h1>
+<h2 id="threadscout-deployment-guide">ThreadScout Deployment Guide</h2>
 <p>This document provides technical instructions for deploying,
 monitoring, and maintaining ThreadScout. For the architectural
 rationale, see <a
 href="../architecture/index.html">ARCHITECTURE</a>.</p>
 <hr />
-<h2 id="phase-1-preparation-setup">Phase 1: Preparation &amp; Setup</h2>
-<h3 id="prerequisites">1.1 Prerequisites</h3>
+<h3 id="phase-1-preparation-setup">Phase 1: Preparation &amp; Setup</h3>
+<h4 id="prerequisites">1.1 Prerequisites</h4>
 <p>Before deployment, ensure the following are installed and
 configured:</p>
 <ul>
@@ -118,11 +118,11 @@ containerized sidecars (PocketID).</li>
 <li><strong>Google Cloud Platform</strong>: Vertex AI API enabled and
 <code>gcloud auth application-default login</code> run.</li>
 </ul>
-<h3 id="environment-configuration">1.2 Environment Configuration</h3>
+<h4 id="environment-configuration">1.2 Environment Configuration</h4>
 <p>ThreadScout uses <strong>Federated Orchestration</strong> (SPEC-61).
 Environment authority is centralized at the root <code>mise.toml</code>,
 which delegates execution to specialized submodules.</p>
-<h4 id="environment-profiles">Environment Profiles</h4>
+<h5 id="environment-profiles">Environment Profiles</h5>
 <p>Configuration is driven by the <code>FNOX_PROFILE</code> variable
 (defaults to <code>local</code>). Each profile corresponds to a
 <code>mise.&lt;profile&gt;.toml</code> file:</p>
@@ -135,7 +135,7 @@ Ingress: <code>threadscout.constans.dev</code>.</li>
 <code>threadscout.constans.dev</code>. <strong>Production use
 only.</strong></li>
 </ul>
-<h4 id="ingress-network-topology">Ingress &amp; Network Topology</h4>
+<h5 id="ingress-network-topology">Ingress &amp; Network Topology</h5>
 <p>ThreadScout uses an <strong>Ingress Authority</strong> model to
 ensure consistent behavior across deployment modes.</p>
 <ul>
@@ -147,8 +147,8 @@ ensure consistent behavior across deployment modes.</p>
 cookies and public OIDC.</li>
 </ul></li>
 </ul>
-<h4 id="core-security-identity-variables">Core Security &amp; Identity
-Variables</h4>
+<h5 id="core-security-identity-variables">Core Security &amp; Identity
+Variables</h5>
 <p>ThreadScout uses robust configuration templating (SPEC-47) to ensure
 safe environment variable injection without <code>mise</code> startup
 crashes.</p>
@@ -175,8 +175,8 @@ the backend will fetch JWKS via this URL to bypass reverse proxies.</li>
 <li><code>THREADSCOUT_OIDC_AUDIENCE</code>: Defaults to
 <code>threadscout</code>.</li>
 </ul>
-<h3 id="environment-variables-reference">1.3 Environment Variables
-Reference</h3>
+<h4 id="environment-variables-reference">1.3 Environment Variables
+Reference</h4>
 <p>ThreadScout uses strict environment variable naming. Backend
 configuration is managed via Pydantic Settings, while the Frontend uses
 a mix of Next.js public variables and secure server-side variables.</p>
@@ -233,8 +233,8 @@ non-production environments).</li>
 <li><strong>Networking</strong>: <code>THREADSCOUT_FRONTEND_URL</code>,
 <code>NEXT_PUBLIC_API_URL</code>.</li>
 </ul>
-<h3 id="secret-management-federated-fnox">1.4 Secret Management
-(Federated <code>fnox</code>)</h3>
+<h4 id="secret-management-federated-fnox">1.4 Secret Management
+(Federated <code>fnox</code>)</h4>
 <p>ThreadScout uses a <strong>Hierarchical Secret Architecture</strong>.
 Secrets are merged recursively:</p>
 <ol type="1">
@@ -290,32 +290,32 @@ for frontend authentication.</li>
 client secret.</li>
 </ul>
 <hr />
-<h2 id="phase-2-starting-the-stack">Phase 2: Starting the Stack</h2>
+<h3 id="phase-2-starting-the-stack">Phase 2: Starting the Stack</h3>
 <p>ThreadScout uses Caddy as a unified ingress for local HTTPS, required
 for eBay OAuth and secure cookie handling.</p>
-<h3 id="standard-deployment-mise">2.1 Standard Deployment (Mise)</h3>
+<h4 id="standard-deployment-mise">2.1 Standard Deployment (Mise)</h4>
 <p>Best for rapid development and host-native execution. The
 <code>launch</code> task orchestrates the full stack (Caddy, Backend,
 Frontend, Sidecars) based on your selected profile.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run setup                <span class="co"># Installs local CA, browsers, and sidecars</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">FNOX_PROFILE</span><span class="op">=</span>hybrid <span class="ex">mise</span> run launch <span class="co"># Starts the integrated stack</span></span></code></pre></div>
-<h3 id="containerized-deployment-docker">2.2 Containerized Deployment
-(Docker)</h3>
+<h4 id="containerized-deployment-docker">2.2 Containerized Deployment
+(Docker)</h4>
 <p>Best for verified “Production-Ready” states.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Access via Caddy at: https://threadscout.constans.dev</span></span></code></pre></div>
-<h3 id="hardware-isolation-microvm">2.3 Hardware Isolation
-(MicroVM)</h3>
+<h4 id="hardware-isolation-microvm">2.3 Hardware Isolation
+(MicroVM)</h4>
 <p>For high-security environments, isolate the backend in a QEMU
 MicroVM.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scripts/setup-isolation.sh</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run proxy  <span class="co"># Run Caddy on host</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mise</span> run isolate <span class="co"># Run Backend in VM</span></span></code></pre></div>
-<h3 id="orchestration-edge-fidelity-spec-45-spec-46">2.4 Orchestration
-&amp; Edge Fidelity (SPEC-45, SPEC-46)</h3>
+<h4 id="orchestration-edge-fidelity-spec-45-spec-46">2.4 Orchestration
+&amp; Edge Fidelity (SPEC-45, SPEC-46)</h4>
 <p>ThreadScout uses automated readiness probes and local worker
 simulation to ensure parity between development and production.</p>
 <ul>
@@ -328,11 +328,11 @@ Caddy configuration mirrors the production edge logic, ensuring a 1:1
 parity with the Cloudflare Ingress.</li>
 </ul>
 <hr />
-<h2 id="phase-3-monitoring-observability">Phase 3: Monitoring &amp;
-Observability</h2>
+<h3 id="phase-3-monitoring-observability">Phase 3: Monitoring &amp;
+Observability</h3>
 <p>ThreadScout implements an “Agent-First” observability stack that
 persists logs even after process crashes.</p>
-<h3 id="live-log-probing">3.1 Live Log Probing</h3>
+<h4 id="live-log-probing">3.1 Live Log Probing</h4>
 <p>Instead of tailing multiple windows, use the unified prober or the
 <code>lnav</code>-powered <code>logs</code> task.</p>
 <div class="sourceCode" id="cb4"><pre
@@ -341,13 +341,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Monitor specific service errors</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> backend <span class="at">--level</span> ERROR</span></code></pre></div>
-<h1 id="search-for-specific-event-patterns-across-all-services">Search
-for specific event patterns across all services</h1>
+<h2 id="search-for-specific-event-patterns-across-all-services">Search
+for specific event patterns across all services</h2>
 <p>./scripts/probe-logs.sh all –grep “OAuth Callback” –context 5</p>
-<h1 id="check-if-the-stack-initialized-correctly">Check if the stack
-initialized correctly</h1>
+<h2 id="check-if-the-stack-initialized-correctly">Check if the stack
+initialized correctly</h2>
 <p>./scripts/probe-logs.sh proxy –grep “serving”</p>
-<pre><code>
+<pre class="text"><code>
 ### 3.2 Security Auditing
 Before promoting to production, verify that the log scrubbing mechanism is active and that no PII has leaked.
 ```bash
@@ -371,7 +371,7 @@ JSON payload on failure.</li>
 provider is unreachable, it logs specific instructions to check sidecar
 status.</li>
 </ul>
-<h3 id="metrics-telemetry">3.4 Metrics &amp; Telemetry</h3>
+<h4 id="metrics-telemetry">3.4 Metrics &amp; Telemetry</h4>
 <ul>
 <li><strong>Log Standardization</strong>: ThreadScout enforces UTC ISO
 8601 timestamps across all logs. Ensure that your log aggregators are
@@ -381,8 +381,8 @@ usage available at <code>/api/metrics</code>.</li>
 <li><strong>Sentry</strong>: Critical application failures and debug
 snapshots are automatically reported to the configured Sentry DSN.</li>
 </ul>
-<h3 id="automated-ingress-cleanup-spec-41">3.5 Automated Ingress Cleanup
-(SPEC-41)</h3>
+<h4 id="automated-ingress-cleanup-spec-41">3.5 Automated Ingress Cleanup
+(SPEC-41)</h4>
 <p>To maintain network hygiene and prevent stale configurations in
 hybrid environments, ThreadScout includes an automated ingress cleanup
 task.</p>
@@ -397,8 +397,8 @@ tunnels.</li>
 marked with <code>permanent: true</code> in
 <code>fnox-schema.json</code>.</li>
 </ul>
-<h3 id="ingress-repair-connectivity-checks-spec-50">3.6 Ingress Repair
-&amp; Connectivity Checks (SPEC-50)</h3>
+<h4 id="ingress-repair-connectivity-checks-spec-50">3.6 Ingress Repair
+&amp; Connectivity Checks (SPEC-50)</h4>
 <p>If connectivity to the main app or OIDC service is interrupted, use
 the ingress repair tool.</p>
 <ul>
@@ -410,18 +410,18 @@ public tunnel URLs. If inconsistencies are found, it automatically
 regenerates the local Caddy configuration and restarts the proxy.</li>
 </ul>
 <hr />
-<h2 id="phase-4-crisis-response-triage">Phase 4: Crisis Response &amp;
-Triage</h2>
+<h3 id="phase-4-crisis-response-triage">Phase 4: Crisis Response &amp;
+Triage</h3>
 <p>When an incident is reported or a crash occurs, follow these steps to
 restore service.</p>
-<h3 id="log-forensic-analysis">4.1 Log Forensic Analysis</h3>
+<h4 id="log-forensic-analysis">4.1 Log Forensic Analysis</h4>
 <p>Retrieve the state of the system at the time of the incident using
 the timestamped prober.</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull 100 lines of context around a specific timestamp</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/probe-logs.sh</span> all <span class="at">--grep</span> <span class="st">&quot;2026-03-03T10:15&quot;</span> <span class="at">--context</span> 50</span></code></pre></div>
-<h3 id="state-reset-environment-purge-spec-53">4.2 State Reset &amp;
-Environment Purge (SPEC-53)</h3>
+<h4 id="state-reset-environment-purge-spec-53">4.2 State Reset &amp;
+Environment Purge (SPEC-53)</h4>
 <p>If the application state becomes corrupted or environment variables
 are inconsistent, perform a deep reset from the project root.</p>
 <ul>
@@ -443,9 +443,9 @@ destructive and non-reversible. It is intended for recovery from total
 system failure or for starting a clean development slate.</li>
 </ul>
 <hr />
-<h2 id="phase-5-public-connectivity-oauth">Phase 5: Public Connectivity
-&amp; OAuth</h2>
-<h3 id="cloudflare-tunnel">5.1 Cloudflare Tunnel</h3>
+<h3 id="phase-5-public-connectivity-oauth">Phase 5: Public Connectivity
+&amp; OAuth</h3>
+<h4 id="cloudflare-tunnel">5.1 Cloudflare Tunnel</h4>
 <p>To receive eBay callbacks and support OIDC identity providers, route
 your public domains to your local instance.</p>
 <ol type="1">
@@ -457,12 +457,12 @@ Hostnames mapping to <code>http://localhost:8080</code>:
 </ul></li>
 <li>Start the tunnel: <code>mise run tunnel</code>.</li>
 </ol>
-<h3 id="ebay-portal-configuration">5.2 eBay Portal Configuration</h3>
+<h4 id="ebay-portal-configuration">5.2 eBay Portal Configuration</h4>
 <p>Update your <strong>Auth Accepted URL</strong> in the eBay Developer
 Portal:
 <code>https://threadscout.yourdomain.com/api/ebay/callback</code></p>
-<h3 id="high-availability-static-compliance-spec-48">5.3
-High-Availability Static Compliance (SPEC-48)</h3>
+<h4 id="high-availability-static-compliance-spec-48">5.3
+High-Availability Static Compliance (SPEC-48)</h4>
 <p>To satisfy OIDC registration requirements and ensure high
 availability, the <code>/privacy</code> and <code>/about</code> pages
 are deployed as static assets to GitHub Pages.</p>
@@ -474,8 +474,8 @@ compliance even during local backend maintenance, allowing identity
 providers (Google, eBay) to always access required legal
 documentation.</li>
 </ul>
-<h3 id="project-app-static-separation-spec-52">5.4. Project-App Static
-Separation (SPEC-52)</h3>
+<h4 id="project-app-static-separation-spec-52">5.4. Project-App Static
+Separation (SPEC-52)</h4>
 <p>To improve performance and security, ThreadScout separates
 application binaries from documentation and marketing assets.</p>
 <ul>
@@ -488,8 +488,8 @@ pipeline.</li>
 updates do not interfere with documentation availability and reduces the
 attack surface of the main application.</li>
 </ul>
-<h3 id="secure-shadow-docs-deployment-spec-51">5.5. Secure Shadow Docs
-Deployment (SPEC-51)</h3>
+<h4 id="secure-shadow-docs-deployment-spec-51">5.5. Secure Shadow Docs
+Deployment (SPEC-51)</h4>
 <p>Internal documentation and pre-release feature specifications are
 managed via a “Shadow Docs” strategy.</p>
 <ul>

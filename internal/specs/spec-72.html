@@ -170,30 +170,22 @@ the final cryptographic manifest into the optimized <code>.jpg</code> or
 Modifications</h2>
 <h3 id="backend">Backend</h3>
 <ul>
-<li><strong><code>backend/pyproject.toml</code></strong>:
-<ul>
+<li><strong><code>backend/pyproject.toml</code></strong>:</li>
 <li>Add <code>Pillow</code> (if not present) and <code>rembg</code> (or
 equivalent background removal dependency).</li>
-</ul></li>
 <li><strong><code>backend/src/threadscout/services/image_pipeline.py</code></strong>
-(New File):
-<ul>
+(New File):</li>
 <li>The orchestrator for the pipeline steps.</li>
-</ul></li>
 <li><strong><code>backend/src/threadscout/models/item.py</code></strong>
-(Existing):
-<ul>
+(Existing):</li>
 <li>Update the database schema to store the generated keyword labels for
 each image asset (e.g., adding a <code>labels: list[str]</code> or
 <code>view_type: str</code> column to the <code>ItemImage</code>
 table).</li>
-</ul></li>
 <li><strong><code>backend/src/threadscout/api/ingest.py</code></strong>
-(Existing):
-<ul>
+(Existing):</li>
 <li>Integrate the pipeline into the ingestion endpoint, dispatching the
 work as a background task.</li>
-</ul></li>
 </ul>
 <h2 id="data-models-schemas">5. Data Models &amp; Schemas</h2>
 <h3 id="pipeline-result-model">Pipeline Result Model</h3>

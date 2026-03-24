@@ -30,11 +30,11 @@
 <h1 class="title">0004 At Rest Encryption With Fernet</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="adr-0004-at-rest-encryption-for-sensitive-tokens-via-fernet">ADR
-0004: At-Rest Encryption for Sensitive Tokens via Fernet</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-0004-at-rest-encryption-for-sensitive-tokens-via-fernet">ADR
+0004: At-Rest Encryption for Sensitive Tokens via Fernet</h2>
+<h3 id="status">Status</h3>
 <p>Accepted</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>ThreadScout stores dynamic, user-specific credentials (eBay OAuth2
 Access and Refresh tokens) in a local SQLite database. While
 application-level secrets (API keys) are managed via <code>fnox</code>
@@ -56,7 +56,7 @@ errors such as IV reuse).</li>
 “recipes” based implementation of AES-128 in CBC mode with HMAC for
 authentication.</li>
 </ol>
-<h2 id="decision">Decision</h2>
+<h3 id="decision">Decision</h3>
 <p>We chose <strong>Option 4: Fernet Encryption</strong>.</p>
 <p>We will use the <code>cryptography</code> library’s Fernet
 implementation to encrypt sensitive strings before they are written to
@@ -64,7 +64,7 @@ the database and decrypt them upon retrieval. The master encryption key
 (32-byte URL-safe base64 string) will be managed as a static secret via
 <code>fnox</code> and injected into the application environment as
 <code>THREADSCOUT_ENCRYPTION_KEY</code>.</p>
-<h2 id="comparison-of-alternatives">Comparison of Alternatives</h2>
+<h3 id="comparison-of-alternatives">Comparison of Alternatives</h3>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -111,7 +111,7 @@ authentication tag.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="rationale">Rationale</h2>
+<h3 id="rationale">Rationale</h3>
 <ul>
 <li><strong>Abstraction over Primitives</strong>: Fernet is an
 opinionated, high-level standard that handles key derivation, IV
@@ -137,7 +137,7 @@ the project’s dependency tree.</li>
 database backend (SQLite, PostgreSQL, etc.) without requiring
 specialized database drivers or extensions.</li>
 </ul>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Positive</strong>: Tokens are protected at rest; key
 rotation is possible by updating the <code>fnox</code> secret; code

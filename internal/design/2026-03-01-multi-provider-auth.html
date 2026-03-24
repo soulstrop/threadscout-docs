@@ -159,11 +159,11 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># OIDC Providers</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    google_client_id: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    google_client_secret: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span> <span class="co"># Encrypted via Fernet in Prod</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># eBay OIDC (Separate from eBay API credentials)</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    ebay_oidc_client_id: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ebay_oidc_client_secret: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Trust List</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Map of Issuer URL -&gt; JWKS URL</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    oidc_trusted_issuers: Dict[<span class="bu">str</span>, <span class="bu">str</span>] <span class="op">=</span> {</span>

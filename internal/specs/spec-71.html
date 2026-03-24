@@ -145,31 +145,23 @@ embedded into the image file.</li>
 Modifications</h2>
 <h3 id="backend">Backend</h3>
 <ul>
-<li><strong><code>backend/pyproject.toml</code></strong>:
-<ul>
+<li><strong><code>backend/pyproject.toml</code></strong>:</li>
 <li>Add <code>c2pa-python</code> to the dependencies.</li>
-</ul></li>
 <li><strong><code>fnox.toml</code></strong> &amp;
-<strong><code>backend/src/threadscout/config.py</code></strong>:
-<ul>
+<strong><code>backend/src/threadscout/config.py</code></strong>:</li>
 <li>Add configuration for <code>C2PA_ENABLED</code> (bool),
 <code>C2PA_PRIVATE_KEY_PATH</code> (str), and
 <code>C2PA_CERT_CHAIN_PATH</code> (str).</li>
-</ul></li>
 <li><strong><code>backend/src/threadscout/services/provenance.py</code></strong>
-(New File):
-<ul>
+(New File):</li>
 <li>Encapsulate the <code>c2pa-python</code> logic.</li>
 <li>Methods for generating a builder, adding assertions (actions,
 creator info), and signing the final asset.</li>
-</ul></li>
 <li><strong><code>backend/src/threadscout/services/image_processor.py</code></strong>
-(Existing/To Be Modified):
-<ul>
+(Existing/To Be Modified):</li>
 <li>Inject the <code>provenance</code> service. Ensure that after every
 Pillow (PIL) or OpenCV manipulation, the provenance service is called to
 append the corresponding C2PA action before the final save.</li>
-</ul></li>
 </ul>
 <h2 id="data-models-schemas">5. Data Models &amp; Schemas</h2>
 <h3 id="configuration-settings">Configuration Settings</h3>
@@ -206,7 +198,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Reads the source image, appends the provided C2PA actions (e.g., [&#39;c2pa.edited&#39;, &#39;c2pa.resized&#39;]),</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">    signs the manifest using the configured certificates, and writes to dest_image_path.</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns True if successful, False if C2PA is disabled or signing fails.</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>

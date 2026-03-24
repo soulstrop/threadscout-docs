@@ -30,19 +30,19 @@
 <h1 class="title">Analysis Multitenancy</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="engineering-analysis-multitenancy-migration">Engineering
-Analysis: Multitenancy Migration</h1>
+<h2 id="engineering-analysis-multitenancy-migration">Engineering
+Analysis: Multitenancy Migration</h2>
 <p><strong>Date Created</strong>: February 15, 2026<br />
 <strong>Last Updated</strong>: February 28, 2026<br />
 <strong>Status</strong>: Implementation Verified (Phase 7/8)</p>
-<h2 id="executive-summary">Executive Summary</h2>
+<h3 id="executive-summary">Executive Summary</h3>
 <p>This document tracks the evolution of ThreadScout from a
 single-tenant local utility to a secure, multi-tenant SaaS-ready
 platform. As of February 28, 2026, the core logical and physical
 isolation layers have been implemented and verified.</p>
 <hr />
-<h2 id="historical-gap-analysis-archived-feb-15-2026">1. Historical Gap
-Analysis (Archived Feb 15, 2026)</h2>
+<h3 id="historical-gap-analysis-archived-feb-15-2026">1. Historical Gap
+Analysis (Archived Feb 15, 2026)</h3>
 <table>
 <colgroup>
 <col style="width: 20%" />
@@ -104,9 +104,9 @@ provisioning.</td>
 </tbody>
 </table>
 <hr />
-<h2 id="implementation-status-verified-feb-28-2026">2. Implementation
-Status (Verified Feb 28, 2026)</h2>
-<h3 id="a.-identity-foundation">A. Identity Foundation</h3>
+<h3 id="implementation-status-verified-feb-28-2026">2. Implementation
+Status (Verified Feb 28, 2026)</h3>
+<h4 id="a.-identity-foundation">A. Identity Foundation</h4>
 <ul>
 <li><strong>OIDC Integration</strong>: Implemented
 <strong>PocketID</strong> as a self-hosted OIDC sidecar.</li>
@@ -117,7 +117,7 @@ eBay).</li>
 automatically created in the database upon their first successful OIDC
 login.</li>
 </ul>
-<h3 id="b.-logical-data-isolation">B. Logical Data Isolation</h3>
+<h4 id="b.-logical-data-isolation">B. Logical Data Isolation</h4>
 <ul>
 <li><strong>User-Scoped Queries</strong>: All database models
 (<code>Item</code>, <code>Image</code>, <code>EBayToken</code>,
@@ -128,7 +128,7 @@ at the API level, ensuring users can only access their own records.</li>
 <li><strong>Security Middleware</strong>: Cryptographic JWT signature
 verification is active for every cross-origin request.</li>
 </ul>
-<h3 id="c.-physical-asset-isolation">C. Physical Asset Isolation</h3>
+<h4 id="c.-physical-asset-isolation">C. Physical Asset Isolation</h4>
 <ul>
 <li><strong>Namespaced Storage</strong>: The local filesystem has been
 restructured to <code>storage/{user_id}/{item_id}/</code>.</li>
@@ -141,7 +141,7 @@ S3-compatible cloud storage and per-user Bring Your Own Storage
 (BYOS).</li>
 </ul>
 <hr />
-<h2 id="saas-logic-quotas">3. SaaS Logic &amp; Quotas</h2>
+<h3 id="saas-logic-quotas">3. SaaS Logic &amp; Quotas</h3>
 <ul>
 <li><strong>Tiers &amp; Quotas</strong>: Implemented
 <code>User.tier</code> (Free/Pro) and monthly limits for AI tokens and
@@ -150,10 +150,10 @@ listings.</li>
 Integration with Stripe to link subscription states to user tiers.</li>
 </ul>
 <hr />
-<h2 id="historical-context-feb-15-2026">4. Historical Context (Feb 15,
-2026)</h2>
-<h3 id="original-migration-roadmap-deprecated">Original Migration
-Roadmap (Deprecated)</h3>
+<h3 id="historical-context-feb-15-2026">4. Historical Context (Feb 15,
+2026)</h3>
+<h4 id="original-migration-roadmap-deprecated">Original Migration
+Roadmap (Deprecated)</h4>
 <ol type="1">
 <li><strong>Identity Foundation</strong>: Introduce centralized Auth.
 (Completed)</li>

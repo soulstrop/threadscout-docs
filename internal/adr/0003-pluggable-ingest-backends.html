@@ -30,25 +30,25 @@
 <h1 class="title">0003 Pluggable Ingest Backends</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="adr-003-pluggable-ingest-backends">ADR 003: Pluggable Ingest
-Backends</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-003-pluggable-ingest-backends">ADR 003: Pluggable Ingest
+Backends</h2>
+<h3 id="status">Status</h3>
 <p>Proposed</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>ThreadScout originally assumed all photos would be located in a local
 <code>ingest/</code> directory. However, resellers use various sources
 for their product photography, including Google Photos, Apple iCloud,
 and direct URLs.</p>
 <p>We need a way to support these varied sources without hardcoding
 specific logic for every provider into the core application.</p>
-<h2 id="decision">Decision</h2>
+<h3 id="decision">Decision</h3>
 <p>We will implement an <strong>Ingest Provider Interface</strong>.</p>
 <p>The backend will be refactored to use a strategy pattern. A base
 <code>IngestProvider</code> class will define the contract, and specific
 implementations (e.g., <code>LocalProvider</code>,
 <code>GooglePhotosProvider</code>) will handle the platform-specific
 logic for listing, fetching, and finalizing images.</p>
-<h2 id="interface-contract">Interface Contract</h2>
+<h3 id="interface-contract">Interface Contract</h3>
 <p>Every Provider must implement:</p>
 <ol type="1">
 <li><code>list_images()</code>: Returns metadata for available images
@@ -58,7 +58,7 @@ analysis.</li>
 <li><code>finalize(image_ids, destination_path)</code>: Moves or marks
 images as processed.</li>
 </ol>
-<h2 id="rationale">Rationale</h2>
+<h3 id="rationale">Rationale</h3>
 <ul>
 <li><strong>Extensibility</strong>: New backends (S3, Dropbox, Apple
 Photos) can be added by simply implementing the interface.</li>
@@ -68,7 +68,7 @@ know if an image is on a local disk or a Google server.</li>
 Google Photos enables a seamless mobile-to-desktop workflow for
 users.</li>
 </ul>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Positive</strong>: High flexibility; supports modern cloud
 workflows.</li>

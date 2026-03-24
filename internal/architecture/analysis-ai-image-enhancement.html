@@ -30,12 +30,12 @@
 <h1 class="title">Analysis Ai Image Enhancement</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="engineering-analysis-ai-assisted-image-enhancement">Engineering
-Analysis: AI-Assisted Image Enhancement</h1>
+<h2 id="engineering-analysis-ai-assisted-image-enhancement">Engineering
+Analysis: AI-Assisted Image Enhancement</h2>
 <p><strong>Date</strong>: February 28, 2026<br />
 <strong>Status</strong>: Concept Design - Ethical &amp; Technical
 Assessment</p>
-<h2 id="executive-summary">1. Executive Summary</h2>
+<h3 id="executive-summary">1. Executive Summary</h3>
 <p>This analysis evaluates the integration of AI-driven image processing
 to improve the visual appeal of listing photos. Key features include
 <strong>background removal/replacement</strong>, <strong>automated
@@ -44,9 +44,9 @@ focus on maximizing click-through rates (CTR) on marketplaces like eBay
 while strictly adhering to ethical guidelines to prevent
 “misrepresentation” claims.</p>
 <hr />
-<h2 id="technical-scope">2. Technical Scope</h2>
-<h3 id="a.-semantic-segmentation-background-removal">A. Semantic
-Segmentation (Background Removal)</h3>
+<h3 id="technical-scope">2. Technical Scope</h3>
+<h4 id="a.-semantic-segmentation-background-removal">A. Semantic
+Segmentation (Background Removal)</h4>
 <ul>
 <li><strong>Objective</strong>: Create a pixel-perfect mask of the
 clothing item.</li>
@@ -55,7 +55,7 @@ clothing item.</li>
 <li><strong>Output</strong>: Transparent PNG or white-background JPG
 (eBay standard).</li>
 </ul>
-<h3 id="b.-contextual-backgrounds">B. Contextual Backgrounds</h3>
+<h4 id="b.-contextual-backgrounds">B. Contextual Backgrounds</h4>
 <ul>
 <li><strong>Objective</strong>: Place the masked item into “Studio” or
 “Abstract” settings.</li>
@@ -64,8 +64,8 @@ the item or changes its perceived color.</li>
 <li><strong>Strategy</strong>: Use high-quality in-painting models with
 a “Safe Contrast” constraint.</li>
 </ul>
-<h3 id="c.-orientation-correction-auto-rotate">C. Orientation Correction
-(Auto-Rotate)</h3>
+<h4 id="c.-orientation-correction-auto-rotate">C. Orientation Correction
+(Auto-Rotate)</h4>
 <ul>
 <li><strong>Objective</strong>: Ensure the item is “right side up”
 regardless of how the user held their phone.</li>
@@ -78,8 +78,8 @@ regardless of how the user held their phone.</li>
 pixels.</li>
 </ul></li>
 </ul>
-<h3 id="d.-hero-image-generation-translucent-mannequin">D. “Hero Image”
-Generation (Translucent Mannequin)</h3>
+<h4 id="d.-hero-image-generation-translucent-mannequin">D. “Hero Image”
+Generation (Translucent Mannequin)</h4>
 <ul>
 <li><strong>Objective</strong>: Create a highly engaging, professional
 primary listing image by visualizing the garment worn on a translucent
@@ -96,8 +96,8 @@ physical garment, and is exempt from the strict “non-destructive” pixel
 rules applied to standard photos.</li>
 </ul>
 <hr />
-<h2 id="cost-performance-analysis">3. Cost &amp; Performance
-Analysis</h2>
+<h3 id="cost-performance-analysis">3. Cost &amp; Performance
+Analysis</h3>
 <p>Unlike text/reasoning models, Image Generation APIs are typically
 priced <strong>per image</strong>, not per token.</p>
 <table>
@@ -137,9 +137,9 @@ Banana)</strong></td>
 </tr>
 </tbody>
 </table>
-<h3
+<h4
 id="heuristic-comprehensive-processing-vs.-the-hero-image">Heuristic:
-Comprehensive Processing vs. The Hero Image</h3>
+Comprehensive Processing vs. The Hero Image</h4>
 <p>To optimize costs while maximizing impact:</p>
 <ul>
 <li><strong>All Images</strong>: Every uploaded image receives rotation
@@ -152,27 +152,27 @@ model, its costs must be tracked separately as a premium pipeline
 step.</li>
 </ul>
 <hr />
-<h2 id="ethical-guardrails-integrity">4. Ethical Guardrails &amp;
-Integrity</h2>
+<h3 id="ethical-guardrails-integrity">4. Ethical Guardrails &amp;
+Integrity</h3>
 <p>The primary risk in AI image enhancement is <strong>Buyer
 Dispute</strong> (item not as described).</p>
-<h3 id="a.-the-non-destructive-rule-standard-gallery-images">A. The
-“Non-Destructive” Rule (Standard Gallery Images)</h3>
+<h4 id="a.-the-non-destructive-rule-standard-gallery-images">A. The
+“Non-Destructive” Rule (Standard Gallery Images)</h4>
 <p>For the actual item gallery images, AI must never:</p>
 <ul>
 <li>Remove stains, holes, or pilling.</li>
 <li>Enhance colors beyond “Natural Calibration.”</li>
 <li>Alter the texture of the fabric.</li>
 </ul>
-<h3 id="b.-the-hero-image-exception">B. The “Hero Image” Exception</h3>
+<h4 id="b.-the-hero-image-exception">B. The “Hero Image” Exception</h4>
 <p>The generated “Hero” image (garment on a translucent mannequin) is
 <strong>exempt</strong> from the non-destructive rule regarding internal
 pixels. However, it MUST be clearly identifiable as a visualization aid.
 It is established practice to use such catalog-style images for primary
 search indexing as long as the gallery contains accurate physical
 representations.</p>
-<h3 id="c.-transparency-declarations">C. Transparency &amp;
-Declarations</h3>
+<h4 id="c.-transparency-declarations">C. Transparency &amp;
+Declarations</h4>
 <p>To maintain trust and comply with emerging marketplace regulations
 (e.g., C2PA), ThreadScout should:</p>
 <ol type="1">
@@ -185,7 +185,7 @@ to the eBay description:<br />
 photos in storage. The enhanced versions are derivatives.</p></li>
 </ol>
 <hr />
-<h2 id="proposed-workflow">5. Proposed Workflow</h2>
+<h3 id="proposed-workflow">5. Proposed Workflow</h3>
 <ol type="1">
 <li><strong>Upload</strong>: User uploads X photos.</li>
 <li><strong>Analysis</strong>: Gemini Vision analyzes all photos for
@@ -203,8 +203,8 @@ create the “translucent mannequin” visualization.</li>
 alongside the processed gallery images in the Synthesis Editor.</li>
 </ol>
 <hr />
-<h2 id="implementation-readiness">6. Implementation Readiness</h2>
-<h3 id="infrastructure-needs">Infrastructure Needs</h3>
+<h3 id="implementation-readiness">6. Implementation Readiness</h3>
+<h4 id="infrastructure-needs">Infrastructure Needs</h4>
 <ul>
 <li><strong><code>imagemagick</code></strong>: Must be added to the
 Docker/Mise environment (already present in
@@ -213,7 +213,7 @@ Docker/Mise environment (already present in
 <code>google-cloud-aiplatform</code> or similar expansion in
 <code>ai.py</code>.</li>
 </ul>
-<h3 id="recommendation">Recommendation</h3>
+<h4 id="recommendation">Recommendation</h4>
 <p><strong>Implement “Auto-Rotation” first.</strong> It is high-value,
 low-cost, and carries zero risk of misrepresentation. <strong>Implement
 “Background Removal” as a Pro-tier feature</strong>, limited to the Main

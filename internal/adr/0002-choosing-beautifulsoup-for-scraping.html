@@ -30,12 +30,12 @@
 <h1 class="title">0002 Choosing Beautifulsoup For Scraping</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1
+<h2
 id="adr-002-choosing-beautifulsoup-over-playwright-for-enrichment-scraping">ADR
-002: Choosing BeautifulSoup over Playwright for Enrichment Scraping</h1>
-<h2 id="status">Status</h2>
+002: Choosing BeautifulSoup over Playwright for Enrichment Scraping</h2>
+<h3 id="status">Status</h3>
 <p>Accepted</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>In ADR 001, we decided on a “Paste &amp; Scrape” workflow for item
 enrichment. We then needed to decide on the technical implementation for
 fetching and parsing the external HTML.</p>
@@ -46,12 +46,12 @@ parser that works on static HTML.</li>
 <li><strong>Playwright</strong>: A full headless browser capable of
 executing JavaScript and bypassing complex anti-bot measures.</li>
 </ol>
-<h2 id="decision">Decision</h2>
+<h3 id="decision">Decision</h3>
 <p>We chose <strong>Option 1: BeautifulSoup4 with HTTPX</strong>.</p>
 <p>Initial investigations into target sites (eBay, rrr.lv) showed that
 primary product metadata—specifically Titles and Descriptions—are
 present in the raw, server-side rendered HTML.</p>
-<h2 id="rationale">Rationale</h2>
+<h3 id="rationale">Rationale</h3>
 <ul>
 <li><strong>Performance</strong>: BeautifulSoup is orders of magnitude
 faster than spawning a headless browser instance.</li>
@@ -65,7 +65,7 @@ environment.</li>
 identified as primary research targets, static parsing is sufficient to
 retrieve the “Gold” data needed for AI enrichment.</li>
 </ul>
-<h2 id="consequences">Consequences</h2>
+<h3 id="consequences">Consequences</h3>
 <ul>
 <li><strong>Positive</strong>: Very fast enrichment loop; low overhead
 on the local development environment.</li>

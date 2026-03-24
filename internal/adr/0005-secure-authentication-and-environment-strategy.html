@@ -31,11 +31,11 @@
 Strategy</h1>
 <p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="adr-0005-secure-authentication-and-environment-strategy">ADR
-0005: Secure Authentication and Environment Strategy</h1>
-<h2 id="status">Status</h2>
+<h2 id="adr-0005-secure-authentication-and-environment-strategy">ADR
+0005: Secure Authentication and Environment Strategy</h2>
+<h3 id="status">Status</h3>
 <p>Proposed</p>
-<h2 id="context">Context</h2>
+<h3 id="context">Context</h3>
 <p>ThreadScout is transitioning from a purely local tool to a “Cloud
 Native Local” application that integrates with external identity
 providers (eBay, Google, Apple). This introduces strict security
@@ -56,9 +56,9 @@ surface.</li>
 machine” issues when moving between Dev, CI (GitHub Actions), and
 Production (likely containerized).</li>
 </ol>
-<h2 id="issues-considerations">Issues &amp; Considerations</h2>
-<h3 id="the-oauth-localhost-problem">1. The OAuth “Localhost”
-Problem</h3>
+<h3 id="issues-considerations">Issues &amp; Considerations</h3>
+<h4 id="the-oauth-localhost-problem">1. The OAuth “Localhost”
+Problem</h4>
 <ul>
 <li><p><strong>Constraint</strong>: Identity providers (IdPs) like eBay
 do not consider <code>http://localhost</code> secure or valid for
@@ -66,17 +66,15 @@ callbacks in production-tier apps.</p></li>
 <li><p><strong>Current Workaround</strong>: Using
 <code>cloudflared</code> to create a temporary public tunnel
 (<code>https://random-name.trycloudflare.com</code>).</p></li>
-<li><p><strong>Risks</strong>:</p>
-<ul>
-<li><strong>Tunnel Stability</strong>: URLs change every restart,
-requiring constant reconfiguration of the IdP portal.</li>
-<li><strong>Security</strong>: Anyone with the URL can hit your local
+<li><p><strong>Risks</strong>:</p></li>
+<li><p><strong>Tunnel Stability</strong>: URLs change every restart,
+requiring constant reconfiguration of the IdP portal.</p></li>
+<li><p><strong>Security</strong>: Anyone with the URL can hit your local
 backend API. There is no WAF or authentication in front of the tunnel by
-default.</li>
-</ul></li>
+default.</p></li>
 </ul>
-<h3 id="multi-provider-identity-needs">2. Multi-Provider Identity
-Needs</h3>
+<h4 id="multi-provider-identity-needs">2. Multi-Provider Identity
+Needs</h4>
 <ul>
 <li><strong>Google/Apple Sign-In</strong>: These providers require
 verifying domain ownership. We cannot verify
@@ -85,7 +83,7 @@ verifying domain ownership. We cannot verify
 name (e.g., <code>dev.threadscout.app</code>) that points to the
 developer’s local environment or a staging instance.</li>
 </ul>
-<h3 id="production-ci-parity">3. Production &amp; CI Parity</h3>
+<h4 id="production-ci-parity">3. Production &amp; CI Parity</h4>
 <ul>
 <li><strong>Containerization</strong>: Production will be
 Docker/Kubernetes based. Developing directly on the host OS
@@ -96,25 +94,23 @@ ephemeral and headless. They cannot perform interactive OAuth flows
 involving browser redirects. Testing strictly needs to be mocked or run
 against a long-lived staging environment.</li>
 </ul>
-<h3 id="developer-machine-security">4. Developer Machine Security</h3>
+<h4 id="developer-machine-security">4. Developer Machine Security</h4>
 <ul>
 <li><p><strong>Risk</strong>: Running a public tunnel directly to a
 workstation bypasses the router’s NAT/Firewall. If the application has a
 vulnerability (e.g., RCE), the developer’s personal machine is
 compromised.</p></li>
-<li><p><strong>Mitigation Options</strong>:</p>
-<ul>
-<li><strong>Isolated VM/Container</strong>: Run the entire stack
+<li><p><strong>Mitigation Options</strong>:</p></li>
+<li><p><strong>Isolated VM/Container</strong>: Run the entire stack
 (Backend + Frontend + Tunnel) inside a VM or Dev Container. If
-compromised, the blast radius is contained.</li>
-<li><strong>Authenticated Tunnel</strong>: Use Cloudflare Access or
+compromised, the blast radius is contained.</p></li>
+<li><p><strong>Authenticated Tunnel</strong>: Use Cloudflare Access or
 ngrok with OAuth protection on the <em>tunnel itself</em>. (Challenge:
-The eBay webhook cannot authenticate to the tunnel).</li>
-</ul></li>
+The eBay webhook cannot authenticate to the tunnel).</p></li>
 </ul>
-<h2 id="proposed-strategy">Proposed Strategy</h2>
-<h3 id="a.-development-environment-the-sandboxed-tunnel">A. Development
-Environment (The “Sandboxed Tunnel”)</h3>
+<h3 id="proposed-strategy">Proposed Strategy</h3>
+<h4 id="a.-development-environment-the-sandboxed-tunnel">A. Development
+Environment (The “Sandboxed Tunnel”)</h4>
 <ol type="1">
 <li><p><strong>Architecture</strong>: Shift development to a <strong>Dev
 Container</strong> or <strong>Local VM</strong>.</p>
@@ -133,7 +129,7 @@ container.</li>
 <code>https://mike.threadscout-dev.com</code>.</li>
 </ul></li>
 </ol>
-<h3 id="b.-cicd-pipeline">B. CI/CD Pipeline</h3>
+<h4 id="b.-cicd-pipeline">B. CI/CD Pipeline</h4>
 <ol type="1">
 <li><strong>Mocking First</strong>: Continue to rely heavily on the
 mocked E2E tests (<code>workflow.spec.ts</code>) for logic
@@ -142,7 +138,7 @@ verification.</li>
 to verify that our mocks match the real eBay/Google API behavior, rather
 than hitting live APIs in CI.</li>
 </ol>
-<h3 id="c.-production-transition">C. Production Transition</h3>
+<h4 id="c.-production-transition">C. Production Transition</h4>
 <ol type="1">
 <li><strong>Container First</strong>: The <code>Dockerfile</code> used
 for the Dev Container should be nearly identical to the Production
@@ -152,7 +148,7 @@ to define the relationship between Frontend, Backend, Caddy, and the
 Tunnel. This file becomes the “source of truth” for how the system runs
 anywhere.</li>
 </ol>
-<h2 id="decision-drivers">Decision Drivers</h2>
+<h3 id="decision-drivers">Decision Drivers</h3>
 <ul>
 <li><strong>Safety</strong>: We must assume the development endpoint is
 hostile territory if it is public. Isolation is non-negotiable.</li>
@@ -161,7 +157,7 @@ unsustainable. We need fixed URLs.</li>
 <li><strong>Compliance</strong>: We must meet the strict HTTPS
 requirements of our partners.</li>
 </ul>
-<h2 id="next-steps">Next Steps</h2>
+<h3 id="next-steps">Next Steps</h3>
 <ol type="1">
 <li><label><input type="checkbox" />Draft a
 <code>docker-compose.dev.yaml</code> that includes the full stack +
