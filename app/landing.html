@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
   <title>README</title>
   <style>
     code{white-space: pre-wrap;}
@@ -27,12 +28,13 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">README</h1>
+<p class="author">jmc &amp; gemini</p>
 </header>
-<h1 id="threadscout">ThreadScout</h1>
+<h2 id="threadscout">ThreadScout</h2>
 <p>ThreadScout is a local-first automation platform for clothing
 resellers. It streamlines the transition from raw product photography to
 complete, market-ready eBay drafts using AI Vision.</p>
-<h2 id="what-threadscout-provides">What ThreadScout Provides</h2>
+<h3 id="what-threadscout-provides">What ThreadScout Provides</h3>
 <ul>
 <li><strong>AI Vision Extraction</strong>: Automatically identifies
 brand, size, material, and condition from garment photos using Gemini
@@ -49,7 +51,7 @@ hardware.</li>
 for running AI tasks in a secure, restricted sandbox.</li>
 </ul>
 <hr />
-<h2 id="quick-start-deployment">Quick Start: Deployment</h2>
+<h3 id="quick-start-deployment">Quick Start: Deployment</h3>
 <p>Get the app running locally for personal use in less than 5
 minutes.</p>
 <ol type="1">
@@ -67,8 +69,8 @@ href="https://localhost:3443">https://localhost:3443</a></li>
 </ol>
 <p>For detailed installation and Cloudflare OAuth configuration, see <a
 href="guides/deployment.html">DEPLOYMENT</a>.</p>
-<h2 id="quick-start-developer-onboarding">Quick Start: Developer
-Onboarding</h2>
+<h3 id="quick-start-developer-onboarding">Quick Start: Developer
+Onboarding</h3>
 <p>For those looking to contribute or customize the internals.</p>
 <ol type="1">
 <li><strong>Clone &amp; Enter</strong>:
@@ -87,8 +89,8 @@ href="architecture/index.html">ARCHITECTURE</a> for the high-level maps
 and philosophy.</li>
 </ol>
 <hr />
-<h2 id="frequently-asked-questions-faq">Frequently Asked Questions
-(FAQ)</h2>
+<h3 id="frequently-asked-questions-faq">Frequently Asked Questions
+(FAQ)</h3>
 <p><strong>Q: Where is my data stored?</strong> A: All item metadata is
 stored in a local SQLite database
 (<code>backend/data/threadscout.db</code>), and images are stored in the
@@ -104,7 +106,7 @@ enrichment. Both run on Google Vertex AI.</p>
 While the current prompts are optimized for garments, the architecture
 is designed to support different “Category Profiles” in the future.</p>
 <hr />
-<h2 id="documentation-hub">Documentation Hub</h2>
+<h3 id="documentation-hub">Documentation Hub</h3>
 <ul>
 <li><strong><a href="guides/user_guide.html">USER_GUIDE</a></strong>:
 The “Why” - Journey intent and operational resilience.</li>
@@ -116,10 +118,10 @@ The Internals - Philosophy, maps, and technical deep-dives.</li>
 Landing Page.</li>
 </ul>
 <hr />
-<h2 id="license">License</h2>
+<h3 id="license">License</h3>
 <p>Copyright (c) 2026 J. Michael Constans. All Rights Reserved. Refer to
 the <a href="license">LICENSE</a> file for more details.</p>
-<h3 id="project-tags">Project Tags</h3>
+<h4 id="project-tags">Project Tags</h4>
 <p><img src="https://img.shields.io/badge/Language-python-blue"
 alt="python" /> <img
 src="https://img.shields.io/badge/Language-typescript-blue"

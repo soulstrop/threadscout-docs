@@ -66,12 +66,14 @@ callbacks in production-tier apps.</p></li>
 <li><p><strong>Current Workaround</strong>: Using
 <code>cloudflared</code> to create a temporary public tunnel
 (<code>https://random-name.trycloudflare.com</code>).</p></li>
-<li><p><strong>Risks</strong>:</p></li>
-<li><p><strong>Tunnel Stability</strong>: URLs change every restart,
-requiring constant reconfiguration of the IdP portal.</p></li>
-<li><p><strong>Security</strong>: Anyone with the URL can hit your local
+<li><p><strong>Risks</strong>:</p>
+<ul>
+<li><strong>Tunnel Stability</strong>: URLs change every restart,
+requiring constant reconfiguration of the IdP portal.</li>
+<li><strong>Security</strong>: Anyone with the URL can hit your local
 backend API. There is no WAF or authentication in front of the tunnel by
-default.</p></li>
+default.</li>
+</ul></li>
 </ul>
 <h4 id="multi-provider-identity-needs">2. Multi-Provider Identity
 Needs</h4>
@@ -100,13 +102,15 @@ against a long-lived staging environment.</li>
 workstation bypasses the router’s NAT/Firewall. If the application has a
 vulnerability (e.g., RCE), the developer’s personal machine is
 compromised.</p></li>
-<li><p><strong>Mitigation Options</strong>:</p></li>
-<li><p><strong>Isolated VM/Container</strong>: Run the entire stack
+<li><p><strong>Mitigation Options</strong>:</p>
+<ul>
+<li><strong>Isolated VM/Container</strong>: Run the entire stack
 (Backend + Frontend + Tunnel) inside a VM or Dev Container. If
-compromised, the blast radius is contained.</p></li>
-<li><p><strong>Authenticated Tunnel</strong>: Use Cloudflare Access or
+compromised, the blast radius is contained.</li>
+<li><strong>Authenticated Tunnel</strong>: Use Cloudflare Access or
 ngrok with OAuth protection on the <em>tunnel itself</em>. (Challenge:
-The eBay webhook cannot authenticate to the tunnel).</p></li>
+The eBay webhook cannot authenticate to the tunnel).</li>
+</ul></li>
 </ul>
 <h3 id="proposed-strategy">Proposed Strategy</h3>
 <h4 id="a.-development-environment-the-sandboxed-tunnel">A. Development
@@ -165,8 +169,20 @@ requirements of our partners.</li>
 <li><label><input type="checkbox" />Investigate acquiring a dedicated
 dev domain for stable tunneling.</label></li>
 <li><label><input type="checkbox" />Evaluate “Dev Containers” (VS Code /
-JetBrains spec) as the standard way to onboard new
-contributors.</label></li>
+JetBrains spec) as the standard way to onboard new contributors.
+<br></label></li>
 </ol>
+<hr />
+<p><strong>Next Steps</strong></p>
+<ul>
+<li><a href="index.html">Return to Documentation Home</a></li>
+<li><a href="mailto:admin@threadscout.constans.dev">Submit an
+Issue/Feedback</a></li>
+<li><a href="#">Back to Top</a></li>
+</ul>
+<blockquote>
+<p>This document was last updated on April 7, 2026. Confused? Contact
+the team at <code>support@threadscout.constans.dev</code>.</p>
+</blockquote>
 </body>
 </html>

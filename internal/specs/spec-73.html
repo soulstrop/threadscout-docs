@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="jmc &amp; gemini" />
   <title>Spec 73</title>
   <style>
     code{white-space: pre-wrap;}
@@ -27,6 +28,7 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">Spec 73</h1>
+<p class="author">jmc &amp; gemini</p>
 </header>
 <h1
 id="spec-73-grafana-dashboard-for-high-throughput-ingestion-queue">SPEC-73:
@@ -67,56 +69,76 @@ business-logic latency and token usage.</li>
 <h3 id="row-1-executive-economics-summary-the-wallet">Row 1: Executive /
 Economics Summary (The “Wallet”)</h3>
 <ul>
-<li><strong>Panel: Total Items Ingested (24h)</strong>: Single
-stat.</li>
+<li><strong>Panel: Total Items Ingested (24h)</strong>: Single stat.
+<ul>
 <li><em>Metric</em>: Count of items where
 <code>status = 'ingested'</code> (from DB) or
 <code>threadscout_items_ingested_total</code> (from Prometheus).</li>
+</ul></li>
 <li><strong>Panel: Token Burn Rate (Tokens/Min)</strong>: Time-series
-graph.</li>
+graph.
+<ul>
 <li><em>Metric</em>: Rate of <code>threadscout_llm_tokens_total</code>
 over a 1m window. Split by model (e.g., <code>gemini-2.0-flash</code> vs
 <code>gemini-2.5-flash-lite</code>).</li>
-<li><strong>Panel: Cost per Item (Estimated)</strong>: Gauge.</li>
+</ul></li>
+<li><strong>Panel: Cost per Item (Estimated)</strong>: Gauge.
+<ul>
 <li><em>Metric</em>: (Total Token Cost in last hour) / (Total Items
 Processed in last hour). Gives immediate feedback if a prompt change
 caused a cost regression.</li>
+</ul></li>
 </ul>
 <h3 id="row-2-pipeline-latency-the-queue">Row 2: Pipeline Latency (The
 “Queue”)</h3>
 <ul>
 <li><strong>Panel: End-to-End Latency (Ingest -&gt; Push)</strong>:
-Histogram / Heatmap.</li>
+Histogram / Heatmap.
+<ul>
 <li><em>Metric</em>: Application-level metric calculating
 <code>pushed_at - ingested_at</code>. Shows the P50, P90, and P99
 latency. If P99 spikes, the LLM or eBay API is likely stalling.</li>
-<li><strong>Panel: Stage Bottlenecks</strong>: Bar chart.</li>
-<li><em>Metric</em>: Average time spent in each stage: *
-<code>vision_latency</code> = <code>enriched_at - ingested_at</code> *
-<code>ebay_latency</code> = <code>pushed_at - enriched_at</code></li>
+</ul></li>
+<li><strong>Panel: Stage Bottlenecks</strong>: Bar chart.
+<ul>
+<li><em>Metric</em>: Average time spent in each stage:
+<ul>
+<li><code>vision_latency</code> =
+<code>enriched_at - ingested_at</code></li>
+<li><code>ebay_latency</code> =
+<code>pushed_at - enriched_at</code></li>
+</ul></li>
+</ul></li>
 <li><strong>Panel: Items in “Pending” State</strong>: Single stat
-(Red/Yellow/Green thresholds).</li>
+(Red/Yellow/Green thresholds).
+<ul>
 <li><em>Metric</em>: Count of items currently stuck without reaching
 <code>status = 'pushed'</code>. Acts as an alert if the queue backs
 up.</li>
+</ul></li>
 </ul>
 <h3 id="row-3-scylladb-health-the-engine">Row 3: ScyllaDB Health (The
 “Engine”)</h3>
 <ul>
 <li><strong>Panel: Database Throughput (Read/Write OPS)</strong>:
-Time-series graph.</li>
+Time-series graph.
+<ul>
 <li><em>PromQL</em>:
 <code>sum(rate(scylla_storage_proxy_coordinator_read_operations_total[1m]))</code>
 and <code>write_operations_total</code>.</li>
+</ul></li>
 <li><strong>Panel: Coordinator Latency (P99)</strong>: Time-series
-graph.</li>
+graph.
+<ul>
 <li><em>PromQL</em>: ScyllaDB 99th percentile write latency. Ensures the
 database isn’t the bottleneck for mobile uploads.</li>
-<li><strong>Panel: Node Load / CPU Utilization</strong>: Gauge per
-node.</li>
+</ul></li>
+<li><strong>Panel: Node Load / CPU Utilization</strong>: Gauge per node.
+<ul>
 <li><em>PromQL</em>:
 <code>sum(rate(node_cpu_seconds_total{mode!="idle"}[1m]))</code> to
 ensure the cluster is evenly balanced.</li>
+</ul></li>
 </ul>
 <h2 id="implementation-strategy-future">5. Implementation Strategy
 (Future)</h2>
@@ -142,8 +164,20 @@ seconds, trigger a webhook to the Ops channel.</li>
 7-day moving average, alert for potential looping/retry bugs in the AI
 services.</li>
 <li><strong>Dead Letter Queue</strong>: If “Items in Pending State” &gt;
-100 for more than 5 minutes, alert that the worker queue has
-crashed.</li>
+100 for more than 5 minutes, alert that the worker queue has crashed.
+<br></li>
 </ul>
+<hr />
+<p><strong>Next Steps</strong></p>
+<ul>
+<li><a href="index.html">Return to Documentation Home</a></li>
+<li><a href="mailto:admin@threadscout.constans.dev">Submit an
+Issue/Feedback</a></li>
+<li><a href="#">Back to Top</a></li>
+</ul>
+<blockquote>
+<p>This document was last updated on April 7, 2026. Confused? Contact
+the team at <code>support@threadscout.constans.dev</code>.</p>
+</blockquote>
 </body>
 </html>
